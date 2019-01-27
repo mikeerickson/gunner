@@ -1,0 +1,41 @@
+{
+  "name": "@codedungeon/gunner",
+  "packageName": "Gunner",
+  "version": "1.0.0",
+  "description": "cli starter",
+  "tagline": "Crafted with love by Codedungeon",
+  "contributors": [
+    {
+      "name": "Mike Erickson",
+      "email": "mike.erickson@codedungeon.io",
+      "url": "http://codedungeon.io"
+    }
+  ],
+  "main": "index.js",
+  "bin": {
+    "gunner": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "node",
+    "starter",
+    "codedungeon"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "10.0.1",
+    "eslint": "5.12.1",
+    "eslint-config-prettier": "4.0.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "prettier": "1.16.1"
+  },
+  "dependencies": {
+    "@codedungeon/messenger": "0.3.0",
+    "@codedungeon/utils": "0.0.5",
+    "chalk": "2.4.2",
+    "enquirer": "2.3.0"
+  }
+}
