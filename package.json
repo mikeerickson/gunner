@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "Gunner",
-  "version": "1.0.0",
+  "version": "0.0.1-dev.2",
   "description": "cli starter",
   "tagline": "Crafted with love by Codedungeon",
   "contributors": [
@@ -15,8 +15,16 @@
   "bin": {
     "gunner": "./index.js"
   },
+  "engines": {
+    "node": ">=8.6"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bump": "yarn run bump:dev",
+    "bump:dev": "version-bump cli pre-release:dev",
+    "bump:patch": "version-bump cli patch",
+    "bump:minor": "version-bump cli minor",
+    "lint": "eslint ./src/**/*.js",
+    "test": "mocha ./test/*.test.js"
   },
   "keywords": [
     "cli",
@@ -35,7 +43,12 @@
   "dependencies": {
     "@codedungeon/messenger": "0.3.0",
     "@codedungeon/utils": "0.0.5",
+    "chai": "4.2.0",
     "chalk": "2.4.2",
-    "enquirer": "2.3.0"
+    "enquirer": "2.3.0",
+    "mocha": "5.2.0",
+    "please-upgrade-node": "3.1.1",
+    "update-notifier": "2.5.0",
+    "yargs-parser": "11.1.1"
   }
 }

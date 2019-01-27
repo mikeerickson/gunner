@@ -1,6 +1,6 @@
 {
   "no-empty-interface": false,
-  "semi": true,
+  "semi": false,
   "printWidth": 110,
-  "singleQuote": false
+  "singleQuote": true
 }

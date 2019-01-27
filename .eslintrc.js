@@ -4,7 +4,7 @@ module.exports = {
     node: true,
     jest: false
   },
-  "parser": "babel-eslint",
+  parser: "babel-eslint",
   plugins: ["prettier"],
   extends: ["eslint:recommended"],
   parserOptions: {
@@ -15,8 +15,8 @@ module.exports = {
   },
   rules: {
     indent: ["error", 2],
-    quotes: ["error", "double"],
-    semi: ["error", "always"],
+    quotes: ["error", "single"],
+    semi: ["error", "never"],
     "no-unused-vars": "off",
     "no-undef": "off",
     "no-console": [
