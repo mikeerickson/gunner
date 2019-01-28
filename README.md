@@ -2,11 +2,11 @@
 
 ## Description
 
-** Project Description **
+Codedungeon CLI Framework
 
 ### Usage
 
-** Describe module functions **
+1. git clone
 
 ### License
 
