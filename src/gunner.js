@@ -12,10 +12,11 @@ class CLI {
     this.command = this.getCommand(argv)
     this.arguments = this.getArguments(argv)
 
-    this.colors = require('colors')
-    this.print = require('@codedungeon/messenger')
-    this.fs = require('fs-extra')
     this.path = require('path')
+    this.fs = require('fs-extra')
+    this.colors = require('colors')
+    this.utils = require('@codedungeon/utils')
+    this.print = require('@codedungeon/messenger')
 
     this.handleCommand()
   }
@@ -98,7 +99,7 @@ class CLI {
   showCommandHelp(command = '') {
     let module = this.loadModule(command)
 
-    if (!module.hasOwnProperty('name')) {
+    if (!this.utils.has(module, 'name')) {
       console.log(this.colors.red(`\n🚫  An internal error occurred access ${command}`))
       process.exit(1)
     }
@@ -110,7 +111,7 @@ class CLI {
     console.log(this.colors.cyan(`⚙️  ${module.name}`))
 
     // show module description, or built description if property does not exist
-    let description = module.hasOwnProperty('description') ? module.description : `${module.name} command`
+    let description = this.utils.has(module, 'description') ? module.description : `${module.name} command`
     console.log(`   ${description}`)
 
     console.log('')
@@ -162,7 +163,7 @@ class CLI {
     }
   }
   isModuleValid(module) {
-    return module.hasOwnProperty('name') && module.hasOwnProperty('run')
+    return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
   }
   setDefaultFlags(cli, flags) {
     if (flags === undefined) {
@@ -210,16 +211,45 @@ class CLI {
     })
     return args
   }
+  argumentHasOption(args, needles) {
+    if (typeof needles === 'undefined') {
+      return false
+    }
+    let items = typeof needles === 'string' ? needles.split(',') : needles
+    for (let i = 0; i < items.length; i++) {
+      if (items[i] === undefined) {
+        return false
+      }
+      const element = items[i].replace(/-/gi, '')
+      if (args.hasOwnProperty(element)) {
+        return true
+      }
+    }
+    return false
+  }
+  getOptionValue(args, optName) {
+    if (this.argumentHasOption(args, optName)) {
+      let options = typeof optName === 'string' ? [optName] : optName
+      for (let i = 0; i < options.length; i++) {
+        let option = options[i].replace(/-/gi, '')
+        if (args.hasOwnProperty(option)) {
+          return args[option]
+        }
+      }
+      return ''
+    }
+    return ''
+  }
   handleCommand() {
     let command = this.command
     let args = this.arguments
 
-    if (args.help || args.h || args.H) {
+    if (this.argumentHasOption(args, ['H', 'h', 'help'])) {
       this.showHelp()
       process.exit(0)
     }
 
-    if (args.V || args.version) {
+    if (this.argumentHasOption(args, ['V', 'version'])) {
       this.showVersion()
       process.exit(0)
     }

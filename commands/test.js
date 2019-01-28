@@ -13,7 +13,7 @@ module.exports = {
   },
   run(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
-    this.hasOwnProperty('init') ? this.init(cli) : null
+    cli.utils.has(this, 'init') ? this.init(cli) : null
 
     cli.print.info(`⚙️  Execute ${this.name} command`)
     cli.print.info(

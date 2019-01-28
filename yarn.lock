@@ -108,10 +108,10 @@
     strip-ansi "5.0.0"
     window-size "1.1.1"
 
-"@codedungeon/utils@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@codedungeon/utils/-/utils-0.0.5.tgz#8093386cce7711954201a837304f2d1e9134b9bc"
-  integrity sha512-hIFSZLXd9gpq+VZ1oglhlJ964TRIyRXFcRGk7Eh+6OU+baPshohOS03T7zh3w/O8MFAynymAI/rAo+hn87Yi3w==
+"@codedungeon/utils@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@codedungeon/utils/-/utils-0.0.6.tgz#60bd78b05dda7a663c057e3d0faa29e455e43e1d"
+  integrity sha512-tXxksYTPSbKuVZVPQEFwZ1T2AFkiccS4X74VYs+USnFK6JAtdcJRkb9dPG9IF7eK5rP5q3s9Q5GYD/7wWXaMiA==
   dependencies:
     chai "4.2.0"
     classnames "2.2.6"
@@ -120,6 +120,7 @@
     ejs "2.6.1"
     fs-extra "7.0.1"
     haikunator "2.0.0"
+    has-value "2.0.2"
     prettier "1.16.0"
     strftime "0.10.0"
     uuid "3.3.2"
@@ -908,6 +909,13 @@ get-stream@^3.0.0:
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
   integrity sha1-jpQ9E1jcN1VQVOy+LtsFqhdO3hQ=
 
+get-value@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/get-value/-/get-value-3.0.1.tgz#5efd2a157f1d6a516d7524e124ac52d0a39ef5a8"
+  integrity sha512-mKZj9JLQrwMBtj5wxi6MH8Z5eSKaERpAwjg43dPtlGI1ZVEgH/qC7T8/6R2OBSUA+zzHBZgICsVJaEIV2tKTDA==
+  dependencies:
+    isobject "^3.0.1"
+
 glob-base@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/glob-base/-/glob-base-0.3.0.tgz#dbb164f6221b1c0b1ccf82aea328b497df0ea3c4"
@@ -1025,6 +1033,21 @@ has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha1-tdRU3CGZriJWmfNGfloH87lVuv0=
+
+has-value@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/has-value/-/has-value-2.0.2.tgz#d0f12e8780ba8e90e66ad1a21c707fdb67c25658"
+  integrity sha512-ybKOlcRsK2MqrM3Hmz/lQxXHZ6ejzSPzpNabKB45jb5qDgJvKPa3SdapTsTLwEb9WltgWpOmNax7i+DzNOk4TA==
+  dependencies:
+    get-value "^3.0.0"
+    has-values "^2.0.1"
+
+has-values@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/has-values/-/has-values-2.0.1.tgz#3876200ff86d8a8546a9264a952c17d5fc17579d"
+  integrity sha512-+QdH3jOmq9P8GfdjFg0eJudqx1FqU62NQJ4P16rOEHeRdl7ckgwn6uqQjzYE0ZoHVV/e5E2esuJ5Gl5+HUW19w==
+  dependencies:
+    kind-of "^6.0.2"
 
 he@1.1.1:
   version "1.1.1"
@@ -1274,6 +1297,11 @@ isobject@^2.0.0:
   integrity sha1-8GVWEJaj8dou9GJy+BXIQNh+DIk=
   dependencies:
     isarray "1.0.0"
+
+isobject@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
+  integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
 jest-chain@1.0.5:
   version "1.0.5"
