@@ -11,6 +11,7 @@ class CLI {
 
     this.command = this.getCommand(argv)
     this.arguments = this.getArguments(argv)
+    this.debug = this.arguments.debug || this.arguments.d
 
     this.path = require('path')
     this.fs = require('fs-extra')
@@ -82,6 +83,27 @@ class CLI {
     })
     console.log(commands)
     return commands
+  }
+  showDebugCommand(command) {
+    if (this.debug) {
+      let separator = '='.repeat(this.utils.windowSize().width)
+      if (command !== undefined && command !== '') {
+        console.log('\n')
+        let msg =
+          ' 🚦  DEBUG COMMAND: ' +
+          command +
+          '\n    ' +
+          JSON.stringify(this.arguments)
+            .replace(/,/gi, ', ')
+            .replace(/:/gi, ': ')
+
+        console.log(this.colors.gray(separator))
+        this.print.debug(msg)
+        console.log(this.colors.gray(separator))
+
+        process.exit(0)
+      }
+    }
   }
   showVersion() {
     console.log(`${this.colors.cyan(this.packageName)} v${this.colors.cyan(this.version)}`)
