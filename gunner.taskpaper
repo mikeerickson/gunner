@@ -1,7 +1,9 @@
 Inbox:
-	- refactor messages to separate method @na
 gunner:
-	New Features:
+New Features:
+	- use private git packages @na
+		https://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry
+	- refactor messages to separate method @na
 	Ideas:
 	Bugs:
 Archive:

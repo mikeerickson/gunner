@@ -19,7 +19,7 @@
     "node": ">=8.6"
   },
   "scripts": {
-    "lint": "eslint ./src/**/*.js",
+    "lint": "eslint \"./**/*.{ts,js,vue}\" --fix",
     "test": "mocha ./test/*.test.js",
     "pre-commit": "yarn run lint && yarn run test"
   },
@@ -40,7 +40,7 @@
     "prettier": "1.16.4"
   },
   "dependencies": {
-    "@codedungeon/messenger": "0.4.0",
+    "@codedungeon/messenger": "0.5.0",
     "@codedungeon/utils": "0.0.12",
     "chai": "4.2.0",
     "chalk": "2.4.2",
