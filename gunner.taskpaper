@@ -1,4 +1,10 @@
 Inbox:
+	- adjust index to not call 'new' command? @na @priority = 5
+		Review sandbox/testFramework which requires gunner then invokes
+		How can this be done without the index method being execute?
+			Seems that I should remove the code in `index.js` which invokes the CLI
+			as it is not a stand alone CLI but instead of CLI framework
+	- cleanup framework commands, testing in new directory @na @priority = 5
 gunner:
 New Features:
 	- use private git packages @na

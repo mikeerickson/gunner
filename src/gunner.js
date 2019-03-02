@@ -1,6 +1,4 @@
-const tildify = require('tildify')
 const pkgInfo = require('../package.json')
-
 const HELP_PAD = 22
 
 class CLI {
@@ -41,7 +39,7 @@ class CLI {
       this.fs.mkdirSync(commandPath)
     }
     if (useShortPath) {
-      commandPath = tildify(commandPath)
+      commandPath = this.utils.tildify(commandPath)
     }
     return commandPath
   }
@@ -81,7 +79,6 @@ class CLI {
         }
       }
     })
-    console.log(commands)
     return commands
   }
   showDebugCommand(command) {
@@ -111,9 +108,22 @@ class CLI {
   }
   showHelp() {
     if (this.command.length === 0) {
+      console.log('')
       this.showVersion()
       console.log('')
-      this.showCommands()
+      this.print.warning('Usage:')
+      console.log('  show usage\n')
+
+      let commands = this.showCommands()
+      if (commands.length > 0) {
+        this.print.warning('Commands:')
+        this.print.log(commands)
+      }
+      this.print.warning('Options:')
+      this.print.log('  show options\n')
+
+      this.print.warning('Examples:')
+      this.print.log('  show examples')
     } else {
       this.showCommandHelp(this.command)
     }
