@@ -1,8 +1,8 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.0.1-dev.5",
-  "description": "cli starter",
+  "version": "0.0.1-dev.9",
+  "description": "node cli starter framework",
   "tagline": "Crafted with love by Codedungeon",
   "contributors": [
     {
@@ -21,7 +21,8 @@
   "scripts": {
     "lint": "eslint \"./**/*.{ts,js,vue}\" --fix",
     "test": "mocha ./test/*.test.js",
-    "pre-commit": "yarn run lint && yarn run test"
+    "test:watch": "mocha ./test/*.test.js --reporter dot --growl --watch",
+    "pre-commit": "npm run lint && npm run test"
   },
   "keywords": [
     "cli",

@@ -1,4 +1,11 @@
 Inbox:
+	- create tests before you get deeper miguel @na @priority = 5
+	- make this easy to use in other projects (vscode-peacock-cli) @na
+		make it a public npm package
+	- devise easy method for usage @na
+		perhaps a method when initializing cli (in index.js)
+	- devise easy method for examples @na
+		perhaps a method when initializing cli (in index.js)
 	- adjust index to not call 'new' command? @na @priority = 5
 		Review sandbox/testFramework which requires gunner then invokes
 		How can this be done without the index method being execute?
@@ -10,6 +17,8 @@ New Features:
 	- use private git packages @na
 		https://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry
 	- refactor messages to separate method @na
+		see `src/messags.js`
+		need to devise method for interpolating
 	Ideas:
 	Bugs:
 Archive:
