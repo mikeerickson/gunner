@@ -1,4 +1,5 @@
 Inbox:
+	- make sure sample is properly loading from commands, package, etc @na
 	- create tests before you get deeper miguel @na @priority = 5
 	- make this easy to use in other projects (vscode-peacock-cli) @na
 		make it a public npm package

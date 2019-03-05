@@ -1,0 +1,21 @@
+{
+  "name": "gunner-example",
+  "version": "1.0.0",
+  "description": "Sample app using Gunner CLI Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "contributors": [
+    {
+      "name": "Mike Erickson",
+      "email": "mike.erickson@codedungeon.io",
+      "url": "https://github.com/mikeerickson"
+    }
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.6"
+  }
+}
