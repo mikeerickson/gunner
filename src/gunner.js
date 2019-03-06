@@ -2,8 +2,8 @@ const path = require('path')
 const HELP_PAD = 22
 
 class CLI {
-  constructor(argv) {
-    this.projectRoot = process.env.ROOT || ''
+  constructor(argv, projectRoot = '') {
+    this.projectRoot = projectRoot || process.env.ROOT || ''
     const pkgInfo = require(path.join(this.projectRoot, 'package.json'))
     this.version = pkgInfo.version
     this.packageName = pkgInfo.packageName || ''
@@ -118,7 +118,7 @@ class CLI {
     if (this.command.length === 0) {
       console.log('')
       this.showVersion()
-      console.log('')
+      // console.log('')
       this.print.warning('Usage:')
       console.log('  show usage\n')
 

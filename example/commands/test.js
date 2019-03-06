@@ -5,7 +5,7 @@ module.exports = {
     cli.arguments.param = cli.arguments.p = cli.arguments.param || cli.arguments.p || 'lowercase'
   },
   name: 'test',
-  description: 'Example Command',
+  description: 'Gunner Command Example',
   flags: {
     all: { aliases: ['-a'], description: 'Use all flags' },
     flag: { description: 'Sample flag', default: false },
@@ -15,7 +15,7 @@ module.exports = {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
     cli.utils.has(this, 'init') ? this.init(cli) : null
 
-    cli.print.info(`⚙️ Execute ${this.name} command`)
+    cli.print.info(`⚙️  Execute ${this.name} command`)
     cli.print.info(
       `   w/ ${JSON.stringify(cli.arguments)
         .replace(/:/gi, ': ')

@@ -4,6 +4,10 @@
   "version": "0.0.1-dev.9",
   "description": "node cli starter framework",
   "tagline": "Crafted with love by Codedungeon",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/mikeerickson/gunner"
+    },
   "contributors": [
     {
       "name": "Mike Erickson",

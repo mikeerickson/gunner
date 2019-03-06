@@ -1,5 +1,4 @@
 Inbox:
-	- make sure sample is properly loading from commands, package, etc @na
 	- create tests before you get deeper miguel @na @priority = 5
 	- make this easy to use in other projects (vscode-peacock-cli) @na
 		make it a public npm package
@@ -13,16 +12,14 @@ Inbox:
 			Seems that I should remove the code in `index.js` which invokes the CLI
 			as it is not a stand alone CLI but instead of CLI framework
 	- cleanup framework commands, testing in new directory @na @priority = 5
-gunner:
 New Features:
 	- use private git packages @na
 		https://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry
 	- refactor messages to separate method @na
 		see `src/messags.js`
 		need to devise method for interpolating
-	Ideas:
-	Bugs:
 Archive:
+  - make sure sample is properly loading from commands, package, etc @na @done @project(Inbox)
 Search Definitions:
 	Top Priority @search(@priority = 5 and not @done)
 	High Priority @search(@priority > 3 and not @done)
