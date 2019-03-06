@@ -1,3 +1,5 @@
+// TODO: is this found
+// REVIEW: What goes here
 module.exports = {
   name: 'test',
   description: 'Gunner Command Example',

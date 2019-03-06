@@ -1,6 +1,9 @@
 const path = require('path')
 const HELP_PAD = 22
 
+// TODO: Is this found
+// FIXME: Fix me
+
 class CLI {
   constructor(argv, projectRoot = '') {
     this.projectRoot = projectRoot || process.env.ROOT || ''

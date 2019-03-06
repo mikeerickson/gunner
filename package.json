@@ -23,7 +23,7 @@
     "node": ">=8.6"
   },
   "scripts": {
-    "lint": "eslint \"./**/*.{ts,js,vue}\" --fix",
+    "lint": "eslint \"./**/*.{ts,tsx,js,jsx,vue}\" --fix",
     "test": "mocha ./test/*.test.js",
     "test:watch": "mocha ./test/*.test.js --reporter dot --growl --watch",
     "pre-commit": "npm run lint && npm run test"
@@ -42,6 +42,7 @@
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
+    "leasot": "7.3.4",
     "prettier": "1.16.4"
   },
   "dependencies": {
