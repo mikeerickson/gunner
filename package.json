@@ -50,9 +50,6 @@
     "fs-extra": "7.0.1",
     "has-flag": "3.0.0",
     "mocha": "6.0.2",
-    "please-upgrade-node": "3.1.1",
-    "tildify": "1.2.0",
-    "update-notifier": "2.5.0",
     "yargs-parser": "13.0.0"
   }
 }

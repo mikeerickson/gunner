@@ -1,17 +1,19 @@
-const pkgInfo = require('../package.json')
+const path = require('path')
 const HELP_PAD = 22
 
 class CLI {
   constructor(argv) {
+    this.projectRoot = process.env.ROOT || ''
+    const pkgInfo = require(path.join(this.projectRoot, 'package.json'))
     this.version = pkgInfo.version
-    this.packageName = pkgInfo.packageName
-    this.tagline = pkgInfo.tagline
+    this.packageName = pkgInfo.packageName || ''
+    this.tagline = pkgInfo.tagline || ''
 
     this.command = this.getCommand(argv)
     this.arguments = this.getArguments(argv)
     this.debug = this.arguments.debug || this.arguments.d
 
-    this.path = require('path')
+    this.path = path
     this.fs = require('fs-extra')
     this.colors = require('colors')
     this.utils = require('@codedungeon/utils')
@@ -34,13 +36,19 @@ class CLI {
     return args
   }
   getProjectCommandPath(useShortPath = false) {
-    let commandPath = this.path.join(process.env.CWD || process.env.PWD, 'commands')
+    let commandPath = ''
+    if (this.projectRoot.length > 0) {
+      commandPath = this.path.join(this.projectRoot, 'commands')
+    } else {
+      commandPath = this.path.join(process.env.CWD || process.env.PWD, 'commands')
+    }
     if (!this.fs.existsSync(commandPath)) {
       this.fs.mkdirSync(commandPath)
     }
     if (useShortPath) {
       commandPath = this.utils.tildify(commandPath)
     }
+
     return commandPath
   }
   loadModule(module = '') {
@@ -103,7 +111,7 @@ class CLI {
     }
   }
   showVersion() {
-    console.log(`${this.colors.cyan(this.packageName)} v${this.colors.cyan(this.version)}`)
+    console.log(`${this.colors.cyan(this.packageName)} ${this.colors.cyan('v' + this.version)}`)
     console.log(`${this.colors.yellow(this.tagline)}`)
   }
   showHelp() {

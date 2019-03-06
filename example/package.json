@@ -1,5 +1,6 @@
 {
   "name": "gunner-example",
+  "packageName": "gunner-example",
   "version": "1.0.0",
   "description": "Sample app using Gunner CLI Framework",
   "main": "index.js",
