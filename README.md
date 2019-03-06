@@ -9,18 +9,18 @@ Codedungeon CLI Framework
 Using npm
 
 ```bash
-$ npm install -S gunner
+> npm install -S gunner
 ```
 
 Using yarn
 
 ```bash
-$ yarn add gunner
+> yarn add gunner
 ```
 
 ### Usage
 
-1. Create `index.js` file and add the following (showing the bare minimum required)
+- Create `index.js` file and add the following (showing the bare minimum required)
 
 ```js
 #!/usr/bin/env node
@@ -31,7 +31,7 @@ let CLI = require('../src/gunner')
 new CLI(process.argv, path.dirname(__filename))
 ```
 
-2. Create new command in the `commands` directory (create if it does not exists)
+- Create new command in the `commands` directory (create if it does not exists)
 
 ### License
 
@@ -47,7 +47,3 @@ E-Mail: [codedungeon@gmail.com](mailto:codedungeon@gmail.com)
 Twitter: [@codedungeon](http://twitter.com/codedungeon)
 
 Webiste: [codedungeon.io](http://codedungeon.io)
-
-```
-
-```

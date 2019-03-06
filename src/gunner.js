@@ -193,7 +193,7 @@ class CLI {
       let disabled = module.disabled || false
       if (!disabled) {
         if (module.hasOwnProperty('run')) {
-          return module.run(this)
+          return module.execute(this)
         }
       } else {
         let output = `🚫  Invalid Command: ${command}`

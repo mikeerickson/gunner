@@ -6,7 +6,7 @@ module.exports = {
     flag: { aliases: ['f'], description: 'Sample flag', default: false },
     param: { aliases: ['p'], description: 'Sample string parameter', default: 'lowercase' }
   },
-  run(cli) {
+  execute(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
     cli.print.info(`⚙️  Execute ${this.name} command`)
     cli.print.info(
