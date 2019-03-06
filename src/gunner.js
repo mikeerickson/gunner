@@ -174,7 +174,7 @@ class CLI {
       }
       let aliases = ''
       if (module.flags[flag].hasOwnProperty('aliases')) {
-        aliases = ', ' + module.flags[flag].aliases
+        aliases = ', ' + '-' + module.flags[flag].aliases
       }
 
       let flags = '  --' + flag + aliases
@@ -209,7 +209,6 @@ class CLI {
     if (flags === undefined) {
       return {}
     }
-
     let args = {}
     let keys = Object.keys(flags)
     keys.forEach(key => {
@@ -249,6 +248,7 @@ class CLI {
         args[flag] = args[flag] || defaultValue
       }
     })
+
     return args
   }
   argumentHasOption(args, needles) {
