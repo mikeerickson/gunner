@@ -1,6 +1,5 @@
 
 ./src/gunner.js
-  line 4  TODO   Is this found
-  line 5  FIXME  Fix me
+  line 4  TODO  make sure all these methods are clean (final)
 
- ✖ 2 todos/fixmes found
+ ✖ 1 todo/fixme found

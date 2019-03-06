@@ -1,8 +1,7 @@
 const path = require('path')
 const HELP_PAD = 22
 
-// TODO: Is this found
-// FIXME: Fix me
+// TODO: make sure all these methods are clean (final)
 
 class CLI {
   constructor(argv, projectRoot = '') {
