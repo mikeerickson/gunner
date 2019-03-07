@@ -2,7 +2,6 @@ const path = require('path')
 const HELP_PAD = 22
 
 // TODO: make sure all these methods are clean (final)
-
 class CLI {
   constructor(argv, projectRoot = '') {
     this.projectRoot = projectRoot || process.env.ROOT || ''
@@ -232,7 +231,6 @@ class CLI {
           alias = alias.replace('-', '')
         }
         let defaultValue = cli.arguments[alias] || cli.arguments[flag]
-
         if (typeof defaultValue !== defaultType) {
           defaultValue = flags[flag]['default']
         }
@@ -250,7 +248,6 @@ class CLI {
         args[flag] = args[flag] || defaultValue
       }
     })
-
     return args
   }
   argumentHasOption(args, needles) {
