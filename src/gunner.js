@@ -1,7 +1,8 @@
 const path = require('path')
-const HELP_PAD = 22
+const HELP_PAD = 30
 
 // TODO: make sure all these methods are clean (final)
+
 class CLI {
   constructor(argv, projectRoot = '') {
     this.projectRoot = projectRoot || process.env.ROOT || ''
@@ -19,6 +20,7 @@ class CLI {
     this.colors = require('colors')
     this.utils = require('@codedungeon/utils')
     this.print = require('@codedungeon/messenger')
+    this.strings = require('voca')
 
     this.handleCommand()
   }
@@ -49,10 +51,10 @@ class CLI {
     if (useShortPath) {
       commandPath = this.utils.tildify(commandPath)
     }
-
     return commandPath
   }
   loadModule(module = '') {
+    module = this.strings.camelCase(module) // normalize string
     let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
     if (this.fs.existsSync(filename)) {
       return require(filename)
@@ -193,7 +195,7 @@ class CLI {
       }
       let disabled = module.disabled || false
       if (!disabled) {
-        if (module.hasOwnProperty('run')) {
+        if (module.hasOwnProperty('execute')) {
           return module.execute(this)
         }
       } else {
@@ -237,6 +239,9 @@ class CLI {
 
         if (defaultValue === undefined) {
           defaultValue = false
+        }
+        if (cli.arguments.hasOwnProperty(flag)) {
+          defaultValue = cli.arguments[flag]
         }
         args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
       } else {

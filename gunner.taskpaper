@@ -1,4 +1,6 @@
 Inbox:
+	- add group feature (ala make:command) @na
+	- figure out why cli commands are not executed @na
 	- create cli make:command @na
 	- refactor base commands, seems a bit messy @priority 5 @na
 	- create tests before you get deeper miguel @na @priority = 5
