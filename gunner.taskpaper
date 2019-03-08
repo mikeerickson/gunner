@@ -1,9 +1,11 @@
 Inbox:
-	- assert missing required options @na
-	- add group feature (ala make:command) @na
-	- figure out why cli commands are not executed @na
+	- refactor to use 'run' command to kick off CLI @na
+		This will allow adding configuration routines such as `setUsage` etc
+	- if flag required, not supplied on cli, show prompt @na
+	- if flag has message/choices and flag not supplied on command @na
+	- integrate enquirer triggered when flag has choices @na
+	- add choices to flags object @na
 	- create cli make:command @na
-	- refactor base commands, seems a bit messy @priority 5 @na
 	- create tests before you get deeper miguel @na @priority = 5
 	- make this easy to use in other projects (vscode-peacock-cli) @na
 		make it a public npm package
@@ -24,6 +26,10 @@ New Features:
 		see `src/messags.js`
 		need to devise method for interpolating
 Archive:
+  - assert missing required options @na @done @project(Inbox)
+  - add group feature (ala make:command) @na @done @project(Inbox)
+  - figure out why cli commands are not executed @na @done @project(Inbox)
+  - refactor base commands, seems a bit messy @priority 5 @na @done @project(Inbox)
   - make sure sample is properly loading from commands, package, etc @na @done @project(Inbox)
 Search Definitions:
 	Top Priority @search(@priority = 5 and not @done)

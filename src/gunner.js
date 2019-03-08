@@ -121,7 +121,7 @@ class CLI {
     if (this.command.length === 0) {
       console.log('')
       this.showVersion()
-      // console.log('')
+      console.log('')
       this.print.warning('Usage:')
       console.log('  show usage\n')
 
