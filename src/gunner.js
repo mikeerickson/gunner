@@ -195,6 +195,13 @@ class CLI {
       }
       let disabled = module.disabled || false
       if (!disabled) {
+        let requiredArguments = this.hasRequiredArguments(module, this.arguments)
+        if (requiredArguments.length > 0) {
+          let output = '\n🚫  Missing Required Arguments:\n'
+          output += '   - ' + requiredArguments.join(', ')
+          this.print.error(output)
+          return output
+        }
         if (module.hasOwnProperty('execute')) {
           return module.execute(this)
         }
@@ -204,6 +211,18 @@ class CLI {
         return output
       }
     }
+  }
+
+  hasRequiredArguments(module, args) {
+    let missingArguments = []
+    for (let flag in module.flags) {
+      if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required) {
+        if (!args.hasOwnProperty(flag)) {
+          missingArguments.push(flag)
+        }
+      }
+    }
+    return missingArguments
   }
   isModuleValid(module) {
     return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
@@ -241,9 +260,12 @@ class CLI {
           defaultValue = false
         }
         if (cli.arguments.hasOwnProperty(flag)) {
-          defaultValue = cli.arguments[flag]
+          args[flag] = args[alias] = args[flag] || args[alias] || cli.arguments[flag]
+        } else {
+          if (flags.hasOwnProperty('required')) {
+            args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
+          }
         }
-        args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
       } else {
         let defaultType = typeof flags[flag]['default']
         let defaultValue = cli.arguments[flag]

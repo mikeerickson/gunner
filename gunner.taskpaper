@@ -1,4 +1,5 @@
 Inbox:
+	- assert missing required options @na
 	- add group feature (ala make:command) @na
 	- figure out why cli commands are not executed @na
 	- create cli make:command @na

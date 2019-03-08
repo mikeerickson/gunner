@@ -7,11 +7,7 @@ module.exports = {
   },
   execute(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
-    cli.print.info(`⚙️ Execute ${this.name} command`)
-    cli.print.info(
-      `   w/ ${JSON.stringify(cli.arguments)
-        .replace(/:/gi, ': ')
-        .replace(/,/gi, ', ')}`
-    )
+    cli.print.important('Command:    ' + this.name)
+    cli.print.important('Arguments:  ' + JSON.stringify(cli.arguments).replace(/,/gi, ', '))
   }
 }
