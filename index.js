@@ -5,4 +5,10 @@ process.env.ROOT = path.dirname(__filename)
 
 // all good, start the CLI
 let CLI = require('./src/gunner')
-new CLI(process.argv)
+const app = new CLI(process.argv)
+  .usage('  gunner make:command --name TestCommand')
+  .help()
+  .commands()
+  .options()
+  .examples()
+  .start()

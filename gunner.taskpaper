@@ -1,4 +1,8 @@
 Inbox:
+	- add examples @na
+	- add examples @na
+	- add options @na
+	- add commands @na
 	- refactor to use 'run' command to kick off CLI @na
 		This will allow adding configuration routines such as `setUsage` etc
 	- if flag required, not supplied on cli, show prompt @na
