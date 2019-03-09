@@ -1,4 +1,5 @@
 Inbox:
+	- clean up the setDefaultFlags routine, refactor to setDefaultOptions? @na
 	- when calling 'run' method, provide ability to supply default command and options @na
     this can be handy when writing tests
 	- when using alias, it still reports as not supplied @na
