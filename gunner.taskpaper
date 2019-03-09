@@ -1,21 +1,26 @@
 Inbox:
-	- clean up the setDefaultFlags routine, refactor to setDefaultOptions? @na
-	- when calling 'run' method, provide ability to supply default command and options @na
-    this can be handy when writing tests
-	- when using alias, it still reports as not supplied @na
-    node example/index test -a
-    produceds `Missing required ...`
-	- consider moving cli commands to separate file @na
-	- consider refactor cli... to cli.toolbox... to separate items @na
-	- if flag required, not supplied on cli, show prompt @na @priority = 5
-	- if flag has message/choices and flag not supplied on command @na
-	- integrate enquirer triggered when flag has choices @na
-	- add choices to flags object @na
-	- create cli make:command @na
-	- create tests before you get deeper miguel @na @priority = 5
+	- test @na
+	- test @na @done
 New Features:
-	- use private git packages @na
-		https://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry
+- when using alias, it still reports as not supplied @na @critical
+  node example/index test -a
+  produceds `Missing required ...`
+- clean up the setDefaultFlags routine, refactor to `setDefaultOptions`? @na @priority = 5 @high
+- create generic prompt methods wrapping enquirer @na @priority = 5 @high
+  Make sure it is as generic as possible so it can be used in other projects
+  Use Async/Await method (see examples from enquirer)
+  integrate enquirer triggered when flag has choices @na
+- add choices to flags object @na @high
+- when calling 'run' method, provide ability to supply default command and options @na @low
+- consider moving cli commands to separate file @na @low
+- consider refactor cli... to cli.toolbox... to separate items @na @high
+- if flag required, not supplied on cli, show prompt @na @priority = 5 @low
+- if flag has message/choices and flag not supplied on command @na @low
+- create cli make:command @na @low
+- create tests before you get deeper miguel @na @priority = 5 @low
+  this can be handy when writing tests
+- use private git packages @na
+  https://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry
 	- refactor messages to separate method @na
 		see `src/messags.js`
 		need to devise method for interpolating

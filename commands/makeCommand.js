@@ -3,7 +3,9 @@ module.exports = {
   description: 'Create a new gunner command',
   flags: {
     name: { aliases: ['n'], description: 'command name', required: true },
-    language: { aliases: ['l'], description: 'language', default: 'php' }
+    language: { aliases: ['l'], description: 'language', default: 'php', required: true },
+    all: { aliases: ['a'], description: 'Use All', default: false },
+    some: { aliases: ['s'], description: 'Use Some', default: false }
   },
   execute(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)

@@ -104,66 +104,33 @@ class CLI {
     let missingArguments = []
     for (let flag in module.flags) {
       if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required) {
+        let hasAlias = false
         if (!args.hasOwnProperty(flag)) {
-          missingArguments.push(flag)
+          if (module.flags[flag].hasOwnProperty('aliases')) {
+            let alias = module.flags[flag].aliases[0]
+            hasAlias = args.hasOwnProperty(alias)
+          }
+          !hasAlias ? missingArguments.push(flag) : null
         }
       }
     }
     return missingArguments
   }
   setDefaultFlags(cli, flags) {
-    if (flags === undefined) {
-      return {}
-    }
-    let args = {}
     let keys = Object.keys(flags)
-    keys.forEach(key => {
-      args[key] = null
-      if (flags[key].hasOwnProperty('aliases')) {
-        let alias = flags[key]['aliases']
-        if (typeof alias === 'string') {
-          alias = flags[key]['aliases'].replace('-', '')
-        }
-        args[alias] = null
+    let defaults = {}
+    keys.map(flag => {
+      let alias = flags[flag].aliases[0]
+      let defaultValue = this.utils.dot.get(flags[flag].default)
+      if (defaultValue === undefined) {
+        defaultValue = null
       }
+      defaults = Object.assign(defaults, {
+        [flag]: this.utils.dot.get(cli.arguments[flag] || this.utils.dot.get(cli.arguments[alias] || defaultValue)),
+        [alias]: this.utils.dot.get(cli.arguments[alias] || this.utils.dot.get(cli.arguments[flag] || defaultValue))
+      })
     })
-
-    keys.forEach(flag => {
-      if (flags[flag].hasOwnProperty('aliases')) {
-        let defaultType = typeof flags[flag]['default']
-        let alias = flags[flag]['aliases']
-        if (typeof alias === 'string') {
-          alias = alias.replace('-', '')
-        }
-
-        let defaultValue = cli.arguments[alias] || cli.arguments[flag]
-        if (typeof defaultValue !== defaultType) {
-          defaultValue = flags[flag]['default']
-        }
-        (defaultValue === undefined) ? false : defaultValue
-
-        if (cli.arguments.hasOwnProperty(flags[flag].aliases[0])) {
-          args[flag] = defaultValue
-          args[flags[flag].aliases[0]] = defaultValue
-        } else {
-          if (cli.arguments.hasOwnProperty(flag)) {
-            args[flag] = args[alias] = args[flag] || args[alias] || cli.arguments[flag]
-          } else {
-            if (flags.hasOwnProperty('required')) {
-              args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
-            }
-          }
-        }
-      } else {
-        let defaultType = typeof flags[flag]['default']
-        let defaultValue = cli.arguments[flag]
-        if (typeof defaultValue !== defaultType) {
-          defaultValue = flags[flag]['default']
-        }
-        args[flag] = args[flag] || defaultValue
-      }
-    })
-    return args
+    return defaults
   }
   argumentHasOption(args, needles) {
     if (typeof needles === 'undefined') {
