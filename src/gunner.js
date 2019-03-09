@@ -37,7 +37,7 @@ class CLI {
      */
     // this.handleCommand()
   }
-  start() {
+  run() {
     this.handleCommand()
   }
   usage(usage = '') {
@@ -135,19 +135,23 @@ class CLI {
         if (typeof alias === 'string') {
           alias = alias.replace('-', '')
         }
+
         let defaultValue = cli.arguments[alias] || cli.arguments[flag]
         if (typeof defaultValue !== defaultType) {
           defaultValue = flags[flag]['default']
         }
+        (defaultValue === undefined) ? false : defaultValue
 
-        if (defaultValue === undefined) {
-          defaultValue = false
-        }
-        if (cli.arguments.hasOwnProperty(flag)) {
-          args[flag] = args[alias] = args[flag] || args[alias] || cli.arguments[flag]
+        if (cli.arguments.hasOwnProperty(flags[flag].aliases[0])) {
+          args[flag] = defaultValue
+          args[flags[flag].aliases[0]] = defaultValue
         } else {
-          if (flags.hasOwnProperty('required')) {
-            args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
+          if (cli.arguments.hasOwnProperty(flag)) {
+            args[flag] = args[alias] = args[flag] || args[alias] || cli.arguments[flag]
+          } else {
+            if (flags.hasOwnProperty('required')) {
+              args[flag] = args[alias] = args[flag] || args[alias] || defaultValue
+            }
           }
         }
       } else {

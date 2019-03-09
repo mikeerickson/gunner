@@ -1,10 +1,8 @@
-// TODO: is this found
-// REVIEW: What goes here
 module.exports = {
   name: 'test',
   description: 'Gunner Command Example',
   flags: {
-    all: { aliases: ['a'], description: 'Use all flags', default: false },
+    all: { aliases: ['a'], description: 'Use all flags', default: false, required: true },
     flag: { aliases: ['f'], description: 'Sample flag', default: false },
     param: { aliases: ['p'], description: 'Sample string parameter', default: 'lowercase' }
   },

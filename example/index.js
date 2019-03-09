@@ -6,4 +6,4 @@ const path = require('path')
 // process.env.ROOT = path.dirname(__filename)
 
 let CLI = require('../src/gunner')
-let app = new CLI(process.argv, path.dirname(__filename)).start()
+new CLI(process.argv, path.dirname(__filename)).run()
