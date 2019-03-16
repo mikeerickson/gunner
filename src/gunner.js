@@ -4,8 +4,8 @@ const HELP_PAD = 30
 // TODO: make sure all these methods are clean (final)
 
 class CLI {
-  constructor(argv, projectRoot = '') {
-    this.projectRoot = projectRoot || process.env.ROOT || ''
+  constructor(argv) {
+    this.projectRoot = path.dirname(argv[1])
     this.pkgInfo = require(path.join(this.projectRoot, 'package.json'))
 
     this.version = this.pkgInfo.version
@@ -68,7 +68,7 @@ class CLI {
     return command
   }
   getArguments(argv) {
-    let args = require('yargs-parser')(argv.slice(2))
+    let args = require('mri')(argv.slice(2))
     if (args.hasOwnProperty('_')) {
       delete args['_']
     }
@@ -95,7 +95,6 @@ class CLI {
   loadModule(module = '') {
     module = this.strings.camelCase(module) // normalize string
     let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
-    console.log(filename)
     if (this.fs.existsSync(filename)) {
       return require(filename)
     }
