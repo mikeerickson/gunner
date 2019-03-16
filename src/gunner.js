@@ -95,6 +95,7 @@ class CLI {
   loadModule(module = '') {
     module = this.strings.camelCase(module) // normalize string
     let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
+    console.log(filename)
     if (this.fs.existsSync(filename)) {
       return require(filename)
     }
@@ -178,6 +179,7 @@ class CLI {
 
     commandFiles.forEach(filename => {
       if (this.path.extname(filename) == '.js') {
+        console.log(this.path.basename(filename, '.js'))
         let module = this.loadModule(this.path.basename(filename, '.js'))
         let disabled = module.disabled || false
         if (!disabled) {
