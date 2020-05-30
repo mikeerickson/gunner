@@ -1,5 +1,19 @@
 {
   "workbench.colorCustomizations": {
-    "statusBar.background": "#269F42"
-  }
+    "sideBarSectionHeader.background": "#292D3F",
+    "sideBar.background": "#292D3F",
+    "editorGutter.background": "#292D3F",
+    "terminal.background": "#292D3F",
+    "debugToolBar.background": "#271501",
+    "statusBar.debuggingBackground": "#fbff00",
+    "statusBar.debuggingForeground": "#000000",
+    "editorLineNumber.foreground": "#d4f349",
+    "editorLineNumber.activeForeground": "#00eeff",
+    "jsannotations.annotationForeground": "#61678E",
+    "peekView.border": "#dadcdd",
+    "statusBar.background": "#151720",
+    "statusBarItem.hoverBackground": "#292d3f",
+    "statusBar.foreground": "#e7e7e7"
+  },
+  "peacock.color": "#151720"
 }

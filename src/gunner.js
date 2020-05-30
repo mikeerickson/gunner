@@ -31,12 +31,13 @@ class CLI {
     this.commandInfo = ''
     this.optionInfo = ''
     this.exampleInfo = ''
-
-    /**
-     * start CLI
-     */
-    // this.handleCommand()
   }
+  /**
+   * run()
+   * kicks off CLI program
+   *
+   * @memberof CLI
+   */
   run() {
     this.handleCommand()
   }
@@ -44,22 +45,58 @@ class CLI {
     this.usageInfo = usage
     return this
   }
+  /**
+   * help()
+   * overrides default help data
+   * @note If help is supplied, the comamnds, examples, options, usage methods are not used
+   *
+   * @param {string} [help='']
+   * @returns
+   * @memberof CLI
+   */
   help(help = '') {
     this.helpInfo = help
     return this
   }
+
+  /**
+   * Overrides default command output when using --help flag
+   * @note: If custom help is used, this information will not be displayed
+   *
+   * @param {string} [command='']
+   * @returns
+   * @memberof CLI
+   */
   commands(command = '') {
     this.commandInfo = command
     return this
   }
+
+  /**
+   * Overrides default options output when using --help flag
+   * @note: If custom help is used, this information will not be displayed
+   *
+   * @param {string} [options='']
+   * @returns
+   * @memberof CLI
+   */
   options(options = '') {
     this.optionInfo = options
     return this
   }
+
+  /**
+   * Overrides default examples output when using --help flag
+   * @note: If custom help is used, this information will not be displayed
+   * @param {string} [examples='']
+   * @returns
+   * @memberof CLI
+   */
   examples(examples = '') {
     this.exampleInfo = examples
     return this
   }
+
   getCommand(argv) {
     let command = argv.length > 2 ? argv[2] : '<command>'
     if (command[0] == '-') {
@@ -224,7 +261,7 @@ class CLI {
   }
   showHelp() {
     // if we have defined custom help, display it
-    if (this.help.length > 0) {
+    if (this.helpInfo.length > 0) {
       return this.print.log(this.helpInfo)
     }
 
