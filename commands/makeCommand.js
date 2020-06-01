@@ -6,16 +6,23 @@ module.exports = {
     description: { aliases: ['d'], description: 'Command description', required: false }
   },
   execute(cli) {
+    console.log('')
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
 
     let data = {
       name: cli.arguments.name,
       description: cli.arguments.description
     }
+
     let templateFilename = cli.path.join(cli.getTemplatePath(), 'makeCommand.mustache')
     let templateData = cli.template.render(templateFilename, data)
     if (templateData !== 'TEMPLATE_NOT_FOUND') {
-      let commandFilename = cli.path.join(cli.getCommandPath(), cli.commandName + '.js')
+      let currentCommandPath = cli.getCurrentCommandPath()
+      if (!cli.fs.existsSync(currentCommandPath)) {
+        cli.fs.mkdirSync(currentCommandPath)
+        cli.print.info(cli.colors.bold('==> Creating Local `commands` Directory'))
+      }
+      let commandFilename = cli.path.join(cli.getCurrentCommandPath(), cli.commandName + '.js')
       if (cli.arguments.overwrite || cli.overwrite) {
         cli.fs.unlinkSync(commandFilename)
       }

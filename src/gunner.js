@@ -167,11 +167,11 @@ class CLI {
     return args
   }
   getTemplatePath() {
-    let cmdPath = this.getCommandPath()
+    let cmdPath = this.getProjectCommandPath()
     let templatePath = this.path.join(cmdPath, 'templates')
     return templatePath
   }
-  getCommandPath(useShortPath = false) {
+  getProjectCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
       commandPath = this.path.join(this.projectRoot, 'commands')
@@ -186,12 +186,15 @@ class CLI {
     }
     return commandPath
   }
+  getCurrentCommandPath() {
+    return this.path.join(process.cwd(), 'commands')
+  }
   isModuleValid(module) {
     return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
   }
   loadModule(module = '') {
     module = this.strings.camelCase(module) // normalize string
-    let filename = this.path.join(this.getCommandPath(), module + '.js')
+    let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
     if (this.fs.existsSync(filename)) {
       return require(filename)
     }
@@ -263,7 +266,7 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = this.getCommandPath()
+    let commandPath = this.getProjectCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
     let projectHome = this.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
@@ -432,6 +435,7 @@ class CLI {
           this.print.error(output)
           return output
         }
+
         let result = module.hasOwnProperty('execute')
         if (module.hasOwnProperty('execute')) {
           return module.execute(this)
