@@ -16,6 +16,8 @@ let cliArguments = argsParser(process.argv)
 
 const app = new CLI(process.argv)
   .usage('gunner make:command --name TestCommand')
+  .options()
+  .globalOptions()
   .help()
   .commands()
   .examples()

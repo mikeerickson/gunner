@@ -63,6 +63,7 @@
     "minimist": "1.2.5",
     "mocha": "6.0.2",
     "mri": "1.1.4",
+    "mustache": "4.0.1",
     "voca": "1.4.0"
   },
   "husky": {

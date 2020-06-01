@@ -2,13 +2,35 @@ module.exports = {
   name: 'make:command',
   description: 'Create a new gunner command',
   flags: {
-    name: { aliases: ['n'], description: 'command name', required: false },
-    language: { aliases: ['l'], description: 'language', default: 'php', required: false }
+    name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
+    description: { aliases: ['d'], description: 'Command description', required: false }
   },
   execute(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
-    cli.print.important('Command:       ' + this.name)
-    cli.print.important('Command Name:  ' + cli.commandName)
-    cli.print.important('Arguments:     ' + JSON.stringify(cli.arguments).replace(/,/gi, ', '))
+
+    let data = {
+      name: cli.arguments.name,
+      description: cli.arguments.description
+    }
+    let templateFilename = cli.path.join(cli.getTemplatePath(), 'makeCommand.mustache')
+    let templateData = cli.template.render(templateFilename, data)
+    if (templateData !== 'TEMPLATE_NOT_FOUND') {
+      let commandFilename = cli.path.join(cli.getCommandPath(), cli.commandName + '.js')
+      if (cli.arguments.overwrite || cli.overwrite) {
+        cli.fs.unlinkSync(commandFilename)
+      }
+      if (!cli.fs.existsSync(commandFilename)) {
+        try {
+          let ret = cli.fs.writeFileSync(commandFilename, templateData)
+          cli.print.success(`${cli.utils.tildify(commandFilename)} created successfuly`, 'SUCCESS')
+        } catch (e) {
+          cli.print.error(`Error creating ${cli.utils.tildify(commandFilename)}`, 'ERROR')
+        }
+      } else {
+        cli.print.note(`${cli.utils.tildify(commandFilename)} already exists`, 'NOTE')
+      }
+    } else {
+      cli.print.error(`${cli.utils.tildify(templateFilename)} template not found`, 'ERROR')
+    }
   }
 }

@@ -9,6 +9,7 @@ module.exports = {
     this.handle(cli)
   },
   handle(cli) {
+    let commandPath = cli.getProjectCommandPath()
     let name = cli.strings.titleCase(cli.arguments.name)
     cli.print.info(`Hello ${name}`, 'INFO')
   }

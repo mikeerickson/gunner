@@ -7,6 +7,6 @@ let CLI = require('../src/gunner')
 
 new CLI(process.argv)
   .name('Gunner Example')
-  // .options(' ') //setting option to string > 0, overrides default
+  .options() //setting option to string > 0, overrides default
   .usage('gunner create-project <options>')
   .run()

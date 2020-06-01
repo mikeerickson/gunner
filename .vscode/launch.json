@@ -18,13 +18,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Default",
+      "name": "Command Test",
       "program": "${workspaceFolder}/index.js",
       "args": [
         "make:command",
         "TestCommand",
         "--name",
-        "mike"
+        "testCommand",
+        "--description",
+        "testDescription",
+        "--overwrite"
       ]
     },
     {

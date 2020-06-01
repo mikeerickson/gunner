@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const HELP_PAD = 23
+const HELP_PAD = 30
 
 class CLI {
   constructor(argv) {
@@ -17,6 +17,7 @@ class CLI {
     this.commandName = this.getCommandName(argv)
     this.arguments = this.getArguments(argv)
     this.debug = this.arguments.debug || this.arguments.d
+    this.overwrite = this.arguments.overwrite || this.arguments.o
 
     // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
@@ -37,11 +38,13 @@ class CLI {
     this.utils = require('@codedungeon/utils')
     this.print = require('@codedungeon/messenger')
     this.strings = require('voca')
+    this.template = require('./template')
 
     this.helpInfo = ''
     this.usageInfo = ''
     this.commandInfo = ''
     this.optionInfo = ''
+    this.globalOptionInfo = ''
     this.exampleInfo = ''
   }
   /**
@@ -84,6 +87,15 @@ class CLI {
     return this
   }
 
+  globalOptions(options = '') {
+    if (options.length > 0) {
+      this.globalOptionInfo = options
+    } else {
+      let globalOptions = ['  --overwrite, -o              Overwrite Existing Files(s)']
+      this.globalOptionInfo = globalOptions.join('\n')
+    }
+    return this
+  }
   /**
    * Overrides default options output when using --help flag
    * @note: If custom help is used, this information will not be displayed
@@ -99,10 +111,10 @@ class CLI {
       this.optionInfo = options
     } else {
       let options = [
-        '--debug, -d              Debug Mode',
-        '--help, -h, -H           Shows Help (this screen)',
+        '--debug, -d                    Debug Mode',
+        '--help, -h, -H                 Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
-        '--version, -v, -V        Show Version'
+        '--version, -v, -V              Show Version'
       ]
 
       this.optionInfo = options.join('\n')
@@ -154,7 +166,12 @@ class CLI {
     }
     return args
   }
-  getProjectCommandPath(useShortPath = false) {
+  getTemplatePath() {
+    let cmdPath = this.getCommandPath()
+    let templatePath = this.path.join(cmdPath, 'templates')
+    return templatePath
+  }
+  getCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
       commandPath = this.path.join(this.projectRoot, 'commands')
@@ -174,7 +191,7 @@ class CLI {
   }
   loadModule(module = '') {
     module = this.strings.camelCase(module) // normalize string
-    let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
+    let filename = this.path.join(this.getCommandPath(), module + '.js')
     if (this.fs.existsSync(filename)) {
       return require(filename)
     }
@@ -246,7 +263,7 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = this.getProjectCommandPath()
+    let commandPath = this.getCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
     let projectHome = this.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
@@ -335,6 +352,11 @@ class CLI {
         this.print.log(this.optionInfo + '\n')
       }
 
+      if (this.globalOptionInfo.length > 1) {
+        this.print.warning('Global Options:')
+        this.print.log(this.globalOptionInfo + '\n')
+      }
+
       if (this.exampleInfo.length > 0) {
         this.print.warning('Examples:')
         this.print.log(this.formatInfo(this.exampleInfo) + '\n')
@@ -386,6 +408,11 @@ class CLI {
       let flags = '  --' + flag + aliases
       console.log(flags.padEnd(HELP_PAD), description, defaultValue)
     })
+
+    if (this.globalOptionInfo.length > 0) {
+      console.log(this.colors.yellow('\nGlobal Options:'))
+      console.log(this.globalOptionInfo)
+    }
 
     return `${module.name} help displayed`
   }
