@@ -10,6 +10,6 @@ module.exports = {
   },
   handle(cli) {
     let name = cli.strings.titleCase(cli.arguments.name)
-    console.log(`Hello ${name}`)
+    cli.print.info(`Hello ${name}`, 'INFO')
   }
 }

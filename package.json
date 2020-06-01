@@ -35,7 +35,8 @@
     "framework",
     "javascript",
     "node",
-    "starter"
+    "starter",
+    "skeleton"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -59,6 +60,7 @@
     "enquirer": "2.3.0",
     "fs-extra": "7.0.1",
     "has-flag": "3.0.0",
+    "minimist": "1.2.5",
     "mocha": "6.0.2",
     "mri": "1.1.4",
     "voca": "1.4.0"

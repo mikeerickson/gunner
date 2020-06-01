@@ -7,9 +7,34 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Debug Example",
+      "program": "${workspaceFolder}/example/index.js",
+      "args": [
+        "hello",
+        "--name",
+        "mike"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Default",
       "program": "${workspaceFolder}/index.js",
-      "args": ["make:command", "--name", "makeController"]
+      "args": [
+        "make:command",
+        "TestCommand",
+        "--name",
+        "mike"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Default w/Help",
+      "program": "${workspaceFolder}/index.js",
+      "args": [
+        "--help"
+      ]
     },
     {
       "type": "node",

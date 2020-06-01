@@ -1,20 +1,32 @@
 const path = require('path')
-const HELP_PAD = 30
+const fs = require('fs')
 
-// TODO: make sure all these methods are clean (final)
+const HELP_PAD = 23
 
 class CLI {
   constructor(argv) {
-    this.projectRoot = path.dirname(argv[1])
-    this.pkgInfo = require(path.join(this.projectRoot, 'package.json'))
+    this.projectRoot = path.dirname(fs.realpathSync(argv[1]))
+    let packageJsonFilename = path.join(fs.realpathSync(this.projectRoot), 'package.json')
+    this.pkgInfo = require(packageJsonFilename)
 
     this.version = this.pkgInfo.version
     this.packageName = this.pkgInfo.packageName || ''
     this.tagline = this.pkgInfo.tagline || ''
 
     this.command = this.getCommand(argv)
+    this.commandName = this.getCommandName(argv)
     this.arguments = this.getArguments(argv)
     this.debug = this.arguments.debug || this.arguments.d
+
+    // help is activated
+    if (this.arguments.help || this.arguments.h || this.arguments.H) {
+      this.arguments.help = this.arguments.h = this.arguments.H = true
+    }
+
+    // version is activated
+    if (this.arguments.version || this.arguments.v || this.arguments.V) {
+      this.arguments.version = this.arguments.v = this.arguments.V = true
+    }
 
     /**
      * setup cli toolbox
@@ -38,7 +50,7 @@ class CLI {
    *
    * @memberof CLI
    */
-  run() {
+  run(commandInfo = {}) {
     this.handleCommand()
   }
   usage(usage = '') {
@@ -81,7 +93,25 @@ class CLI {
    * @memberof CLI
    */
   options(options = '') {
-    this.optionInfo = options
+    // if options is cleared, show default.
+    // - Custom Options should be >1 char
+    if (options.length > 0) {
+      this.optionInfo = options
+    } else {
+      let options = [
+        '--debug, -d              Debug Mode',
+        '--help, -h, -H           Shows Help (this screen)',
+        // '--logs, -l               Output logs to stdout',
+        '--version, -v, -V        Show Version'
+      ]
+
+      this.optionInfo = options.join('\n')
+    }
+    return this
+  }
+
+  name(name = '') {
+    this.packageName = name
     return this
   }
 
@@ -97,12 +127,25 @@ class CLI {
     return this
   }
 
+  formatInfo(info = '') {
+    // TODO: Fix
+    // parse lines
+    // indent each line 2 spaces
+    // return formatted line
+    return '  ' + info
+  }
+
   getCommand(argv) {
     let command = argv.length > 2 ? argv[2] : '<command>'
     if (command[0] == '-') {
       command = ''
     }
     return command
+  }
+  getCommandName(argv) {
+    let parseArgs = require('minimist')
+    let parsedArguments = parseArgs(argv)
+    return parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
   }
   getArguments(argv) {
     let args = require('mri')(argv.slice(2))
@@ -215,7 +258,7 @@ class CLI {
 
     commandFiles.forEach(filename => {
       if (this.path.extname(filename) == '.js') {
-        console.log(this.path.basename(filename, '.js'))
+        // console.log(this.path.basename(filename, '.js'))
         let module = this.loadModule(this.path.basename(filename, '.js'))
         let disabled = module.disabled || false
         if (!disabled) {
@@ -238,6 +281,7 @@ class CLI {
     if (this.debug) {
       let separator = '='.repeat(this.utils.windowSize().width)
       if (command !== undefined && command !== '') {
+        command += ' ' + this.commandName
         console.log('\n')
         let msg =
           ' 🚦  DEBUG COMMAND: ' +
@@ -258,6 +302,7 @@ class CLI {
   showVersion() {
     console.log(`${this.colors.cyan(this.packageName)} ${this.colors.cyan('v' + this.version)}`)
     console.log(`${this.colors.yellow(this.tagline)}`)
+    console.log()
   }
   showHelp() {
     // if we have defined custom help, display it
@@ -269,9 +314,11 @@ class CLI {
     if (this.command.length === 0) {
       console.log('')
       this.showVersion()
-      console.log('')
-      this.print.warning('Usage:')
-      console.log(this.usageInfo + '\n')
+
+      if (this.usageInfo.length > 0) {
+        this.print.warning('Usage:')
+        console.log(this.formatInfo(this.usageInfo) + '\n')
+      }
 
       this.print.warning('Commands:')
       if (this.commandInfo.length > 0) {
@@ -282,14 +329,15 @@ class CLI {
           this.print.log(commands)
         }
       }
-      if (this.optionInfo.length > 0) {
+
+      if (this.optionInfo.length > 1) {
         this.print.warning('Options:')
         this.print.log(this.optionInfo + '\n')
       }
 
       if (this.exampleInfo.length > 0) {
         this.print.warning('Examples:')
-        this.print.log(this.exampleInfo + '\n')
+        this.print.log(this.formatInfo(this.exampleInfo) + '\n')
       }
     } else {
       this.showCommandHelp(this.command)
@@ -315,10 +363,6 @@ class CLI {
     // show module description, or built description if property does not exist
     let description = this.utils.has(module, 'description') ? module.description : `${module.name} command`
     console.log(`   ${description}`)
-
-    console.log('')
-    console.log(this.colors.yellow('Usage:'))
-    console.log(`  ${this.packageName} ${command} <options>`)
 
     console.log('')
     if (!module.hasOwnProperty('flags')) {
@@ -361,6 +405,7 @@ class CLI {
           this.print.error(output)
           return output
         }
+        let result = module.hasOwnProperty('execute')
         if (module.hasOwnProperty('execute')) {
           return module.execute(this)
         }
@@ -375,17 +420,23 @@ class CLI {
     let command = this.command
     let args = this.arguments
 
-    if (this.argumentHasOption(args, ['H', 'h', 'help'])) {
-      this.showHelp()
-      process.exit(0)
+    // if command not supplied, show help regardless
+    if (command === '<command>') {
+      this.command = ''
+      command = ''
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {
+      console.log()
       this.showVersion()
       process.exit(0)
     }
 
     this.debug ? this.showDebugCommand(command) : null
+
+    if (this.command.length > 0 && this.arguments.help) {
+      return this.showCommandHelp(this.command)
+    }
 
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
   }
