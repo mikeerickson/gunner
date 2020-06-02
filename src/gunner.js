@@ -91,7 +91,7 @@ class CLI {
     if (options.length > 0) {
       this.globalOptionInfo = options
     } else {
-      let globalOptions = ['  --overwrite, -o              Overwrite Existing Files(s)']
+      let globalOptions = ['  --overwrite, -o               Overwrite Existing Files(s)']
       this.globalOptionInfo = globalOptions.join('\n')
     }
     return this
@@ -111,10 +111,10 @@ class CLI {
       this.optionInfo = options
     } else {
       let options = [
-        '--debug, -d                    Debug Mode',
-        '--help, -h, -H                 Shows Help (this screen)',
+        '  --debug, -d                   Debug Mode',
+        '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
-        '--version, -v, -V              Show Version'
+        '  --version, -v, -V             Show Version'
       ]
 
       this.optionInfo = options.join('\n')
@@ -414,7 +414,7 @@ class CLI {
       }
 
       let flags = '  --' + flag + aliases
-      console.log(flags.padEnd(HELP_PAD), description, defaultValue)
+      console.log(flags.padEnd(HELP_PAD + 1), description, defaultValue)
     })
 
     if (this.globalOptionInfo.length > 0) {

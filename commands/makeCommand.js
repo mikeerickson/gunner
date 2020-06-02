@@ -24,22 +24,17 @@ module.exports = {
     description: { aliases: ['d'], description: 'Command description', required: false }
   },
   execute(cli) {
-    console.log('')
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
-    cli.print.dd(cli.commandName)
-    /*
-  - you can use the following variables when creating your command
-  - cli.commandName
-  - cli.command
-  - cli.arguments
-*/
+
     let data = {
       name: cli.arguments.name,
       description: cli.arguments.description
     }
 
+    console.log('')
     let templateFilename = cli.path.join(cli.getTemplatePath(), 'makeCommand.mustache')
     let templateData = cli.template.render(templateFilename, data)
+
     if (templateData !== 'TEMPLATE_NOT_FOUND') {
       let currentCommandPath = cli.getCurrentCommandPath()
       if (!cli.fs.existsSync(currentCommandPath)) {

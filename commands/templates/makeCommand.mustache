@@ -19,6 +19,13 @@ module.exports = {
     name: { description: ['d'], description: 'Command Description', required: false },
   },
   execute(cli) {
+    /*
+      - you can use the following variables when creating your command
+      - cli.commandName
+      - cli.command
+      - cli.arguments
+    */
+
 		// leave this line intact, it will process arguments, applying defaults where applicable
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
 
