@@ -1,5 +1,6 @@
-const path = require('path')
 const fs = require('fs')
+const path = require('path')
+const config = require('./config')
 
 const HELP_PAD = 30
 
@@ -17,6 +18,8 @@ class CLI {
     this.commandName = this.getCommandName(argv)
     this.arguments = this.getArguments(argv)
     this.debug = this.arguments.debug || this.arguments.d
+
+    // setup global commands
     this.overwrite = this.arguments.overwrite || this.arguments.o
 
     // help is activated
@@ -32,8 +35,9 @@ class CLI {
     /**
      * setup cli toolbox
      * */
+    this.config = config
     this.path = path
-    this.fs = require('fs-extra')
+    this.fs = fs
     this.colors = require('colors')
     this.utils = require('@codedungeon/utils')
     this.print = require('@codedungeon/messenger')
@@ -193,12 +197,18 @@ class CLI {
     return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
   }
   loadModule(module = '') {
-    module = this.strings.camelCase(module) // normalize string
-    let filename = this.path.join(this.getProjectCommandPath(), module + '.js')
-    if (this.fs.existsSync(filename)) {
-      return require(filename)
-    }
-    return {}
+    // try kebabCase or camelCase filename
+    let files = [
+      this.path.join(this.getProjectCommandPath(), this.strings.kebabCase(module) + '.js'),
+      this.path.join(this.getProjectCommandPath(), this.strings.camelCase(module) + '.js')
+    ]
+    let filename = ''
+    let result = files.forEach(file => {
+      if (this.fs.existsSync(file)) {
+        filename = file
+      }
+    })
+    return filename.length > 0 ? require(filename) : {}
   }
   hasRequiredArguments(module, args) {
     let missingArguments = []

@@ -1,3 +1,12 @@
+/*
+ - create commands directory
+  - create sample command (hello-world.js)
+ - initialize package.json
+ - create ./index.js
+ - create config file (.myapprc.json or myapp.config.js)
+
+*/
+
 module.exports = {
   name: 'create:project',
   description: 'Generate New CLI Application',

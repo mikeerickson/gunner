@@ -44,6 +44,17 @@
       "request": "launch",
       "name": "Current File",
       "program": "${file}"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Kebab Test",
+      "program": "${workspaceFolder}/index.js",
+      "args": [
+        "test:command",
+        "--name",
+        "mike"
+      ]
+    },
   ]
 }
