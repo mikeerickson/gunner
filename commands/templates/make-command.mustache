@@ -1,4 +1,8 @@
 /* Command Descritption
+  Filename on disk must match the module name property
+  It will accept kebabCase or camelCase from module name
+  Example name 'hello:world' will find command filename 'helloWorld.js' or 'hello-world.js'
+
   Each command has the following keys
     - name: command name (showed in help)
     - descirption: command description (showed in help)
@@ -15,8 +19,7 @@ module.exports = {
   description: '{{description}}',
   usage: 'Do something cool, after all this is your command!',
   flags: {
-    name: { aliases: ['n'], description: 'Command name', required: true },
-    description: { aliases: ['d'], description: 'Command Description', required: false },
+    name: { aliases: ['n'], description: 'Command name', required: false }
   },
   execute(cli) {
     /*
@@ -29,10 +32,7 @@ module.exports = {
 		// leave this line intact, it will process arguments, applying defaults where applicable
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
 
-		// all arguments can be accesses off the `cli.arguments` variable
-		cli.print.information('Name: ', cli.arguments.name)
-
 		// example processing command
-		cli.print.info(`Hello ${cli.arguments.name}`)
+		cli.print.info(`Hello ${cli.arguments.name || 'World'}`)
   }
 }

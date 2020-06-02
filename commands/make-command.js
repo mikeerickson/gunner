@@ -5,11 +5,15 @@ module.exports = {
   description: 'Create a new gunner command',
   usage: 'make:command <CommandName> [flags]',
   flags: {
-    name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
+    name: { aliases: ['n'], description: 'Command name (eg make:command)', required: false },
     description: { aliases: ['d'], description: 'Command description', required: false }
   },
   execute(cli) {
     cli.arguments = cli.setDefaultFlags(cli, this.flags)
+    if (cli.arguments.name === null) {
+      let cmdName = cli.strings.kebabCase(cli.commandName)
+      cli.arguments.name = cmdName
+    }
 
     let data = {
       name: cli.arguments.name,
@@ -26,9 +30,13 @@ module.exports = {
         cli.fs.mkdirSync(currentCommandPath)
         cli.print.info(cli.colors.bold('==> Creating Local `commands` Directory'))
       }
-      let commandFilename = cli.path.join(currentCommandPath, cli.commandName + '.js')
+      // check if command name has file extension, if not use ".js"
+      let fileExtension = cli.path.extname(cli.commandName)
+      fileExtension = fileExtension.length > 0 ? '' : '.js'
+
+      let commandFilename = cli.path.join(currentCommandPath, cli.commandName + fileExtension)
       if (cli.arguments.overwrite || cli.overwrite) {
-        cli.fs.unlinkSync(commandFilename)
+        cli.fs.existsSync(commandFilename) ? cli.fs.unlinkSync(commandFilename) : null
       }
       if (!cli.fs.existsSync(commandFilename)) {
         try {
