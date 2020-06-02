@@ -5,10 +5,15 @@
   "description": "Sample app using Gunner CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "main": "index.js",
+  "bin": {
+    "gunner-example": "./index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "cli"
+  ],
   "contributors": [
     {
       "name": "Mike Erickson",
