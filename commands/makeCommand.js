@@ -1,15 +1,3 @@
-/* Command Descritption
-  Each command has the following keys
-    - name: command name (showed in help)
-    - descirption: command description (showed in help)
-    - usage [option]: description of how to use command (showed in help)
-    - flags each flag object contans the following properties
-        - name: command name (example make:command)
-        - aliases: array of flag aliass
-        - description: Command description (displayed when show help)
-        - required: optional parameter if flag is required
-*/
-
 const chalk = require('chalk')
 
 module.exports = {
@@ -17,9 +5,6 @@ module.exports = {
   description: 'Create a new gunner command',
   usage: 'make:command <CommandName> [flags]',
   flags: {
-    /* Command Flags:
-
-    */
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
     description: { aliases: ['d'], description: 'Command description', required: false }
   },
@@ -32,7 +17,7 @@ module.exports = {
     }
 
     console.log('')
-    let templateFilename = cli.path.join(cli.getTemplatePath(), 'makeCommand.mustache')
+    let templateFilename = cli.path.join(cli.getTemplatePath(), 'make-command.mustache')
     let templateData = cli.template.render(templateFilename, data)
 
     if (templateData !== 'TEMPLATE_NOT_FOUND') {

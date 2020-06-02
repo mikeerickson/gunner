@@ -16,7 +16,7 @@ module.exports = {
   usage: 'Do something cool, after all this is your command!',
   flags: {
     name: { aliases: ['n'], description: 'Command name', required: true },
-    name: { description: ['d'], description: 'Command Description', required: false },
+    description: { aliases: ['d'], description: 'Command Description', required: false },
   },
   execute(cli) {
     /*
