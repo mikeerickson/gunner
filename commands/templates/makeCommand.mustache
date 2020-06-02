@@ -1,9 +1,22 @@
+/* Command Descritption
+  Each command has the following keys
+    - name: command name (showed in help)
+    - descirption: command description (showed in help)
+    - usage [option]: description of how to use command (showed in help)
+    - flags each flag object contans the following properties
+        - name: command name (example make:command)
+        - aliases: array of flag aliass
+        - description: Command description (displayed when show help)
+        - required: optional parameter if flag is required
+*/
+
 module.exports = {
   name: '{{name}}',
   description: '{{description}}',
+  usage: 'Do something cool, after all this is your command!',
   flags: {
-    name: { aliases: ['n'], description: 'command name', required: false },
-    description: { aliases: ['d'], description: 'command description', required: false },
+    name: { aliases: ['n'], description: 'Command name', required: true },
+    name: { description: ['d'], description: 'Command Description', required: false },
   },
   execute(cli) {
 		// leave this line intact, it will process arguments, applying defaults where applicable
@@ -11,10 +24,6 @@ module.exports = {
 
 		// all arguments can be accesses off the `cli.arguments` variable
 		cli.print.information('Name: ', cli.arguments.name)
-		cli.print.information('Description: ', cli.arguments.description)
-
-		// this can be useful to easily print all arguments
-    cli.print.important('Arguments:     ' + JSON.stringify(cli.arguments).replace(/,/gi, ', '))
 
 		// example processing command
 		cli.print.info(`Hello ${cli.arguments.name}`)

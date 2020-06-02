@@ -389,6 +389,11 @@ class CLI {
     let description = this.utils.has(module, 'description') ? module.description : `${module.name} command`
     console.log(`   ${description}`)
 
+    if (module.hasOwnProperty('usage')) {
+      this.print.warning('\nUsage:')
+      console.log('  ' + module.usage)
+    }
+
     console.log('')
     if (!module.hasOwnProperty('flags')) {
       process.exit(0)
