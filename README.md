@@ -2,23 +2,23 @@
 
 ## Description
 
-Codedungeon CLI Framework
+Codedungeon Slimlined CLI Framework
 
-### Installation
+## Installation
 
 Using npm
 
 ```bash
-> npm install -S gunner
+> npm install -g gunner
 ```
 
 Using yarn
 
 ```bash
-> yarn add gunner
+> yarn add global gunner
 ```
 
-### Usage
+## Usage
 
 - Create `index.js` file and add the following (showing the bare minimum required)
 
@@ -33,17 +33,17 @@ new CLI(process.argv, path.dirname(__filename))
 
 - Create new command in the `commands` directory (create if it does not exists)
 
-### License
+## License
 
-Copyright &copy; 2019 Mike Erickson
+Copyright &copy; 2019-2020 Mike Erickson
 Released under the MIT license
 
 ### Credits
 
 Gunner written by Mike Erickson
 
-E-Mail: [codedungeon@gmail.com](mailto:codedungeon@gmail.com)
+E-Mail: [mike.erickson@codedungeon.io](mailto:mike.erickson@codedungeon.io)
 
 Twitter: [@codedungeon](http://twitter.com/codedungeon)
 
-Website: [codedungeon.io](http://codedungeon.io)
+Website: [codedungeon.io](http://codedungeon.io/gunner)
