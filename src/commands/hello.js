@@ -17,7 +17,6 @@
 module.exports = {
   name: 'hello',
   description: '',
-  hidden: true,
   usage: 'Do something cool, after all this is your command!',
   flags: {
     name: { aliases: ['n'], description: 'Command name', required: false }
