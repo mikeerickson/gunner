@@ -15,8 +15,8 @@ let initProcess = process
 let cliArguments = argsParser(process.argv)
 
 const app = new CLI(process.argv)
-  .usage('gunner make:command --name TestCommand')
+  .usage('gunner make:command TestCommand --name test:command')
   .options()
   .globalOptions()
   .examples('make:command TestCommand --name hello')
-  .run()
+  .run({ command: 'hello', args: { name: 'Mike' } })

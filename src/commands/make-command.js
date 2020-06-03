@@ -7,7 +7,6 @@ module.exports = {
     description: { aliases: ['d'], description: 'Command description', required: false }
   },
   execute(cli) {
-    cli.arguments = cli.setDefaultFlags(cli, this.flags)
     if (cli.arguments.name === null) {
       let cmdName = cli.strings.kebabCase(cli.commandName)
       cli.arguments.name = cmdName
@@ -25,7 +24,7 @@ module.exports = {
     if (templateData !== 'TEMPLATE_NOT_FOUND') {
       let currentCommandPath = cli.getCurrentCommandPath()
       if (!cli.fs.existsSync(currentCommandPath)) {
-        cli.fs.mkdirSync(currentCommandPath)
+        cli.fs.mkdirSync(currentCommandPath, { recursive: true })
         cli.print.info(cli.colors.bold('==> Creating Local `commands` Directory'))
       }
       // check if command name has file extension, if not use ".js"

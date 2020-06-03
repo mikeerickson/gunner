@@ -52,8 +52,16 @@ class CLI {
     this.exampleInfo = ''
   }
 
+  src(path = '') {
+    if (path.length > 0) {
+      this.projectRoot = path
+    }
+    return this
+  }
+
   run(commandInfo = {}) {
-    this.handleCommand()
+    let result = this.handleCommand(commandInfo)
+    process.exit(result)
   }
 
   usage(usage = '') {
@@ -140,15 +148,13 @@ class CLI {
   }
 
   getTemplatePath() {
-    let cmdPath = this.getProjectCommandPath()
-    let templatePath = this.path.join(cmdPath, 'templates')
-    return templatePath
+    return this.path.join(this.projectRoot, 'src', 'templates')
   }
 
   getProjectCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
-      commandPath = this.path.join(this.projectRoot, 'commands')
+      commandPath = this.path.join(this.projectRoot, 'src', 'commands')
     } else {
       commandPath = this.path.join(process.env.CWD || process.env.PWD, 'commands')
     }
@@ -162,7 +168,7 @@ class CLI {
   }
 
   getCurrentCommandPath() {
-    return this.path.join(process.cwd(), 'commands')
+    return this.path.join(process.cwd(), 'src', 'commands')
   }
 
   isModuleValid(module) {
@@ -265,10 +271,10 @@ class CLI {
 
     commandFiles.forEach(filename => {
       if (this.path.extname(filename) == '.js') {
-        // console.log(this.path.basename(filename, '.js'))
         let module = this.loadModule(this.path.basename(filename, '.js'))
         let disabled = module.disabled || false
-        if (!disabled) {
+        let hidden = module.hidden || false
+        if (!disabled && !hidden) {
           let name = module.name || ''
           if (module.hasOwnProperty('flags')) {
             if (Object.keys(module.flags).length > 0) {
@@ -435,6 +441,7 @@ class CLI {
 
         let result = module.hasOwnProperty('execute')
         if (module.hasOwnProperty('execute')) {
+          this.arguments = this.setDefaultFlags(this, module.flags)
           return module.execute(this)
         }
       } else {
@@ -445,9 +452,9 @@ class CLI {
     }
   }
 
-  handleCommand() {
-    let command = this.command
-    let args = this.arguments
+  handleCommand(commandInfo = {}) {
+    let command = commandInfo.name || this.command
+    let args = commandInfo.args || this.arguments
 
     // if command not supplied, show help regardless
     if (command === '<command>') {
