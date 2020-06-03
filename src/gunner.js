@@ -51,41 +51,21 @@ class CLI {
     this.globalOptionInfo = ''
     this.exampleInfo = ''
   }
-  /**
-   * run()
-   * kicks off CLI program
-   *
-   * @memberof CLI
-   */
+
   run(commandInfo = {}) {
     this.handleCommand()
   }
+
   usage(usage = '') {
     this.usageInfo = usage
     return this
   }
-  /**
-   * help()
-   * overrides default help data
-   * @note If help is supplied, the comamnds, examples, options, usage methods are not used
-   *
-   * @param {string} [help='']
-   * @returns
-   * @memberof CLI
-   */
+
   help(help = '') {
     this.helpInfo = help
     return this
   }
 
-  /**
-   * Overrides default command output when using --help flag
-   * @note: If custom help is used, this information will not be displayed
-   *
-   * @param {string} [command='']
-   * @returns
-   * @memberof CLI
-   */
   commands(command = '') {
     this.commandInfo = command
     return this
@@ -100,14 +80,7 @@ class CLI {
     }
     return this
   }
-  /**
-   * Overrides default options output when using --help flag
-   * @note: If custom help is used, this information will not be displayed
-   *
-   * @param {string} [options='']
-   * @returns
-   * @memberof CLI
-   */
+
   options(options = '') {
     // if options is cleared, show default.
     // - Custom Options should be >1 char
@@ -131,13 +104,6 @@ class CLI {
     return this
   }
 
-  /**
-   * Overrides default examples output when using --help flag
-   * @note: If custom help is used, this information will not be displayed
-   * @param {string} [examples='']
-   * @returns
-   * @memberof CLI
-   */
   examples(examples = '') {
     this.exampleInfo = examples
     return this
@@ -158,11 +124,13 @@ class CLI {
     }
     return command
   }
+
   getCommandName(argv) {
     let parseArgs = require('minimist')
     let parsedArguments = parseArgs(argv)
     return parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
   }
+
   getArguments(argv) {
     let args = require('mri')(argv.slice(2))
     if (args.hasOwnProperty('_')) {
@@ -170,11 +138,13 @@ class CLI {
     }
     return args
   }
+
   getTemplatePath() {
     let cmdPath = this.getProjectCommandPath()
     let templatePath = this.path.join(cmdPath, 'templates')
     return templatePath
   }
+
   getProjectCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
@@ -190,12 +160,15 @@ class CLI {
     }
     return commandPath
   }
+
   getCurrentCommandPath() {
     return this.path.join(process.cwd(), 'commands')
   }
+
   isModuleValid(module) {
     return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
   }
+
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
@@ -210,6 +183,7 @@ class CLI {
     })
     return filename.length > 0 ? require(filename) : {}
   }
+
   hasRequiredArguments(module, args) {
     let missingArguments = []
     for (let flag in module.flags) {
@@ -226,6 +200,7 @@ class CLI {
     }
     return missingArguments
   }
+
   setDefaultFlags(cli, flags) {
     let keys = Object.keys(flags)
     let defaults = {}
@@ -242,6 +217,7 @@ class CLI {
     })
     return defaults
   }
+
   argumentHasOption(args, needles) {
     if (typeof needles === 'undefined') {
       return false
@@ -258,6 +234,7 @@ class CLI {
     }
     return false
   }
+
   getOptionValue(args, optName) {
     if (this.argumentHasOption(args, optName)) {
       let options = typeof optName === 'string' ? [optName] : optName
@@ -307,6 +284,7 @@ class CLI {
     })
     return commands
   }
+
   showDebugCommand(command) {
     if (this.debug) {
       let separator = '='.repeat(this.utils.windowSize().width)
@@ -329,11 +307,13 @@ class CLI {
       }
     }
   }
+
   showVersion() {
     console.log(`${this.colors.cyan(this.packageName)} ${this.colors.cyan('v' + this.version)}`)
     console.log(`${this.colors.yellow(this.tagline)}`)
     console.log()
   }
+
   showHelp() {
     // if we have defined custom help, display it
     if (this.helpInfo.length > 0) {
@@ -378,6 +358,7 @@ class CLI {
       this.showCommandHelp(this.command)
     }
   }
+
   showCommandHelp(command = '') {
     if (this.commandInfo.length > 0) {
       return this.commandInfo
@@ -434,6 +415,7 @@ class CLI {
 
     return `${module.name} help displayed`
   }
+
   executeCommand(command, args) {
     if (command.length > 0) {
       let module = this.loadModule(command)
@@ -462,6 +444,7 @@ class CLI {
       }
     }
   }
+
   handleCommand() {
     let command = this.command
     let args = this.arguments
