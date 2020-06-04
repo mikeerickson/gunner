@@ -15,24 +15,14 @@
  */
 
 module.exports = {
-  name: 'hello',
+  name: 'default',
   description: '',
   usage: 'Do something cool, after all this is your command!',
   flags: {
-    name: { aliases: ['n'], description: 'Command name', required: false }
+    message: { aliases: ['m'], description: 'Command message' }
   },
   execute(cli) {
-    /*
-      - you can use the following variables when creating your command
-      - cli.commandName
-      - cli.command
-      - cli.arguments
-    */
-
-    // leave this line intact, it will process arguments, applying defaults where applicable
-    cli.arguments = cli.setDefaultFlags(cli, this.flags)
-
-    // example processing command
-    cli.print.info(`Hello ${cli.arguments.name || 'World'}`)
+    let msg = cli.arguments.message || 'Hello World'
+    cli.print.info(`Default Message: ${msg}`)
   }
 }

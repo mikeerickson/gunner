@@ -6,6 +6,7 @@ const HELP_PAD = 30
 
 class CLI {
   constructor(argv) {
+    this.argv = argv
     this.projectRoot = path.dirname(fs.realpathSync(argv[1]))
     let packageJsonFilename = path.join(fs.realpathSync(this.projectRoot), 'package.json')
     this.pkgInfo = require(packageJsonFilename)
@@ -17,7 +18,7 @@ class CLI {
     this.command = this.getCommand(argv)
     this.commandName = this.getCommandName(argv)
     this.arguments = this.getArguments(argv)
-    this.debug = this.arguments.debug || this.arguments.d
+    this.debug = this.arguments.debug || this.arguments.d || false
 
     // setup global commands
     this.overwrite = this.arguments.overwrite || this.arguments.o
@@ -44,6 +45,9 @@ class CLI {
     this.strings = require('voca')
     this.template = require('./template')
 
+    // load project extensions
+    this.loadExtensions(this)
+
     this.helpInfo = ''
     this.usageInfo = ''
     this.commandInfo = ''
@@ -60,7 +64,7 @@ class CLI {
   }
 
   run(commandInfo = {}) {
-    let result = this.handleCommand(commandInfo)
+    let result = this.handleCommand(this.argv, commandInfo)
     process.exit(result)
   }
 
@@ -83,7 +87,7 @@ class CLI {
     if (options.length > 0) {
       this.globalOptionInfo = options
     } else {
-      let globalOptions = ['  --overwrite, -o               Overwrite Existing Files(s)']
+      let globalOptions = ['  --overwrite, -o               Overwrite Existing Files(s) if creating in command']
       this.globalOptionInfo = globalOptions.join('\n')
     }
     return this
@@ -145,6 +149,10 @@ class CLI {
       delete args['_']
     }
     return args
+  }
+
+  getExtensionPath() {
+    return this.path.join(this.projectRoot, 'src', 'extensions')
   }
 
   getTemplatePath() {
@@ -452,7 +460,10 @@ class CLI {
     }
   }
 
-  handleCommand(commandInfo = {}) {
+  handleCommand(argv, commandInfo = {}) {
+    // special handle if default supplied in .run()
+    commandInfo = argv.length >= 3 ? {} : commandInfo
+
     let command = commandInfo.name || this.command
     let args = commandInfo.args || this.arguments
 
@@ -475,6 +486,22 @@ class CLI {
     }
 
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
+  }
+
+  loadExtensions(cli) {
+    let extensionPath = this.getExtensionPath()
+    if (!cli.fs.existsSync(extensionPath)) {
+      this.fs.mkdirSync(extensionPath)
+    }
+    let extensionFiles = this.fs.readdirSync(extensionPath)
+    extensionFiles.forEach(filename => {
+      let extFilename = this.path.join(extensionPath, filename)
+      let module = require(extFilename)(cli)
+    })
+
+    cli.test = function(msg = 'default') {
+      console.log(msg)
+    }
   }
 }
 

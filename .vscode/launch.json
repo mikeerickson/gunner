@@ -18,6 +18,13 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Default Program: .run()",
+      "program": "${workspaceFolder}/index.js",
+      "args": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Command Test",
       "program": "${workspaceFolder}/index.js",
       "args": [
@@ -33,28 +40,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Default w/Help",
-      "program": "${workspaceFolder}/index.js",
-      "args": [
-        "--help"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Current File",
       "program": "${file}"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Kebab Test",
-      "program": "${workspaceFolder}/index.js",
-      "args": [
-        "test:command",
-        "--name",
-        "mike"
-      ]
     },
   ]
 }
