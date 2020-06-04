@@ -52,7 +52,6 @@ class CLI {
     this.usageInfo = ''
     this.commandInfo = ''
     this.optionInfo = ''
-    this.globalOptionInfo = ''
     this.exampleInfo = ''
   }
 
@@ -83,16 +82,6 @@ class CLI {
     return this
   }
 
-  globalOptions(options = '') {
-    if (options.length > 0) {
-      this.globalOptionInfo = options
-    } else {
-      let globalOptions = ['  --overwrite, -o               Overwrite Existing Files(s) if creating in command']
-      this.globalOptionInfo = globalOptions.join('\n')
-    }
-    return this
-  }
-
   options(options = '') {
     // if options is cleared, show default.
     // - Custom Options should be >1 char
@@ -103,6 +92,7 @@ class CLI {
         '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
+        '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --version, -v, -V             Show Version'
       ]
 
@@ -359,11 +349,6 @@ class CLI {
         this.print.log(this.optionInfo + '\n')
       }
 
-      if (this.globalOptionInfo.length > 1) {
-        this.print.warning('Global Options:')
-        this.print.log(this.globalOptionInfo + '\n')
-      }
-
       if (this.exampleInfo.length > 0) {
         this.print.warning('Examples:')
         this.print.log(this.formatInfo(this.exampleInfo) + '\n')
@@ -421,11 +406,6 @@ class CLI {
       let flags = '  --' + flag + aliases
       console.log(flags.padEnd(HELP_PAD + 1), description, defaultValue)
     })
-
-    if (this.globalOptionInfo.length > 0) {
-      console.log(this.colors.yellow('\nGlobal Options:'))
-      console.log(this.globalOptionInfo)
-    }
 
     return `${module.name} help displayed`
   }
