@@ -2,7 +2,7 @@
 /*eslint no-console: "off"*/
 
 // NOTE: Make sure `leasot` is installed globally, otherwise you can use package version
-// ./node_modules/.bin/leasot
+// NOTE: ./node_modules/.bin/leasot
 
 const { spawnSync } = require('child_process')
 const colors = require('chalk')
@@ -18,7 +18,7 @@ if (!quiet) {
   spawnSync('leasot', ['./**/*.{ts,js,vue}', '--ignore', './node_modules'], { stdio: 'inherit' })
 }
 
-// if output (-o, --output) flag supplied, reporter written to TODO.md
+// if output (-o, --output) flag supplied, report written to TODO.md
 if (output) {
   spawnSync('leasot', ['./**/*.{ts,js,vue}', '--ignore', './node_modules', '>', todoFilename], {
     shell: true

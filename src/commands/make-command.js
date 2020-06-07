@@ -38,7 +38,7 @@ module.exports = {
       if (!cli.fs.existsSync(commandFilename)) {
         try {
           let ret = cli.fs.writeFileSync(commandFilename, templateData)
-          cli.print.success(`${cli.utils.tildify(commandFilename)} created successfuly`, 'SUCCESS')
+          cli.print.success(`${cli.utils.tildify(commandFilename)} created successfully`, 'SUCCESS')
         } catch (e) {
           cli.print.error(`Error creating ${cli.utils.tildify(commandFilename)}`, 'ERROR')
         }

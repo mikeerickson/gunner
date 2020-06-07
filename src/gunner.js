@@ -313,7 +313,8 @@ class CLI {
   }
 
   showVersion() {
-    console.log(`${this.colors.cyan(this.packageName)} ${this.colors.cyan('v' + this.version)}`)
+    const name = this.strings.titleCase(this.packageName)
+    console.log(`${this.colors.cyan(name)} ${this.colors.cyan('v' + this.version)}`)
     console.log(`${this.colors.yellow(this.tagline)}`)
     console.log()
   }
