@@ -35,5 +35,6 @@ module.exports = {
         console.log(answer)
       })
       .catch(console.error)
-  }
+  },
+  multiple: (questions = []) => {}
 }

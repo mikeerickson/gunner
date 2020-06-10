@@ -7,6 +7,6 @@ module.exports = {
   },
   execute(cli) {
     let msg = cli.arguments.message || 'Hello World'
-    cli.print.info(`Default Message: ${msg}`)
+    cli.print.info(`Default Command: ${msg}`)
   }
 }
