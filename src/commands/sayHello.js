@@ -7,6 +7,7 @@ module.exports = {
   },
   execute(cli) {
     let name = cli.strings.titleCase(cli.arguments.name || 'world')
+    console.log()
     cli.print.success(`Hello ${name}!`, 'SUCCESS')
   }
 }

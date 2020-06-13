@@ -26,9 +26,13 @@ Using yarn
 #!/usr/bin/env node
 
 const path = require('path')
+let CLI = require('@codedungeon/gunner')
 
-let CLI = require('../src/gunner')
-new CLI(process.argv, path.dirname(__filename))
+const app = new CLI(process.argv)
+  .usage('gunner make:command TestCommand --name test:command')
+  .options()
+  .examples('make:command TestCommand --name hello')
+  .run({ name: 'default' })
 ```
 
 - Create new command in the `commands` directory (create if it does not exists)

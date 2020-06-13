@@ -9,17 +9,19 @@ const fs = require('fs-extra-promise')
 const HELP_PAD = 30
 
 class CLI {
-  constructor(argv = []) {
+  constructor(argv = [], projectRootDir = null) {
     if (argv.length === 0) {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
     }
     this.argv = argv
 
-    this.projectRoot = path.dirname(fs.realpathSync(argv[1]))
+    this.projectRoot = projectRootDir || path.dirname(fs.realpathSync(argv[1]))
+
     let packageJsonFilename = path.join(fs.realpathSync(this.projectRoot), 'package.json')
     this.pkgInfo = require(packageJsonFilename)
 
+    this.appName = this.pkgInfo.packageName
     this.version = this.pkgInfo.version
     this.packageName = this.pkgInfo.packageName || ''
     this.tagline = this.pkgInfo.tagline || ''
@@ -353,8 +355,8 @@ class CLI {
 
   showVersion() {
     const name = this.strings.titleCase(this.packageName)
-    console.log(`${this.colors.cyan(name)} ${this.colors.cyan('v' + this.version)}`)
-    console.log(`${this.colors.yellow(this.tagline)}`)
+    console.log(`🚧 ${this.colors.cyan(name)} ${this.colors.cyan('v' + this.version)}`)
+    console.log(`   ${this.colors.magenta.italic(this.tagline)}`)
     console.log()
   }
 
