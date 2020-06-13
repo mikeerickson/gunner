@@ -9,13 +9,13 @@ Codedungeon Slimlined CLI Framework
 Using npm
 
 ```bash
-> npm install -g gunner
+> npm install -g @codedungeon/gunner
 ```
 
 Using yarn
 
 ```bash
-> yarn add global gunner
+> yarn add global @codedungeon/gunner
 ```
 
 ## Usage
