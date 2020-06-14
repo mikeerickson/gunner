@@ -2,7 +2,7 @@ const { expect } = require('chai')
 const { exec } = require('child_process')
 const pkgInfo = require('../package.json')
 
-describe('default', done => {
+describe('commands', done => {
   it('should return correct command name', done => {
     let sample = require('../src/commands/default')
     expect(sample.name).equal('default')

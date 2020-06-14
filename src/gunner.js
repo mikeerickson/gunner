@@ -5,11 +5,13 @@ const fsj = require('fs-jetpack')
 const config = require('./config')
 const system = require('./system.js')
 const fs = require('fs-extra-promise')
+const check = require('./sanity-check.js')
 
 const HELP_PAD = 30
 
 class CLI {
   constructor(argv = [], projectRootDir = null) {
+    check.startup()
     if (argv.length === 0) {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
@@ -83,7 +85,7 @@ class CLI {
 
     fs.separator = os.platform === 'win32' ? '\\' : '/'
 
-    fs.homedir = function() {
+    fs.homedir = function () {
       return os.homedir()
     }
 
@@ -134,7 +136,7 @@ class CLI {
         '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
-        '  --version, -v, -V             Show Version'
+        '  --version, -v, -V             Show Version',
       ]
 
       this.optionInfo = options.join('\n')
@@ -175,7 +177,8 @@ class CLI {
   }
 
   getArguments(argv) {
-    let args = require('mri')(argv.slice(2))
+    let argsParser = require('minimist')
+    let args = argsParser(argv)
     if (args.hasOwnProperty('_')) {
       delete args['_']
     }
@@ -218,10 +221,10 @@ class CLI {
     // try kebabCase or camelCase filename
     let files = [
       this.path.join(this.getProjectCommandPath(), this.strings.kebabCase(module) + '.js'),
-      this.path.join(this.getProjectCommandPath(), this.strings.camelCase(module) + '.js')
+      this.path.join(this.getProjectCommandPath(), this.strings.camelCase(module) + '.js'),
     ]
     let filename = ''
-    let result = files.forEach(file => {
+    let result = files.forEach((file) => {
       if (this.fs.existsSync(file)) {
         filename = file
       }
@@ -249,7 +252,7 @@ class CLI {
   setDefaultFlags(cli, flags) {
     let keys = Object.keys(flags)
     let defaults = {}
-    keys.map(flag => {
+    keys.map((flag) => {
       let alias = flags[flag].aliases[0]
       let defaultValue = this.utils.dot.get(flags[flag].default)
       if (defaultValue === undefined) {
@@ -257,7 +260,7 @@ class CLI {
       }
       defaults = Object.assign(defaults, {
         [flag]: this.utils.dot.get(cli.arguments[flag] || this.utils.dot.get(cli.arguments[alias] || defaultValue)),
-        [alias]: this.utils.dot.get(cli.arguments[alias] || this.utils.dot.get(cli.arguments[flag] || defaultValue))
+        [alias]: this.utils.dot.get(cli.arguments[alias] || this.utils.dot.get(cli.arguments[flag] || defaultValue)),
       })
     })
     return defaults
@@ -308,7 +311,7 @@ class CLI {
       commands += this.colors.red(`  Please review your ${projectHome} directory\n`)
     }
 
-    commandFiles.forEach(filename => {
+    commandFiles.forEach((filename) => {
       if (this.path.extname(filename) == '.js') {
         let module = this.loadModule(this.path.basename(filename, '.js'))
         let disabled = module.disabled || false
@@ -340,9 +343,7 @@ class CLI {
           ' 🚦  DEBUG COMMAND: ' +
           command +
           '\n    ' +
-          JSON.stringify(this.arguments)
-            .replace(/,/gi, ', ')
-            .replace(/:/gi, ': ')
+          JSON.stringify(this.arguments).replace(/,/gi, ', ').replace(/:/gi, ': ')
 
         console.log(this.colors.gray(separator))
         this.print.debug(msg)
@@ -432,7 +433,7 @@ class CLI {
     }
     let keys = Object.keys(module.flags)
     console.log(this.colors.yellow('Options:'))
-    keys.forEach(flag => {
+    keys.forEach((flag) => {
       const description = module.flags[flag]['description'] || module.flags[flag]
 
       let defaultValue = ''
@@ -516,12 +517,12 @@ class CLI {
       this.fs.mkdirSync(extensionPath)
     }
     let extensionFiles = this.fs.readdirSync(extensionPath)
-    extensionFiles.forEach(filename => {
+    extensionFiles.forEach((filename) => {
       let extFilename = this.path.join(extensionPath, filename)
       let module = require(extFilename)(cli)
     })
 
-    cli.test = function(msg = 'default') {
+    cli.test = function (msg = 'default') {
       console.log(msg)
     }
   }
