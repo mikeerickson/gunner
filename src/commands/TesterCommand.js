@@ -24,7 +24,7 @@ module.exports = {
   usage: 'Do something cool, after all this is your command!',
   flags: {
     // example flag, adjust accordingly
-    name: { aliases: ['n'], description: 'Command name', required: false }
+    name: { aliases: ['n'], description: 'Command name', required: false },
   },
   execute(cli) {
     /*
@@ -34,7 +34,7 @@ module.exports = {
      * - cli.arguments
      */
 
-		// example processing command
+    // example processing command
     let name = cli.strings.titleCase(cli.arguments.name || 'world')
-  }
+  },
 }
