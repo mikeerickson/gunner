@@ -6,23 +6,23 @@ const config = require('./config')
 const system = require('./system.js')
 const fs = require('fs-extra-promise')
 const check = require('./sanity-check.js')
+const table = require('./utils/table.js')
+const { clearConfigCache } = require('prettier')
 
 const HELP_PAD = 30
 
 class CLI {
   constructor(argv = [], projectRootDir = null) {
     check.startup()
+
     if (argv.length === 0) {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
     }
+
     this.argv = argv
-
     this.projectRoot = projectRootDir || path.dirname(fs.realpathSync(argv[1]))
-
-    let packageJsonFilename = path.join(fs.realpathSync(this.projectRoot), 'package.json')
-    this.pkgInfo = require(packageJsonFilename)
-
+    this.pkgInfo = require(path.join(fs.realpathSync(this.projectRoot), 'package.json'))
     this.appName = this.pkgInfo.packageName
     this.version = this.pkgInfo.version
     this.packageName = this.pkgInfo.packageName || ''
@@ -32,6 +32,7 @@ class CLI {
     this.commandName = this.getCommandName(argv)
     this.arguments = this.getArguments(argv)
     this.debug = this.arguments.debug || this.arguments.d || false
+    this.verbose = this.arguments.verbose || false
 
     // setup global commands
     this.overwrite = this.arguments.overwrite || this.arguments.o
@@ -71,6 +72,8 @@ class CLI {
     this.commandInfo = ''
     this.optionInfo = ''
     this.exampleInfo = ''
+
+    this.debug && this.verbose ? table.render(['Property', 'Value'], Object.entries(this)) : ''
   }
 
   src(path = '') {
@@ -137,6 +140,7 @@ class CLI {
         // '--logs, -l               Output logs to stdout',
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --version, -v, -V             Show Version',
+        '  --verbose                     Verbose output',
       ]
 
       this.optionInfo = options.join('\n')
@@ -522,9 +526,9 @@ class CLI {
       let module = require(extFilename)(cli)
     })
 
-    cli.test = function (msg = 'default') {
-      console.log(msg)
-    }
+    // cli.test = function (msg = 'default') {
+    //   console.log(msg)
+    // }
   }
 }
 

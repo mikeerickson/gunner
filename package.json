@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.8.1-2",
+  "version": "0.8.1-7",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "repository": {
@@ -56,9 +56,10 @@
     "prettier": "2.0.5"
   },
   "dependencies": {
-    "@codedungeon/messenger": "0.6.0",
+    "@codedungeon/messenger": "0.7.0",
     "@codedungeon/utils": "0.0.12",
     "chalk": "4.1.0",
+    "cli-table3": "0.6.0",
     "colors": "1.4.0",
     "configstore": "5.0.1",
     "enquirer": "2.3.5",
@@ -72,6 +73,7 @@
     "node-ip": "0.1.2",
     "npm-which": "3.0.1",
     "please-upgrade-node": "3.2.0",
+    "pluralize": "8.0.0",
     "update-notifier": "4.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
