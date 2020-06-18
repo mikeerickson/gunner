@@ -1,10 +1,6 @@
 const os = require('os')
 const path = require('path')
 const which = require('which')
-// const fsj = require('fs-jetpack')
-// const fs = require('fs-extra-promise')
-
-// const fs = require('./filesystem')
 const config = require('./config')
 const system = require('./system.js')
 const table = require('./utils/table.js')
@@ -55,17 +51,11 @@ class CLI {
     this.system = system
     this.config = config
     this.path = path
-    // this.filesystem = fs
     this.colors = require('colors')
     this.utils = require('@codedungeon/utils')
     this.print = require('@codedungeon/messenger')
     this.strings = require('voca')
     this.template = require('./template')
-
-    // patch fs|filesystem to include common methods
-    // this.fs = require('fs-extra-promise')
-    // this.fs = this.filesystem = this.patchFilesystem(this.fs)
-    // this.filesystem = this.fs
 
     // load project extensions
     this.loadExtensions(this)
@@ -84,31 +74,6 @@ class CLI {
       this.projectRoot = path
     }
     return this
-  }
-
-  patchFilesystem(fs) {
-    fs.eol = os.platform === 'win32' ? '\r\n' : '\n'
-
-    fs.separator = os.platform === 'win32' ? '\\' : '/'
-
-    fs.homedir = function () {
-      return os.homedir()
-    }
-
-    fs.chmod = (path = '', mode = '') => {
-      return fs.chmodSync(path, mode)
-    }
-
-    fs.copy = (src = '', dest = '', options = {}) => {
-      return fsj.copy(src, dest, options)
-    }
-
-    fs.cwd = (opts = '') => {
-      const jetParent = fsj.cwd(opts)
-      return jetParent.cwd()
-    }
-
-    return fs
   }
 
   run(commandInfo = {}) {
