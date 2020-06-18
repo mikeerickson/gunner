@@ -41,6 +41,7 @@ const table = {
         value = Object.keys(value).join(', ')
         value = colors.yellow(`[${itemStr}] `) + value
       }
+
       table.push([itemKey, value])
     })
     console.log()

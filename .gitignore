@@ -7,3 +7,4 @@ logs/
 TODO.md
 NOTES.md
 example/
+.nyc_output/

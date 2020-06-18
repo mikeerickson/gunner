@@ -1,13 +1,14 @@
 const os = require('os')
 const path = require('path')
 const which = require('which')
-const fsj = require('fs-jetpack')
+// const fsj = require('fs-jetpack')
+// const fs = require('fs-extra-promise')
+
+// const fs = require('./filesystem')
 const config = require('./config')
 const system = require('./system.js')
-const fs = require('fs-extra-promise')
-const check = require('./sanity-check.js')
 const table = require('./utils/table.js')
-const { clearConfigCache } = require('prettier')
+const check = require('./sanity-check.js')
 
 const HELP_PAD = 30
 
@@ -21,21 +22,22 @@ class CLI {
     }
 
     this.argv = argv
-    this.projectRoot = projectRootDir || path.dirname(fs.realpathSync(argv[1]))
-    this.pkgInfo = require(path.join(fs.realpathSync(this.projectRoot), 'package.json'))
-    this.appName = this.pkgInfo.packageName
+    this.fs = this.filesystem = require('./filesystem') // get this early as it will be used during bootstrap
+    this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
+    this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
     this.version = this.pkgInfo.version
-    this.packageName = this.pkgInfo.packageName || ''
+    this.appName = this.pkgInfo.packageName
     this.tagline = this.pkgInfo.tagline || ''
+    this.packageName = this.pkgInfo.packageName || ''
 
     this.command = this.getCommand(argv)
-    this.commandName = this.getCommandName(argv)
+    this.commandName = this.getCommandName(argv) // sub command (see make:command for example)
     this.arguments = this.getArguments(argv)
-    this.debug = this.arguments.debug || this.arguments.d || false
-    this.verbose = this.arguments.verbose || false
 
     // setup global commands
+    this.verbose = this.arguments.verbose || false
     this.overwrite = this.arguments.overwrite || this.arguments.o
+    this.debug = this.arguments.debug || this.arguments.d || false
 
     // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
@@ -53,8 +55,7 @@ class CLI {
     this.system = system
     this.config = config
     this.path = path
-    this.fs = fs
-    this.filesystem = fs
+    // this.filesystem = fs
     this.colors = require('colors')
     this.utils = require('@codedungeon/utils')
     this.print = require('@codedungeon/messenger')
@@ -62,7 +63,9 @@ class CLI {
     this.template = require('./template')
 
     // patch fs|filesystem to include common methods
-    this.fs = this.filesystem = this.patchFilesystem(this.fs)
+    // this.fs = require('fs-extra-promise')
+    // this.fs = this.filesystem = this.patchFilesystem(this.fs)
+    // this.filesystem = this.fs
 
     // load project extensions
     this.loadExtensions(this)
@@ -140,7 +143,8 @@ class CLI {
         // '--logs, -l               Output logs to stdout',
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --version, -v, -V             Show Version',
-        '  --verbose                     Verbose output',
+        '  --verbose                     Verbose Output [only used in conjuction with --debug]',
+        this.colors.magenta.italic('                                 (includes table of gunner options)'),
       ]
 
       this.optionInfo = options.join('\n')

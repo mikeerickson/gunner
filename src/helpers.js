@@ -1,8 +1,9 @@
-const pkgInfo = require('../package.json')
 const fs = require('fs-extra')
 const dotProp = require('dot-prop')
 const colors = require('ansi-colors')
 const { prompt } = require('enquirer')
+
+const pkgInfo = require('../package.json')
 
 class Helpers {
   constructor() {
@@ -44,8 +45,10 @@ class Helpers {
     return false
   }
 
+  // see template.js for more verbose implemenation using .mustache syntax
+  // TODO: ideally, this should be refatored to only use .mustache
   compile(template = '', data = {}) {
-    Object.keys(data).map(key => {
+    Object.keys(data).map((key) => {
       let regex = new RegExp(`<%${key}%>`, 'gi')
       template = template.replace(regex, data[key])
     })
@@ -78,7 +81,7 @@ class Helpers {
       },
       indicator(state, choice) {
         return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
-      }
+      },
     }
 
     let options = { ...defaultOptions, ...alternateOptions }
@@ -87,10 +90,10 @@ class Helpers {
 
   promptRequest(questions = [], resolve, reject) {
     prompt(questions)
-      .then(answers => {
+      .then((answers) => {
         resolve(answers)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err)
       })
   }
