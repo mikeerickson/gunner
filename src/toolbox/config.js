@@ -1,5 +1,5 @@
 const Configstore = require('configstore')
-const pkgInfo = require('../package.json')
+const pkgInfo = require('../../package.json')
 
 const conf = new Configstore(pkgInfo.name)
 
@@ -15,17 +15,19 @@ const config = {
     }
     return result
   },
-  hasKey: key => {
+  hasKey: (key) => {
     let result = conf.get(key)
     return result !== undefined
   },
-
   set: (key, value) => {
     return conf.set(key, value)
   },
-  delete: key => {
+  delete: (key) => {
     conf.delete(key)
-  }
+  },
+  configFilename: () => {
+    return `./config/${pkgInfo.name}.json`
+  },
 }
 
 module.exports = config

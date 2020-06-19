@@ -1,7 +1,7 @@
 const os = require('os')
 const path = require('path')
 const { expect } = require('chai')
-const fs = require('../src/filesystem')
+const fs = require('../src/toolbox/filesystem')
 
 describe('filesystem patching', (done) => {
   it('should add .eol property', (done) => {

@@ -1,10 +1,27 @@
 const Table = require('cli-table3')
 const colors = require('ansi-colors')
-const { clearConfigCache } = require('prettier')
 const pluralize = require('pluralize')
+const { clearConfigCache } = require('prettier')
 
 const table = {
-  render: (header = [], data = {}) => {
+  render: (header = [], data = []) => {
+    if (data.length === 0) {
+      console.log('\n' + colors.red('No Tabld Data'))
+      return
+    }
+
+    const table = new Table({
+      head: header,
+      colWidths: [20, process.stdout.columns - 25],
+    })
+
+    data.map((item) => {
+      table.push(item)
+    })
+    console.log()
+    console.log(table.toString())
+  },
+  verboseInfo: (header = [], data = {}) => {
     if (Object.keys(data).length === 0) {
       console.log('\n' + colors.red('No Tabld Data'))
       return

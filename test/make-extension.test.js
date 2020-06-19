@@ -6,7 +6,7 @@ const utils = require('../src/utils/cli-utils.js')
 
 const pkgInfo = require('../package.json')
 
-describe('make:command', (done) => {
+describe('make:extension', (done) => {
   let testCommandFilename = ''
   beforeEach(async () => {
     testCommandFilename = path.join(utils.getProjectCommandPath(), '_TestCommand_.js')

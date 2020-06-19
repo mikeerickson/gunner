@@ -1,10 +1,11 @@
 const os = require('os')
 const path = require('path')
 const which = require('which')
-const config = require('./config')
-const system = require('./system.js')
-const table = require('./utils/table.js')
+
+const table = require('./toolbox/table.js')
+const config = require('./toolbox/config')
 const check = require('./sanity-check.js')
+const system = require('./toolbox/system.js')
 
 const HELP_PAD = 30
 
@@ -18,7 +19,7 @@ class CLI {
     }
 
     this.argv = argv
-    this.fs = this.filesystem = require('./filesystem') // get this early as it will be used during bootstrap
+    this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
     this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
     this.version = this.pkgInfo.version
@@ -51,11 +52,11 @@ class CLI {
     this.system = system
     this.config = config
     this.path = path
-    this.colors = require('colors')
-    this.utils = require('@codedungeon/utils')
-    this.print = require('@codedungeon/messenger')
     this.strings = require('voca')
-    this.template = require('./template')
+    this.colors = require('colors')
+    this.print = require('./toolbox/print')
+    this.utils = require('@codedungeon/utils')
+    this.template = require('./toolbox/template')
 
     // load project extensions
     this.loadExtensions(this)
@@ -66,7 +67,7 @@ class CLI {
     this.optionInfo = ''
     this.exampleInfo = ''
 
-    this.debug && this.verbose ? table.render(['Property', 'Value'], Object.entries(this)) : ''
+    this.debug && this.verbose ? table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
   }
 
   src(path = '') {
