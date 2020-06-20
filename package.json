@@ -27,7 +27,7 @@
     "bump:patch": "bump package.json --patch --yes",
     "bump:minor": "bump package.json --minor --yes",
     "lint": "./tasks/lint.sh",
-    "test": "mocha ./test/*.test.js --reporter mocha-better-spec-reporter",
+    "test": "mocha ./test/*.test.js --timeout 5000 --reporter mocha-better-spec-reporter",
     "test:commit": "mocha ./test/*.test.js --reporter dot",
     "test:coverage": "nyc mocha ./test/*.test.js",
     "test:watch": "mocha ./test/*.test.js --growl --watch  --reporter progress",
@@ -80,6 +80,7 @@
     "npm-which": "3.0.1",
     "please-upgrade-node": "3.2.0",
     "pluralize": "8.0.0",
+    "sync-exec": "0.6.2",
     "update-notifier": "4.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"

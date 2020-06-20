@@ -35,7 +35,7 @@ module.exports = {
 
       let commandFilename = toolbox.path.join(currentCommandPath, toolbox.env.commandName + fileExtension)
       if (toolbox.arguments.overwrite) {
-        toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.unlinkSync(commandFilename) : null
+        toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.delete(commandFilename) : null
       }
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {

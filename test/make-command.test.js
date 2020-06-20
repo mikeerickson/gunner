@@ -2,6 +2,7 @@ const path = require('path')
 const fs = require('fs-extra')
 const { expect } = require('chai')
 const { exec } = require('child_process')
+const execSync = require('sync-exec')
 const utils = require('../src/utils/cli-utils.js')
 
 const pkgInfo = require('../package.json')
@@ -30,11 +31,11 @@ describe('make:command', (done) => {
 
   it('should create test command', (done) => {
     let testCommandName = '_TestCommand_'
-    exec(`gunner make:command ${testCommandName}`, async (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain(`${testCommandName}.js created successfully`)
-      await fs.unlink(testCommandFilename)
-    })
+    let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
+    let msg = result.stdout.replace(/\n/gi, '')
+    expect(msg).contain(`${testCommandName}.js created successfully`)
+
+    fs.unlink(testCommandFilename)
     done()
   })
 

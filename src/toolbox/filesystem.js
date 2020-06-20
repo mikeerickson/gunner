@@ -23,4 +23,10 @@ fs.cwd = (opts = '') => {
   return jetParent.cwd()
 }
 
+fs.delete = (filename = '') => {
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename)
+  }
+}
+
 module.exports = fs
