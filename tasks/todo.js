@@ -5,7 +5,7 @@
 // NOTE: ./node_modules/.bin/leasot
 
 const { spawnSync } = require('child_process')
-const colors = require('chalk')
+const colors = require('colors')
 
 // get all flags
 const output = process.argv.indexOf('-o') > 0 || process.argv.indexOf('--output') > 0
@@ -21,7 +21,7 @@ if (!quiet) {
 // if output (-o, --output) flag supplied, report written to TODO.md
 if (output) {
   spawnSync('leasot', ['./**/*.{ts,js,vue}', '--ignore', './node_modules', '>', todoFilename], {
-    shell: true
+    shell: true,
   })
   console.log('')
   console.log(colors.green(`✅  ${todoFilename} file created successfully`))

@@ -1,40 +1,43 @@
 const messenger = require('@codedungeon/messenger')
 const print = {
   success: (msg = '', label = '') => {
-    messenger.success(msg, label)
+    return messenger.success(msg, label)
   },
   error: (msg = '', label = '') => {
-    messenger.error(msg, label)
+    return messenger.error(msg, label)
   },
   info: (msg = '', label = '') => {
-    messenger.info(msg, label)
+    return messenger.info(msg, label)
+  },
+  information: (msg = '', label = '') => {
+    return messenger.info(msg, label)
   },
   warn: (msg = '', label = '') => {
     messenger.warn(msg, label)
   },
   warning: (msg = '', label = '') => {
-    messenger.warn(msg, label)
+    return messenger.warn(msg, label)
   },
   important: (msg = '', label = '') => {
-    messenger.important(msg, label)
+    return messenger.important(msg, label)
   },
   critical: (msg = '', label = '') => {
-    messenger.critical(msg, label)
+    return messenger.critical(msg, label)
   },
   status: (msg = '', label = '') => {
-    messenger.status(msg, label)
+    return messenger.status(msg, label)
   },
   notice: (msg = '', label = '') => {
-    messenger.notice(msg, label)
+    return messenger.notice(msg, label)
   },
   note: (msg = '', label = '') => {
-    messenger.note(msg, label)
+    return messenger.note(msg, label)
   },
   log: (msg = '', label = '') => {
-    messenger.log(msg, label)
+    return messenger.log(msg, label)
   },
   debug: (msg = '', label = '') => {
-    messenger.debug(msg, label)
+    return messenger.debug(msg, label)
   },
 }
 

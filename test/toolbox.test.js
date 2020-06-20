@@ -11,8 +11,8 @@ before(() => {
   pkgInfo = require('../package.json')
 })
 
-describe('CLI', (done) => {
-  it('appName', (done) => {
+describe('toolbox', (done) => {
+  it('env.appName', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('appName')
     expect(result).to.be.true
 
@@ -20,15 +20,8 @@ describe('CLI', (done) => {
     done()
   })
 
-  it('arguments', (done) => {
-    let result = gunner.toolbox.hasOwnProperty('arguments')
-    expect(result).to.be.true
-
-    done()
-  })
-
-  it('argv', (done) => {
-    let result = gunner.hasOwnProperty('argv')
+  it('env.arguments', (done) => {
+    let result = gunner.toolbox.env.hasOwnProperty('arguments')
     expect(result).to.be.true
 
     done()
@@ -43,13 +36,6 @@ describe('CLI', (done) => {
 
   it('command', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('command')
-    expect(result).to.be.true
-
-    done()
-  })
-
-  it('commandInfo', (done) => {
-    let result = gunner.hasOwnProperty('commandInfo')
     expect(result).to.be.true
 
     done()
@@ -83,13 +69,6 @@ describe('CLI', (done) => {
     done()
   })
 
-  it('exampleInfo', (done) => {
-    let result = gunner.hasOwnProperty('exampleInfo')
-    expect(result).to.be.true
-
-    done()
-  })
-
   it('has fs toolbox', (done) => {
     let result = gunner.toolbox.hasOwnProperty('fs')
     expect(result).to.be.true
@@ -99,20 +78,6 @@ describe('CLI', (done) => {
   it('filesystem', (done) => {
     let result = gunner.toolbox.hasOwnProperty('filesystem')
     expect(result).to.be.true
-    done()
-  })
-
-  it('helpInfo', (done) => {
-    let result = gunner.hasOwnProperty('helpInfo')
-    expect(result).to.be.true
-    done()
-  })
-
-  it('optionInfo', (done) => {
-    let result = gunner.hasOwnProperty('optionInfo')
-    expect(result).to.be.true
-
-    // expect(gunner.optionInfo).contains('Options:')
     done()
   })
 
@@ -133,14 +98,6 @@ describe('CLI', (done) => {
   it('path tool', (done) => {
     let result = gunner.toolbox.hasOwnProperty('path')
     expect(result).to.be.true
-    done()
-  })
-
-  it('pkgInfo', (done) => {
-    let result = gunner.hasOwnProperty('pkgInfo')
-    expect(result).to.be.true
-    expect(gunner.pkgInfo).equals(pkgInfo)
-
     done()
   })
 
@@ -168,22 +125,8 @@ describe('CLI', (done) => {
     done()
   })
 
-  it('tagline', (done) => {
-    let result = gunner.hasOwnProperty('tagline')
-    expect(result).to.be.true
-
-    expect(gunner.tagline).equals(pkgInfo.tagline)
-    done()
-  })
-
   it('template', (done) => {
     let result = gunner.toolbox.hasOwnProperty('template')
-    expect(result).to.be.true
-    done()
-  })
-
-  it('usageInfo', (done) => {
-    let result = gunner.hasOwnProperty('usageInfo')
     expect(result).to.be.true
     done()
   })

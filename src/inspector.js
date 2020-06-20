@@ -3,10 +3,11 @@ const colors = require('ansi-colors')
 const pkg = require('../package.json')
 const updateNotifier = require('update-notifier')
 const pleaseUpgradeNode = require('please-upgrade-node')
+const { inspect } = require('fs-jetpack')
 
-const check = {
+const inspector = {
   startup: () => {
-    // check node version
+    // inspet node version
     pleaseUpgradeNode(pkg, {
       exitCode: 0,
       message: (requiredVersion) => {
@@ -14,8 +15,8 @@ const check = {
       },
     })
 
-    // check for any cli updates
+    // inspet for any cli updates
     updateNotifier({ pkg }).notify()
   },
 }
-module.exports = check
+module.exports = inspector

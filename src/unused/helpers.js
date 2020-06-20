@@ -1,9 +1,9 @@
 const fs = require('fs-extra')
 const dotProp = require('dot-prop')
-const colors = require('ansi-colors')
 const { prompt } = require('enquirer')
+const promptColors = require('ansi-colors')
 
-const pkgInfo = require('../package.json')
+const pkgInfo = require('../../package.json')
 
 class Helpers {
   constructor() {
@@ -75,12 +75,12 @@ class Helpers {
 
   buildQuestion(type, name, message, alternateOptions = {}) {
     let defaultOptions = {
-      styles: { em: colors.cyan },
+      styles: { em: promptColors.cyan },
       pointer(state, choice) {
-        return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
+        return choice.index === state.index ? promptColors.cyan.bold(promptColors.symbols.pointer) : ' '
       },
       indicator(state, choice) {
-        return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
+        return choice.enabled ? ' ' + promptColors.green('●') : ' ' + promptColors.gray('o')
       },
     }
 

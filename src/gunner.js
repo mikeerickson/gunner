@@ -2,16 +2,16 @@ const os = require('os')
 const path = require('path')
 const which = require('which')
 
-const table = require('./toolbox/table.js')
 const config = require('./toolbox/config')
-const check = require('./sanity-check.js')
+const inspector = require('./inspector.js')
+const table = require('./toolbox/table.js')
 const system = require('./toolbox/system.js')
 
 const HELP_PAD = 30
 
 class CLI {
   constructor(argv = [], projectRootDir = null) {
-    check.startup()
+    inspector.startup()
 
     if (argv.length === 0) {
       argv.push(system.which('node'))
@@ -31,12 +31,12 @@ class CLI {
     this.commandName = this.getCommandName(argv) // sub command (see make:command for example)
     this.arguments = this.getArguments(argv)
 
-    // setup global commands
+    // setup global options
     this.verbose = this.arguments.verbose || false
     this.overwrite = this.arguments.overwrite || this.arguments.o
     this.debug = this.arguments.debug || this.arguments.d || false
 
-    // help is activated
+    // // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
       this.arguments.help = this.arguments.h = this.arguments.H = true
     }
@@ -49,7 +49,7 @@ class CLI {
     /**
      * setup cli toolbox
      * */
-    this.system = system
+    // this.system = system
     this.config = config
     this.path = path
     this.strings = require('voca')
@@ -61,12 +61,45 @@ class CLI {
     // load project extensions
     this.loadExtensions(this)
 
+    // each of the following will be displayed when CLI help is requested
+    // each object can be customized using associated method when initializing CLI
+    // eg .help() .usage() .commands() .options() .examples()
     this.helpInfo = ''
     this.usageInfo = ''
     this.commandInfo = ''
     this.optionInfo = ''
     this.exampleInfo = ''
 
+    this.toolbox = {
+      appUtils: require('./utils/cli-utils'),
+      arguments: this.arguments,
+      colors: this.colors,
+      config,
+      debug: require('dumper.js'),
+      env: {
+        appName: this.appName,
+        arguments: this.arguments,
+        command: this.command,
+        commandName: this.commandName,
+        debug: this.debug,
+        overwrite: this.overwrite,
+        packageName: this.packageName,
+        projectRoot: this.projectRoot,
+        verbose: this.verbose,
+        version: this.version,
+      },
+      filesystem: this.fs,
+      fs: this.fs,
+      path: this.path,
+      print: this.print,
+      strings: this.strings,
+      system,
+      table,
+      template: this.template,
+      utils: this.utils,
+    }
+
+    // show app info
     this.debug && this.verbose ? table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
   }
 
@@ -82,6 +115,14 @@ class CLI {
     process.exit(result)
   }
 
+  name(name = '') {
+    this.packageName = name
+    return this
+  }
+
+  /**
+   * help override methods
+   */
   usage(usage = '') {
     this.usageInfo = usage
     return this
@@ -98,8 +139,6 @@ class CLI {
   }
 
   options(options = '') {
-    // if options is cleared, show default.
-    // - Custom Options should be >1 char
     if (options.length > 0) {
       this.optionInfo = options
     } else {
@@ -118,21 +157,12 @@ class CLI {
     return this
   }
 
-  name(name = '') {
-    this.packageName = name
-    return this
-  }
-
   examples(examples = '') {
     this.exampleInfo = examples
     return this
   }
 
   formatInfo(info = '') {
-    // TODO: Fix
-    // parse lines
-    // indent each line 2 spaces
-    // return formatted line
     return '  ' + info
   }
 
@@ -167,6 +197,10 @@ class CLI {
     return this.path.join(this.projectRoot, 'src', 'templates')
   }
 
+  getCommandPath() {
+    return this.path.join(process.cwd(), 'src', 'commands')
+  }
+
   getProjectCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
@@ -181,10 +215,6 @@ class CLI {
       commandPath = this.utils.tildify(commandPath)
     }
     return commandPath
-  }
-
-  getCurrentCommandPath() {
-    return this.path.join(process.cwd(), 'src', 'commands')
   }
 
   isModuleValid(module) {
@@ -447,7 +477,7 @@ class CLI {
         let result = module.hasOwnProperty('execute')
         if (module.hasOwnProperty('execute')) {
           this.arguments = this.setDefaultFlags(this, module.flags)
-          return module.execute(this)
+          return module.execute(this.toolbox)
         }
       } else {
         let output = `🚫  Invalid Command: ${command}`

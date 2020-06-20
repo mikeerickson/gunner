@@ -1,6 +1,7 @@
 const os = require('os')
 const fsj = require('fs-jetpack')
 let fs = require('fs-extra-promise')
+let path = require('path')
 
 fs.eol = os.platform === 'win32' ? '\r\n' : '\n'
 fs.separator = os.platform === 'win32' ? '\\' : '/'

@@ -9,18 +9,19 @@
 
 module.exports = {
   name: 'create:project',
-  description: 'Generate New CLI Application',
+  description: 'Generate New toolbox Application',
   usage: 'create:project --name <command> <flags>',
   flags: {
     name: { aliases: ['n'], description: 'Command name', required: true },
-    description: { aliases: ['n'], description: 'Command name', required: true }
+    description: { aliases: ['n'], description: 'Command name', required: true },
   },
-  execute(cli) {
+  execute(toolbox) {
     // create folder
     // create package.json
     // create base index
-    cli.arguments = cli.setDefaultFlags(cli, this.flags)
-    cli.print.information('Name: ', cli.arguments.name)
-    cli.print.info(`Hello ${cli.arguments.name}`)
-  }
+    // toolbox.arguments = toolbox.setDefaultFlags(toolbox, this.flags)
+    toolbox.print.info(toolbox.arguments)
+    toolbox.print.information(`Name: ${toolbox.arguments.name}`)
+    toolbox.print.info(`Hello ${toolbox.arguments.name}`, 'INFO')
+  },
 }

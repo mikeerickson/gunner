@@ -8,8 +8,8 @@ module.exports = {
     // example flag, adjust accordingly
     name: { aliases: ['n'], description: 'Extension name', required: true },
   },
-  execute(cli) {
-    // cli.print.info(`macOS Version: ${cli.machineInfo()}`)
-    cli.print.log('perform extension creation (see make:command for tips)', 'LOG')
+  execute(toolbox) {
+    // toolbox.print.info(`macOS Version: ${toolbox.machineInfo()}`)
+    toolbox.print.log('perform extension creation (see make:command for tips)', 'LOG')
   },
 }

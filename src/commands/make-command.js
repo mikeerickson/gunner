@@ -1,52 +1,54 @@
+const { debug } = require('../toolbox/print')
+
 module.exports = {
   name: 'make:command',
-  description: 'Create new gunner command',
+  description: 'Create a new gunner command',
   usage: 'make:command <CommandName> [flags]',
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: false },
     description: { aliases: ['d'], description: 'Command description', required: false },
   },
-  execute(cli) {
-    if (cli.arguments.name === null) {
-      let cmdName = cli.strings.kebabCase(cli.commandName)
-      cli.arguments.name = cmdName
+  execute(toolbox) {
+    if (toolbox.arguments.name === null) {
+      let cmdName = toolbox.strings.kebabCase(toolbox.commandName)
+      toolbox.arguments.name = cmdName
     }
 
     let data = {
-      name: cli.arguments.name,
-      description: cli.arguments.description,
+      name: toolbox.arguments.name,
+      description: toolbox.arguments.description,
     }
 
     console.log('')
-    let templateFilename = cli.path.join(cli.getTemplatePath(), 'make-command.mustache')
-    let templateData = cli.template.process(templateFilename, data)
+    let templateFilename = toolbox.path.join(toolbox.appUtils.getTemplatePath(), 'make-command.mustache')
+    let templateData = toolbox.template.process(templateFilename, data)
 
     if (templateData !== 'TEMPLATE_NOT_FOUND') {
-      let currentCommandPath = cli.getCurrentCommandPath()
-      if (!cli.fs.existsSync(currentCommandPath)) {
-        cli.fs.mkdirSync(currentCommandPath, { recursive: true })
-        cli.print.info(cli.colors.bold('==> Creating Local `commands` Directory'))
+      let currentCommandPath = toolbox.appUtils.getCommandPath()
+      if (!toolbox.filesystem.existsSync(currentCommandPath)) {
+        toolbox.filesystem.mkdirSync(currentCommandPath, { recursive: true })
+        toolbox.print.info(toolbox.colors.bold('==> Creating Local `commands` Directory'))
       }
       // check if command name has file extension, if not use ".js"
-      let fileExtension = cli.path.extname(cli.commandName)
+      let fileExtension = toolbox.path.extname(toolbox.env.commandName)
       fileExtension = fileExtension.length > 0 ? '' : '.js'
 
-      let commandFilename = cli.path.join(currentCommandPath, cli.commandName + fileExtension)
-      if (cli.arguments.overwrite || cli.overwrite) {
-        cli.fs.existsSync(commandFilename) ? cli.fs.unlinkSync(commandFilename) : null
+      let commandFilename = toolbox.path.join(currentCommandPath, toolbox.env.commandName + fileExtension)
+      if (toolbox.arguments.overwrite) {
+        toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.unlinkSync(commandFilename) : null
       }
-      if (!cli.fs.existsSync(commandFilename)) {
+      if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
-          let ret = cli.fs.writeFileSync(commandFilename, templateData)
-          cli.print.success(`${cli.utils.tildify(commandFilename)} created successfully`, 'SUCCESS')
+          let ret = toolbox.filesystem.writeFileSync(commandFilename, templateData)
+          toolbox.print.success(`${toolbox.utils.tildify(commandFilename)} created successfully`, 'SUCCESS')
         } catch (e) {
-          cli.print.error(`Error creating ${cli.utils.tildify(commandFilename)}`, 'ERROR')
+          toolbox.print.error(`Error creating ${toolbox.utils.tildify(commandFilename)}`, 'ERROR')
         }
       } else {
-        cli.print.note(`${cli.utils.tildify(commandFilename)} already exists`, 'NOTE')
+        toolbox.print.note(`${toolbox.utils.tildify(commandFilename)} already exists`, 'NOTE')
       }
     } else {
-      cli.print.error(`${cli.utils.tildify(templateFilename)} template not found`, 'ERROR')
+      toolbox.print.error(`${toolbox.utils.tildify(templateFilename)} template not found`, 'ERROR')
     }
   },
 }

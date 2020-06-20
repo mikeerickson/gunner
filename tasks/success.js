@@ -1,9 +1,9 @@
-const chalk = require('chalk')
+const colors = require('colors')
 
 let msg = process.argv[2] !== undefined ? process.argv[2] : 'No errors found'
 
-msg = chalk.green(`${msg}`)
+msg = colors.green(`${msg}`)
 
 console.log('')
-console.log(`${chalk.bgGreen.black(' INFO ')} ${msg}`)
+console.log(`${colors.bgGreen.black(' INFO ')} ${msg}`)
 console.log('')
