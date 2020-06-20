@@ -1,5 +1,5 @@
-module.exports = (toolbox) => {
-  toolbox.helloExtension = () => {
-    toolbox.print.info('Hello from Gunner Extension!')
+module.exports = (cli) => {
+  cli.helloExtension = ({ toolbox } = cli) => {
+    return toolbox.print.info('Hello from Gunner Extension!')
   }
 }

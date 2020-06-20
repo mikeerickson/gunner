@@ -43,9 +43,6 @@ class CLI {
       this.arguments.version = this.arguments.v = this.arguments.V = true
     }
 
-    // load project extensions
-    this.loadExtensions(this)
-
     /**
      * Gunner Help Information
      * each of the following will be displayed when CLI help is requested
@@ -87,6 +84,9 @@ class CLI {
       template: require('./toolbox/template'),
       utils: require('@codedungeon/utils'),
     }
+
+    // load project extensions (will be appended to app namespace)
+    this.loadExtensions(this)
 
     // show app info
     this.debug && this.verbose ? this.toolbox.table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
@@ -483,10 +483,11 @@ class CLI {
 
   loadExtensions(cli) {
     let extensionPath = appUtils.getExtensionPath()
-    if (!cli.fs.existsSync(extensionPath)) {
+    if (!this.fs.existsSync(extensionPath)) {
       this.fs.mkdirSync(extensionPath)
     }
     let extensionFiles = this.fs.readdirSync(extensionPath)
+
     extensionFiles.forEach((filename) => {
       let extFilename = path.join(extensionPath, filename)
       let module = require(extFilename)(cli)
