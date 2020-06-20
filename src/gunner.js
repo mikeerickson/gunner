@@ -1,12 +1,12 @@
 const path = require('path')
-
-const inspector = require('./inspector.js')
 const system = require('./toolbox/system.js')
+const appUtils = require('./utils/cli-utils')
 
 const HELP_PAD = 30
 
 class CLI {
   constructor(argv = [], projectRootDir = null) {
+    const inspector = require('./inspector.js')
     inspector.startup()
 
     if (argv.length === 0) {
@@ -31,6 +31,7 @@ class CLI {
     this.verbose = this.arguments.verbose || false
     this.debug = this.arguments.debug || this.arguments.d || false
     this.overwrite = this.arguments.overwrite || this.arguments.o || false
+    this.help = this.arguments.help || this.arguments.h || this.arguments.H || false
 
     // // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
@@ -59,7 +60,7 @@ class CLI {
 
     /** Setup Toolbox */
     this.toolbox = {
-      appUtils: require('./utils/cli-utils'),
+      appUtils,
       arguments: this.arguments,
       colors: require('colors'),
       config: require('./toolbox/config'),
@@ -126,6 +127,7 @@ class CLI {
     return this
   }
 
+  // TODO: This needs to be refactored so options will appear regards of being called in index.js method as is rest of help info
   options(options = '') {
     if (options.length > 0) {
       this.optionInfo = options
@@ -177,34 +179,6 @@ class CLI {
     return args
   }
 
-  getExtensionPath() {
-    return path.join(this.projectRoot, 'src', 'extensions')
-  }
-
-  getTemplatePath() {
-    return path.join(this.projectRoot, 'src', 'templates')
-  }
-
-  getCommandPath() {
-    return path.join(process.cwd(), 'src', 'commands')
-  }
-
-  getProjectCommandPath(useShortPath = false) {
-    let commandPath = ''
-    if (this.projectRoot.length > 0) {
-      commandPath = path.join(this.projectRoot, 'src', 'commands')
-    } else {
-      commandPath = path.join(process.env.CWD || process.env.PWD, 'commands')
-    }
-    if (!this.fs.existsSync(commandPath)) {
-      this.fs.mkdirSync(commandPath)
-    }
-    if (useShortPath) {
-      commandPath = this.toolbox.utils.tildify(commandPath)
-    }
-    return commandPath
-  }
-
   isModuleValid(module) {
     return this.toolbox.utils.has(module, 'name') ** this.toolbox.utils.has(module, 'run')
   }
@@ -212,8 +186,8 @@ class CLI {
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      path.join(this.getProjectCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
-      path.join(this.getProjectCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
+      path.join(appUtils.getProjectCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
+      path.join(appUtils.getProjectCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
     ]
     let filename = ''
     let result = files.forEach((file) => {
@@ -297,7 +271,7 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = this.getProjectCommandPath()
+    let commandPath = appUtils.getProjectCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
     let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
@@ -412,7 +386,7 @@ class CLI {
       process.exit(1)
     }
     console.log('')
-    console.log(this.toolbox.colors.cyan(`⚙️  ${module.name}`))
+    console.log(this.toolbox.colors.cyan(`🛠  ${module.name}`))
 
     // show module description, or built description if property does not exist
     let description = this.toolbox.utils.has(module, 'description') ? module.description : `${module.name} command`
@@ -508,7 +482,7 @@ class CLI {
   }
 
   loadExtensions(cli) {
-    let extensionPath = this.getExtensionPath()
+    let extensionPath = appUtils.getExtensionPath()
     if (!cli.fs.existsSync(extensionPath)) {
       this.fs.mkdirSync(extensionPath)
     }
@@ -517,10 +491,6 @@ class CLI {
       let extFilename = path.join(extensionPath, filename)
       let module = require(extFilename)(cli)
     })
-
-    // cli.test = function (msg = 'default') {
-    //   console.log(msg)
-    // }
   }
 }
 

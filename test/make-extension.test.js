@@ -23,7 +23,7 @@ describe('make:extension', (done) => {
   it('should show version when command help supplied', (done) => {
     exec('gunner make:command --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('⚙️  make:command')
+      expect(result).contain('🛠  make:command')
     })
     done()
   })

@@ -1,9 +1,7 @@
-const path = require('path')
 const colors = require('ansi-colors')
 const pkg = require('../package.json')
 const updateNotifier = require('update-notifier')
 const pleaseUpgradeNode = require('please-upgrade-node')
-const { inspect } = require('fs-jetpack')
 
 const inspector = {
   startup: () => {
