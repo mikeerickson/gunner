@@ -19,7 +19,6 @@ module.exports = {
     // create folder
     // create package.json
     // create base index
-    // toolbox.arguments = toolbox.setDefaultFlags(toolbox, this.flags)
     toolbox.print.info(toolbox.arguments)
     toolbox.print.information(`Name: ${toolbox.arguments.name}`)
     toolbox.print.info(`Hello ${toolbox.arguments.name}`, 'INFO')

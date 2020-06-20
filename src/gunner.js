@@ -1,10 +1,6 @@
-const os = require('os')
 const path = require('path')
-const which = require('which')
 
-const config = require('./toolbox/config')
 const inspector = require('./inspector.js')
-const table = require('./toolbox/table.js')
 const system = require('./toolbox/system.js')
 
 const HELP_PAD = 30
@@ -33,8 +29,8 @@ class CLI {
 
     // setup global options
     this.verbose = this.arguments.verbose || false
-    this.overwrite = this.arguments.overwrite || this.arguments.o
     this.debug = this.arguments.debug || this.arguments.d || false
+    this.overwrite = this.arguments.overwrite || this.arguments.o || false
 
     // // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
@@ -46,35 +42,27 @@ class CLI {
       this.arguments.version = this.arguments.v = this.arguments.V = true
     }
 
-    /**
-     * setup cli toolbox
-     * */
-    // this.system = system
-    this.config = config
-    this.path = path
-    this.strings = require('voca')
-    this.colors = require('colors')
-    this.print = require('./toolbox/print')
-    this.utils = require('@codedungeon/utils')
-    this.template = require('./toolbox/template')
-
     // load project extensions
     this.loadExtensions(this)
 
-    // each of the following will be displayed when CLI help is requested
-    // each object can be customized using associated method when initializing CLI
-    // eg .help() .usage() .commands() .options() .examples()
+    /**
+     * Gunner Help Information
+     * each of the following will be displayed when CLI help is requested
+     * eg .help() .usage() .commands() .options() .examples()
+     */
+
     this.helpInfo = ''
     this.usageInfo = ''
     this.commandInfo = ''
     this.optionInfo = ''
     this.exampleInfo = ''
 
+    /** Setup Toolbox */
     this.toolbox = {
       appUtils: require('./utils/cli-utils'),
       arguments: this.arguments,
-      colors: this.colors,
-      config,
+      colors: require('colors'),
+      config: require('./toolbox/config'),
       debug: require('dumper.js'),
       env: {
         appName: this.appName,
@@ -90,17 +78,17 @@ class CLI {
       },
       filesystem: this.fs,
       fs: this.fs,
-      path: this.path,
-      print: this.print,
-      strings: this.strings,
+      path,
+      print: require('./toolbox/print'),
+      strings: require('voca'),
       system,
-      table,
-      template: this.template,
-      utils: this.utils,
+      table: require('./toolbox/table.js'),
+      template: require('./toolbox/template'),
+      utils: require('@codedungeon/utils'),
     }
 
     // show app info
-    this.debug && this.verbose ? table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
+    this.debug && this.verbose ? this.toolbox.table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
   }
 
   src(path = '') {
@@ -149,7 +137,7 @@ class CLI {
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --version, -v, -V             Show Version',
         '  --verbose                     Verbose Output [only used in conjuction with --debug]',
-        this.colors.magenta.italic('                                 (includes table of gunner options)'),
+        this.toolbox.colors.magenta.italic('                                 (includes table of gunner options)'),
       ]
 
       this.optionInfo = options.join('\n')
@@ -190,42 +178,42 @@ class CLI {
   }
 
   getExtensionPath() {
-    return this.path.join(this.projectRoot, 'src', 'extensions')
+    return path.join(this.projectRoot, 'src', 'extensions')
   }
 
   getTemplatePath() {
-    return this.path.join(this.projectRoot, 'src', 'templates')
+    return path.join(this.projectRoot, 'src', 'templates')
   }
 
   getCommandPath() {
-    return this.path.join(process.cwd(), 'src', 'commands')
+    return path.join(process.cwd(), 'src', 'commands')
   }
 
   getProjectCommandPath(useShortPath = false) {
     let commandPath = ''
     if (this.projectRoot.length > 0) {
-      commandPath = this.path.join(this.projectRoot, 'src', 'commands')
+      commandPath = path.join(this.projectRoot, 'src', 'commands')
     } else {
-      commandPath = this.path.join(process.env.CWD || process.env.PWD, 'commands')
+      commandPath = path.join(process.env.CWD || process.env.PWD, 'commands')
     }
     if (!this.fs.existsSync(commandPath)) {
       this.fs.mkdirSync(commandPath)
     }
     if (useShortPath) {
-      commandPath = this.utils.tildify(commandPath)
+      commandPath = this.toolbox.utils.tildify(commandPath)
     }
     return commandPath
   }
 
   isModuleValid(module) {
-    return this.utils.has(module, 'name') ** this.utils.has(module, 'run')
+    return this.toolbox.utils.has(module, 'name') ** this.toolbox.utils.has(module, 'run')
   }
 
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      this.path.join(this.getProjectCommandPath(), this.strings.kebabCase(module) + '.js'),
-      this.path.join(this.getProjectCommandPath(), this.strings.camelCase(module) + '.js'),
+      path.join(this.getProjectCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
+      path.join(this.getProjectCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
     ]
     let filename = ''
     let result = files.forEach((file) => {
@@ -258,13 +246,17 @@ class CLI {
     let defaults = {}
     keys.map((flag) => {
       let alias = flags[flag].aliases[0]
-      let defaultValue = this.utils.dot.get(flags[flag].default)
+      let defaultValue = this.toolbox.utils.dot.get(flags[flag].default)
       if (defaultValue === undefined) {
         defaultValue = null
       }
       defaults = Object.assign(defaults, {
-        [flag]: this.utils.dot.get(cli.arguments[flag] || this.utils.dot.get(cli.arguments[alias] || defaultValue)),
-        [alias]: this.utils.dot.get(cli.arguments[alias] || this.utils.dot.get(cli.arguments[flag] || defaultValue)),
+        [flag]: this.toolbox.utils.dot.get(
+          cli.arguments[flag] || this.toolbox.utils.dot.get(cli.arguments[alias] || defaultValue)
+        ),
+        [alias]: this.toolbox.utils.dot.get(
+          cli.arguments[alias] || this.toolbox.utils.dot.get(cli.arguments[flag] || defaultValue)
+        ),
       })
     })
     return defaults
@@ -308,16 +300,16 @@ class CLI {
     let commandPath = this.getProjectCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
-    let projectHome = this.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
+    let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
 
     if (commandFiles.length === 0) {
-      commands += this.colors.red('  There are no defined commands\n')
-      commands += this.colors.red(`  Please review your ${projectHome} directory\n`)
+      commands += this.toolbox.colors.red('  There are no defined commands\n')
+      commands += this.toolbox.colors.red(`  Please review your ${projectHome} directory\n`)
     }
 
     commandFiles.forEach((filename) => {
-      if (this.path.extname(filename) == '.js') {
-        let module = this.loadModule(this.path.basename(filename, '.js'))
+      if (path.extname(filename) == '.js') {
+        let module = this.loadModule(path.basename(filename, '.js'))
         let disabled = module.disabled || false
         let hidden = module.hidden || false
         if (!disabled && !hidden) {
@@ -339,7 +331,7 @@ class CLI {
 
   showDebugCommand(command) {
     if (this.debug) {
-      let separator = '='.repeat(this.utils.windowSize().width)
+      let separator = '='.repeat(this.toolbox.utils.windowSize().width)
       if (command !== undefined && command !== '') {
         command += ' ' + this.commandName
         console.log('\n')
@@ -349,9 +341,9 @@ class CLI {
           '\n    ' +
           JSON.stringify(this.arguments).replace(/,/gi, ', ').replace(/:/gi, ': ')
 
-        console.log(this.colors.gray(separator))
-        this.print.debug(msg)
-        console.log(this.colors.gray(separator))
+        console.log(this.toolbox.colors.gray(separator))
+        this.toolbox.print.debug(msg)
+        console.log(this.toolbox.colors.gray(separator))
 
         process.exit(0)
       }
@@ -359,16 +351,16 @@ class CLI {
   }
 
   showVersion() {
-    const name = this.strings.titleCase(this.packageName)
-    console.log(`🚧 ${this.colors.cyan(name)} ${this.colors.cyan('v' + this.version)}`)
-    console.log(`   ${this.colors.magenta.italic(this.tagline)}`)
+    const name = this.toolbox.strings.titleCase(this.packageName)
+    console.log(`🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + this.version)}`)
+    console.log(`   ${this.toolbox.colors.magenta.italic(this.tagline)}`)
     console.log()
   }
 
   showHelp() {
     // if we have defined custom help, display it
     if (this.helpInfo.length > 0) {
-      return this.print.log(this.helpInfo)
+      return this.toolbox.print.log(this.helpInfo)
     }
 
     // otherwise build CLI help
@@ -377,28 +369,28 @@ class CLI {
       this.showVersion()
 
       if (this.usageInfo.length > 0) {
-        this.print.warning('Usage:')
+        this.toolbox.print.warning('Usage:')
         console.log(this.formatInfo(this.usageInfo) + '\n')
       }
 
-      this.print.warning('Commands:')
+      this.toolbox.print.warning('Commands:')
       if (this.commandInfo.length > 0) {
-        this.print.log(this.commandInfo + '\n')
+        this.toolbox.print.log(this.commandInfo + '\n')
       } else {
         let commands = this.showCommands()
         if (commands.length > 0) {
-          this.print.log(commands)
+          this.toolbox.print.log(commands)
         }
       }
 
       if (this.optionInfo.length > 1) {
-        this.print.warning('Options:')
-        this.print.log(this.optionInfo + '\n')
+        this.toolbox.print.warning('Options:')
+        this.toolbox.print.log(this.optionInfo + '\n')
       }
 
       if (this.exampleInfo.length > 0) {
-        this.print.warning('Examples:')
-        this.print.log(this.formatInfo(this.exampleInfo) + '\n')
+        this.toolbox.print.warning('Examples:')
+        this.toolbox.print.log(this.formatInfo(this.exampleInfo) + '\n')
       }
     } else {
       this.showCommandHelp(this.command)
@@ -411,23 +403,23 @@ class CLI {
     }
     let module = this.loadModule(command)
 
-    if (!this.utils.has(module, 'name')) {
-      console.log(this.colors.red(`\n🚫  An internal error occurred access ${command}`))
+    if (!this.toolbox.utils.has(module, 'name')) {
+      console.log(this.toolbox.colors.red(`\n🚫  An internal error occurred access ${command}`))
       process.exit(1)
     }
     if (module.disabled) {
-      console.log(this.colors.red(`\n🚫  Invalid Command: ${command}`))
+      console.log(this.toolbox.colors.red(`\n🚫  Invalid Command: ${command}`))
       process.exit(1)
     }
     console.log('')
-    console.log(this.colors.cyan(`⚙️  ${module.name}`))
+    console.log(this.toolbox.colors.cyan(`⚙️  ${module.name}`))
 
     // show module description, or built description if property does not exist
-    let description = this.utils.has(module, 'description') ? module.description : `${module.name} command`
+    let description = this.toolbox.utils.has(module, 'description') ? module.description : `${module.name} command`
     console.log(`   ${description}`)
 
     if (module.hasOwnProperty('usage')) {
-      this.print.warning('\nUsage:')
+      this.toolbox.print.warning('\nUsage:')
       console.log('  ' + module.usage)
     }
 
@@ -436,13 +428,13 @@ class CLI {
       process.exit(0)
     }
     let keys = Object.keys(module.flags)
-    console.log(this.colors.yellow('Options:'))
+    console.log(this.toolbox.colors.yellow('Options:'))
     keys.forEach((flag) => {
       const description = module.flags[flag]['description'] || module.flags[flag]
 
       let defaultValue = ''
       if (module.flags[flag].hasOwnProperty('default')) {
-        defaultValue = this.colors.cyan('[default: ' + module.flags[flag].default + ']')
+        defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
         defaultValue = defaultValue.replace(/,/gi, ', ')
       }
       let aliases = ''
@@ -461,7 +453,7 @@ class CLI {
     if (command.length > 0) {
       let module = this.loadModule(command)
       if (!this.isModuleValid(module)) {
-        this.print.error(`🚫  An error occurred accessing: ${command}`)
+        this.toolbox.print.error(`🚫  An error occurred accessing: ${command}`)
         process.exit(1)
       }
       let disabled = module.disabled || false
@@ -470,7 +462,7 @@ class CLI {
         if (requiredArguments.length > 0) {
           let output = '\n🚫  Missing Required Arguments:\n'
           output += '   - ' + requiredArguments.join(', ')
-          this.print.error(output)
+          this.toolbox.print.error(output)
           return output
         }
 
@@ -481,7 +473,7 @@ class CLI {
         }
       } else {
         let output = `🚫  Invalid Command: ${command}`
-        this.print.error(output)
+        this.toolbox.print.error(output)
         return output
       }
     }
@@ -522,7 +514,7 @@ class CLI {
     }
     let extensionFiles = this.fs.readdirSync(extensionPath)
     extensionFiles.forEach((filename) => {
-      let extFilename = this.path.join(extensionPath, filename)
+      let extFilename = path.join(extensionPath, filename)
       let module = require(extFilename)(cli)
     })
 

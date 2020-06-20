@@ -1,10 +1,10 @@
 const sinon = require('sinon')
 const { expect, assert } = require('chai')
-const { exec } = require('child_process')
 const print = require('../src/toolbox/print')
 
-describe('print tools', (done) => {
+describe('print module', (done) => {
   let printMock
+
   beforeEach(() => {
     printMock = sinon.mock(print)
   })
