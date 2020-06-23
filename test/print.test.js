@@ -1,3 +1,4 @@
+/* eslint-disable no-control-regex */
 const sinon = require('sinon')
 const { expect, assert } = require('chai')
 const print = require('../src/toolbox/print')

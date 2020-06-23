@@ -23,7 +23,7 @@ module.exports = {
     let templateFilename = toolbox.path.join(toolbox.appUtils.getTemplatePath(), 'make-command.mustache')
     let templateData = toolbox.template.process(templateFilename, data)
 
-    if (templateData !== 'TEMPLATE_NOT_FOUND') {
+    if (templateData !== 'TEMPLATE_NOT_FD') {
       let currentCommandPath = toolbox.appUtils.getCommandPath()
       if (!toolbox.filesystem.existsSync(currentCommandPath)) {
         toolbox.filesystem.mkdirSync(currentCommandPath, { recursive: true })

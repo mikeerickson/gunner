@@ -1,5 +1,5 @@
 const path = require('path')
-const fs = require('fs-extra')
+const fs = require('../src/toolbox/filesystem')
 const { expect } = require('chai')
 const { exec } = require('child_process')
 const execSync = require('sync-exec')
@@ -12,7 +12,7 @@ describe('make:command', (done) => {
   beforeEach(async () => {
     testCommandFilename = path.join(utils.getProjectCommandPath(), '_TestCommand_.js')
     if (await fs.existsSync(testCommandFilename)) {
-      await fs.unlinkSync(testCommandFilename)
+      await fs.delete(testCommandFilename)
     }
   })
   it('should return correct command name', (done) => {
@@ -35,7 +35,7 @@ describe('make:command', (done) => {
     let msg = result.stdout.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js created successfully`)
 
-    fs.unlink(testCommandFilename)
+    fs.delete(testCommandFilename)
     done()
   })
 
@@ -50,7 +50,7 @@ describe('make:command', (done) => {
 
   after(async () => {
     if (await fs.existsSync(testCommandFilename)) {
-      await fs.unlinkSync(testCommandFilename)
+      await fs.delete(testCommandFilename)
     }
   })
 })

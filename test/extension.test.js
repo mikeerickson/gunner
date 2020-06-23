@@ -1,7 +1,7 @@
 const sinon = require('sinon')
-const { expect, assert } = require('chai')
 const CLI = require('../src/gunner')
-const system = require('../src/toolbox/system')
+const { expect, assert } = require('chai')
+const { run } = require('../src/toolbox/system')
 
 let gunner
 let pkgInfo
@@ -12,16 +12,27 @@ before(() => {
 })
 
 describe('extensions', (done) => {
+  let extensionMock
+  beforeEach(() => {
+    extensionMock = sinon.mock(gunner)
+  })
+
+  afterEach(() => {
+    extensionMock.verify()
+  })
+
   it('should execute hello extension', (done) => {
+    extensionMock.expects('helloExtension').returns('Hello from Gunner Extension!')
     let result = gunner.helloExtension()
-    expect(result).contains('Hello from Gunner Extension!')
+
     done()
   })
 
   it('execute machine info extension', (done) => {
+    let version = run('defaults read loginwindow SystemVersionStampAsString')
+    extensionMock.expects('machineInfo').returns(version)
     let result = gunner.machineInfo()
-    let version = system.run('defaults read loginwindow SystemVersionStampAsString')
-    expect(result).equal(version)
+
     done()
   })
 })
