@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.11.0-120",
+  "version": "0.11.0-121",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "repository": {
@@ -45,15 +45,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "8.3.5",
-    "@commitlint/config-conventional": "8.3.4",
     "babel-eslint": "10.0.1",
     "chai": "4.2.0",
-    "commitlint": "8.3.5",
     "eslint": "5.15.1",
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
-    "husky": "4.2.5",
     "leasot": "11.0.0",
     "mocha-better-spec-reporter": "3.1.0",
     "nyc": "15.1.0",
@@ -63,6 +59,7 @@
   "dependencies": {
     "@codedungeon/messenger": "0.7.0",
     "@codedungeon/utils": "0.0.12",
+    "chalk": "4.1.0",
     "cli-table3": "0.6.0",
     "colors": "1.4.0",
     "configstore": "5.0.1",
@@ -85,11 +82,5 @@
     "update-notifier": "4.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run pre-commit",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   }
 }
