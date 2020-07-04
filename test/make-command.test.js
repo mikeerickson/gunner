@@ -5,8 +5,6 @@ const { exec } = require('child_process')
 const execSync = require('sync-exec')
 const utils = require('../src/utils/cli-utils.js')
 
-const pkgInfo = require('../package.json')
-
 describe('make:command', (done) => {
   let testCommandFilename = ''
   beforeEach(async () => {
@@ -31,10 +29,11 @@ describe('make:command', (done) => {
 
   it('should create test command', (done) => {
     let testCommandName = '_TestCommand_'
+    let testCommandFilename = path.join(utils.getProjectCommandPath(), `${testCommandName}.js`)
+
     let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
     let msg = result.stdout.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js created successfully`)
-
     fs.delete(testCommandFilename)
     done()
   })

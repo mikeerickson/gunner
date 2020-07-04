@@ -1,6 +1,5 @@
 const path = require('path')
 const { expect } = require('chai')
-const pkgInfo = require('../package.json')
 const utils = require('../src/utils/cli-utils')
 const filesystem = require('../src/toolbox/filesystem')
 

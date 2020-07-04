@@ -5,6 +5,7 @@ let path = require('path')
 
 fs.eol = os.platform === 'win32' ? '\r\n' : '\n'
 fs.separator = os.platform === 'win32' ? '\\' : '/'
+fs.path = path
 
 fs.homedir = () => {
   return os.homedir()

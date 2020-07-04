@@ -57,7 +57,7 @@ class CLI {
 
     /** Setup Toolbox */
     this.toolbox = {
-      appUtils,
+      app: appUtils,
       arguments: this.arguments,
       colors: require('colors'),
       config: require('./toolbox/config'),
@@ -89,7 +89,6 @@ class CLI {
     // load project extensions (will be appended to app namespace)
     this.loadExtensions(this)
 
-    // show app info
     this.debug && this.verbose ? this.toolbox.table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
   }
 
@@ -187,9 +186,10 @@ class CLI {
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      path.join(appUtils.getProjectCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
-      path.join(appUtils.getProjectCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
+      path.join(appUtils.getCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
+      path.join(appUtils.getCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
     ]
+
     let filename = ''
     let result = files.forEach((file) => {
       if (this.fs.existsSync(file)) {
@@ -272,7 +272,7 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = appUtils.getProjectCommandPath()
+    let commandPath = appUtils.getCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
     let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
@@ -287,6 +287,7 @@ class CLI {
         let module = this.loadModule(path.basename(filename, '.js'))
         let disabled = module.disabled || false
         let hidden = module.hidden || false
+
         if (!disabled && !hidden) {
           let name = module.name || ''
           if (module.hasOwnProperty('flags')) {
@@ -349,6 +350,7 @@ class CLI {
       }
 
       this.toolbox.print.warning('Commands:')
+
       if (this.commandInfo.length > 0) {
         this.toolbox.print.log(this.commandInfo + '\n')
       } else {

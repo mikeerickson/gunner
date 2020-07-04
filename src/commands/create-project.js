@@ -19,6 +19,7 @@ module.exports = {
     // create folder
     // create package.json
     // create base index
+    // see gluegun
     toolbox.print.info(toolbox.arguments)
     toolbox.print.information(`Name: ${toolbox.arguments.name}`)
     toolbox.print.info(`Hello ${toolbox.arguments.name}`, 'INFO')

@@ -12,7 +12,6 @@ describe('commands', (done) => {
   it('should show version when command help supplied', (done) => {
     exec('gunner --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
-      const pkgInfo = require('../package.json')
       expect(result).contain('v' + pkgInfo.version)
     })
     done()

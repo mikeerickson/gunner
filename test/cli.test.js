@@ -2,13 +2,12 @@ const os = require('os')
 const path = require('path')
 const { expect } = require('chai')
 const CLI = require('../src/gunner')
+const pkgInfo = require('../package.json')
 
 let gunner
-let pkgInfo
 
 before(() => {
   gunner = new CLI()
-  pkgInfo = require('../package.json')
 })
 
 describe('CLI', (done) => {
@@ -138,6 +137,7 @@ describe('CLI', (done) => {
 
   it('pkgInfo', (done) => {
     let result = gunner.hasOwnProperty('pkgInfo')
+
     expect(result).to.be.true
     expect(gunner.pkgInfo).equals(pkgInfo)
 
@@ -170,9 +170,10 @@ describe('CLI', (done) => {
 
   it('tagline', (done) => {
     let result = gunner.hasOwnProperty('tagline')
-    expect(result).to.be.true
 
+    expect(result).to.be.true
     expect(gunner.tagline).equals(pkgInfo.tagline)
+
     done()
   })
 
@@ -202,9 +203,10 @@ describe('CLI', (done) => {
 
   it('version', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('version')
-    expect(result).to.be.true
 
+    expect(result).to.be.true
     expect(gunner.version).equals(pkgInfo.version)
+
     done()
   })
 })

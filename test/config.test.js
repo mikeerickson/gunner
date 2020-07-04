@@ -1,6 +1,7 @@
 const fs = require('fs')
 const sinon = require('sinon')
 const { expect, assert } = require('chai')
+const pkgInfo = require('../package.json')
 const config = require('../src/toolbox/config')
 
 describe('config module', (done) => {
@@ -37,7 +38,6 @@ describe('config module', (done) => {
   })
 
   it('should return config filename', (done) => {
-    const pkgInfo = require('../package.json')
     let configFilename = config.configFilename()
     expect(configFilename).contains(pkgInfo.packageName + '.json')
     assert(fs.existsSync(configFilename), true)

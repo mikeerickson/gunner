@@ -1,6 +1,7 @@
 /* eslint-disable no-control-regex */
 const sinon = require('sinon')
 const semver = require('semver')
+const colors = require('colors')
 const { expect, assert } = require('chai')
 const print = require('../src/toolbox/print')
 const strings = require('../src/toolbox/strings')
@@ -39,6 +40,12 @@ describe('string module', (done) => {
   it('should produce correct raw value', (done) => {
     let result = print.success('Michael Joseph Erickson')
     expect(result.raw.length).equal(23)
+    done()
+  })
+
+  it('should return raw string', (done) => {
+    let str = strings.raw(colors.green('mike'))
+    expect(str.length).equal(4)
     done()
   })
 })

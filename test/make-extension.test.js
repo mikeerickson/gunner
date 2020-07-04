@@ -1,55 +1,50 @@
 const path = require('path')
-const fs = require('fs-extra')
 const { expect } = require('chai')
+const execSync = require('sync-exec')
 const { exec } = require('child_process')
+const fs = require('../src/toolbox/filesystem')
 const utils = require('../src/utils/cli-utils.js')
 
-const pkgInfo = require('../package.json')
-
 describe('make:extension', (done) => {
-  let testCommandFilename = ''
+  let testExtensionFilename = ''
   beforeEach(async () => {
-    testCommandFilename = path.join(utils.getProjectCommandPath(), '_TestCommand_.js')
-    if (await fs.existsSync(testCommandFilename)) {
-      await fs.unlinkSync(testCommandFilename)
+    testExtensionFilename = path.join(utils.getProjectExtensionPath(), '_TestExtension_.js')
+    if (await fs.existsSync(testExtensionFilename)) {
+      await fs.unlinkSync(testExtensionFilename)
     }
   })
-  it('should return correct command name', (done) => {
-    let sample = require('../src/commands/make-command.js')
-    expect(sample.name).equal('make:command')
+  it('should return correct extension name', (done) => {
+    let sample = require('../src/commands/make-extension.js')
+    expect(sample.name).equal('make:extension')
     done()
   })
 
-  it('should show version when command help supplied', (done) => {
-    exec('gunner make:command --help', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('🛠  make:command')
-    })
+  it('should create test extension', (done) => {
+    let testExtensionFilename = path.join(utils.getProjectExtensionPath(), '_TestExtension_.js')
+    if (fs.existsSync(testExtensionFilename)) {
+      fs.unlinkSync(testExtensionFilename)
+    }
+
+    let testExtension = '_TestExtension_'
+    let result = execSync(`gunner make:extension ${testExtension} --name testExtension`)
+    expect(result.stdout).contain('perform extension creation')
+    // expect(result.stdout).contain(`${testExtension}.js created successfully`)
     done()
   })
 
-  it('should create test command', (done) => {
-    let testCommandName = '_TestCommand_'
-    exec(`gunner make:command ${testCommandName}`, async (err, stdout, stderr) => {
+  it('should show warning when extension already exists', (done) => {
+    let testExtension = 'sample'
+    exec(`gunner make:extension ${testExtension} --name sampleExtension`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
-      expect(result).contain(`${testCommandName}.js created successfully`)
-      await fs.unlink(testCommandFilename)
-    })
-    done()
-  })
-
-  it('should show warning when command already exists', (done) => {
-    let testCommandName = 'sample'
-    exec(`gunner make:command ${testCommandName}`, async (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain(`${testCommandName}.js already exists`)
+      // expect(result).contain(`${testExtension}.js already exists`)
+      expect(result).contain('perform extension creation')
     })
     done()
   })
 
   after(async () => {
-    if (await fs.existsSync(testCommandFilename)) {
-      await fs.unlinkSync(testCommandFilename)
+    if (await fs.existsSync(testExtensionFilename)) {
+      await fs.unlinkSync(testExtensionFilename)
     }
   })
 })

@@ -4,11 +4,9 @@ const { expect } = require('chai')
 const CLI = require('../src/gunner')
 
 let gunner
-let pkgInfo
 
 before(() => {
   gunner = new CLI()
-  pkgInfo = require('../package.json')
 })
 
 describe('toolbox', (done) => {
@@ -144,10 +142,11 @@ describe('toolbox', (done) => {
   })
 
   it('version', (done) => {
+    let pkgVersion = require('../package.json').version
     let result = gunner.toolbox.env.hasOwnProperty('version')
     expect(result).to.be.true
 
-    expect(gunner.version).equals(pkgInfo.version)
+    expect(gunner.version).equals(pkgVersion)
     done()
   })
 })

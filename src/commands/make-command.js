@@ -20,11 +20,11 @@ module.exports = {
     }
 
     console.log('')
-    let templateFilename = toolbox.path.join(toolbox.appUtils.getTemplatePath(), 'make-command.mustache')
+    let templateFilename = toolbox.path.join(toolbox.app.getTemplatePath(), 'make-command.mustache')
     let templateData = toolbox.template.process(templateFilename, data)
 
-    if (templateData !== 'TEMPLATE_NOT_FD') {
-      let currentCommandPath = toolbox.appUtils.getCommandPath()
+    if (templateData !== 'TEMPLATE_NOT_FOUND') {
+      let currentCommandPath = toolbox.app.getCommandPath()
       if (!toolbox.filesystem.existsSync(currentCommandPath)) {
         toolbox.filesystem.mkdirSync(currentCommandPath, { recursive: true })
         toolbox.print.info(toolbox.colors.bold('==> Creating Local `commands` Directory'))

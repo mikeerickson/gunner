@@ -4,11 +4,9 @@ const { expect, assert } = require('chai')
 const { run } = require('../src/toolbox/system')
 
 let gunner
-let pkgInfo
 
 before(() => {
   gunner = new CLI()
-  pkgInfo = require('../package.json')
 })
 
 describe('extensions', (done) => {

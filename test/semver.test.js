@@ -3,11 +3,9 @@ const { expect, assert } = require('chai')
 const CLI = require('../src/gunner')
 
 let gunner
-let pkgInfo
 
 before(() => {
   gunner = new CLI()
-  pkgInfo = require('../package.json')
 })
 describe('semver', (done) => {
   it('should have semver in toolbox', (done) => {
@@ -23,7 +21,7 @@ describe('semver', (done) => {
 
   it('should pass minimum semver version', (done) => {
     let version = gunner.toolbox.env.version
-    let result = gunner.toolbox.semver.gt(version, '0.10.0')
+    let result = gunner.toolbox.semver.gt(version, '0.8.0')
     expect(result).to.be.true
     done()
   })
