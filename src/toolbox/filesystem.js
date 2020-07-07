@@ -15,6 +15,10 @@ fs.chmod = (path = '', mode = '') => {
   return fs.chmodSync(path, mode)
 }
 
+fs.chdir = (path) => {
+  process.chdir(path)
+}
+
 fs.copy = (src = '', dest = '', options = {}) => {
   return fsj.copy(src, dest, options)
 }

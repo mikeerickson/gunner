@@ -4,10 +4,7 @@
   "version": "0.9.0-126",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mikeerickson/gunner"
-  },
+  "repository": "https://github.com/mikeerickson/gunner",
   "contributors": [
     {
       "name": "Mike Erickson",
@@ -82,5 +79,6 @@
     "update-notifier": "4.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
-  }
+  },
+  "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)"
 }
