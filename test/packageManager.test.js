@@ -11,7 +11,7 @@ after((done) => {
   done()
 })
 
-describe.only('package manager module', (done) => {
+describe('package manager module', (done) => {
   it('should check if yarn is installed', (done) => {
     let result = packageManager.hasYarn()
     expect(result).to.not.be.undefined
