@@ -1,9 +1,14 @@
 const path = require('path')
-const { expect } = require('chai')
+const { assert, expect } = require('chai')
 const utils = require('../src/utils/cli-utils')
 const filesystem = require('../src/toolbox/filesystem')
 
 describe('cli-utils', (done) => {
+  it('should return application (gunner) path', (done) => {
+    let appPath = utils.getApplicationPath()
+    assert(true, appPath.includes('gunner'))
+    done()
+  })
   it('should return cli command path', (done) => {
     let cliCommandPath = utils.getCommandPath()
     let commandPath = path.join(path.dirname(__dirname), 'src', 'commands')

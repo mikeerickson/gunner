@@ -5,9 +5,14 @@ const system = require('../src/toolbox/system.js')
 const filesystem = require('../src/toolbox/filesystem.js')
 const packageManager = require('../src/toolbox/packageManager.js')
 const fs = require('../src/toolbox/filesystem.js')
+const utils = require('../src/utils/cli-utils.js')
 
 after((done) => {
-  system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
+  process.chdir(fs.path.join(fs.homedir(), 'tmp'))
+  // make sure we are not in the application directory
+  if (fs.cwd() !== utils.getApplicationPath()) {
+    system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
+  }
   done()
 })
 

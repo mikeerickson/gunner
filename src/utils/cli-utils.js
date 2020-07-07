@@ -3,6 +3,10 @@ const path = require('path')
 class Utils {
   constructor() {}
 
+  getApplicationPath() {
+    return path.join(path.dirname(path.dirname(__dirname)))
+  }
+
   getCommandPath() {
     return path.join(path.dirname(path.dirname(__dirname)), 'src', 'commands')
   }
