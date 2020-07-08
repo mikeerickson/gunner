@@ -1,7 +1,8 @@
 const os = require('os')
+const path = require('path')
+const trash = require('trash')
 const fsj = require('fs-jetpack')
-let fs = require('fs-extra-promise')
-let path = require('path')
+const fs = require('fs-extra-promise')
 
 fs.eol = os.platform === 'win32' ? '\r\n' : '\n'
 fs.separator = os.platform === 'win32' ? '\\' : '/'
@@ -31,6 +32,12 @@ fs.cwd = (opts = '') => {
 fs.delete = (filename = '') => {
   if (fs.existsSync(filename)) {
     fs.unlinkSync(filename)
+  }
+}
+
+fs.trash = (filename = '') => {
+  if (fs.existsSync(filename)) {
+    trash(filename)
   }
 }
 

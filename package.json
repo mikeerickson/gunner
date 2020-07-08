@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.9.1",
+  "version": "0.9.2-131",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "repository": "https://github.com/mikeerickson/gunner",
@@ -24,10 +24,11 @@
     "bump:patch": "bump package.json --patch --yes",
     "bump:minor": "bump package.json --minor --yes",
     "lint": "./tasks/lint.sh",
-    "test": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
+    "test": "./tasks/test.js $1",
+    "test:all": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
     "test:commit": "mocha ./test/*.test.js --reporter dot",
     "test:coverage": "nyc mocha ./test/*.test.js",
-    "test:watch": "mocha ./test/*.test.js --growl --watch  --reporter progress",
+    "test:watch": "mocha ./test/*.test.js --growl --watch --reporter progress",
     "todo": "node tasks/todo.js",
     "pre-commit": "npm run lint && npm run test:commit"
   },
@@ -76,6 +77,7 @@
     "pluralize": "8.0.0",
     "semver": "7.3.2",
     "sync-exec": "0.6.2",
+    "trash": "6.1.1",
     "update-notifier": "4.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
