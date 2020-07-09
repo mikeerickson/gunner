@@ -6,6 +6,7 @@ const filesystem = require('../src/toolbox/filesystem.js')
 const packageManager = require('../src/toolbox/packageManager.js')
 const fs = require('../src/toolbox/filesystem.js')
 const utils = require('../src/utils/cli-utils.js')
+const mock = require('mock-fs')
 
 after((done) => {
   process.chdir(fs.path.join(fs.homedir(), 'tmp'))
@@ -50,6 +51,7 @@ describe('package manager module', (done) => {
 
   it('should install package to users tmp directory (~/tmp)', (done) => {
     process.chdir(fs.path.join(fs.homedir(), 'tmp'))
+
     let result = packageManager.install('colors')
     assert(true, result)
     done()
@@ -57,6 +59,7 @@ describe('package manager module', (done) => {
 
   it('should remove package from users tmp directory (~/tmp)', (done) => {
     process.chdir(fs.path.join(fs.homedir(), 'tmp'))
+
     let result = packageManager.install('colors')
     let removeResult = packageManager.remove('colors')
     assert(true, removeResult)

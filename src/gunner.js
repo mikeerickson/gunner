@@ -327,8 +327,13 @@ class CLI {
   }
 
   showVersion() {
+    let versionStr = this.pkgInfo.version
+    let buildStr = this.pkgInfo.build
+
     const name = this.toolbox.strings.titleCase(this.packageName)
-    console.log(`🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + this.version)}`)
+    console.log(
+      `🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + versionStr + ' build ' + buildStr)}`
+    )
     console.log(`   ${this.toolbox.colors.magenta.italic(this.tagline)}`)
     console.log()
   }

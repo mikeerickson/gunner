@@ -30,7 +30,7 @@ describe('filesystem patching', (done) => {
     done()
   })
 
-  it.skip('should validate .trash method', (done) => {
+  it('should validate .trash method', (done) => {
     let result = fs.hasOwnProperty('trash')
     expect(result).to.be.true
 
@@ -41,8 +41,6 @@ describe('filesystem patching', (done) => {
     fs.trash(testFilename)
 
     let trashFilename2 = fs.path.join(fs.homedir(), '.Trash', 'dog.txt')
-    console.log(trashFilename2)
-    console.log(result)
     assert(true, fs.existsSync(trashFilename2))
 
     done()
