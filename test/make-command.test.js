@@ -3,12 +3,12 @@ const fs = require('../src/toolbox/filesystem')
 const { expect } = require('chai')
 const { exec } = require('child_process')
 const execSync = require('sync-exec')
-const utils = require('../src/utils/cli-utils.js')
+const app = require('../src/toolbox/app.js')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''
   beforeEach(async () => {
-    testCommandFilename = path.join(utils.getProjectCommandPath(), '_TestCommand_.js')
+    testCommandFilename = path.join(app.getProjectCommandPath(), '_TestCommand_.js')
     if (await fs.existsSync(testCommandFilename)) {
       await fs.delete(testCommandFilename)
     }
@@ -29,7 +29,7 @@ describe('make:command', (done) => {
 
   it('should create test command', (done) => {
     let testCommandName = '_TestCommand_'
-    let testCommandFilename = path.join(utils.getProjectCommandPath(), `${testCommandName}.js`)
+    let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
 
     let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
     let msg = result.stdout.replace(/\n/gi, '')

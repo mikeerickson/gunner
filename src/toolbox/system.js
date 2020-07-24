@@ -1,12 +1,15 @@
 var os = require('os')
 var which = require('which')
 const { execSync } = require('child_process')
-
+const exec = require('sync-exec')
 const system = {
-  run: cmd => {
+  run: (cmd) => {
     return execSync(cmd, { inherit: true }).toString()
   },
-  which: app => {
+  exec: (cmd) => {
+    return exec(cmd)
+  },
+  which: (app) => {
     return which.sync(app)
   },
   node: () => {
@@ -14,7 +17,7 @@ const system = {
   },
   isWindows: () => {
     os.platform === 'win32'
-  }
+  },
 }
 
 module.exports = system

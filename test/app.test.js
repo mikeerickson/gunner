@@ -1,37 +1,38 @@
 const path = require('path')
 const { assert, expect } = require('chai')
-const utils = require('../src/utils/cli-utils')
+const app = require('../src/toolbox/app')
 const filesystem = require('../src/toolbox/filesystem')
 
-describe('cli-utils', (done) => {
+describe('app utils', (done) => {
   it('should return application (gunner) path', (done) => {
-    let appPath = utils.getApplicationPath()
+    let appPath = app.getApplicationPath()
     assert(true, appPath.includes('gunner'))
     done()
   })
+
   it('should return cli command path', (done) => {
-    let cliCommandPath = utils.getCommandPath()
+    let cliCommandPath = app.getCommandPath()
     let commandPath = path.join(path.dirname(__dirname), 'src', 'commands')
     expect(cliCommandPath).equals(commandPath)
     done()
   })
 
   it('should return cli extension path', (done) => {
-    let cliExtensionPath = utils.getExtensionPath()
+    let cliExtensionPath = app.getExtensionPath()
     let extensionPath = path.join(path.dirname(__dirname), 'src', 'extensions')
     expect(cliExtensionPath).equals(extensionPath)
     done()
   })
 
   it('should return cli template path', (done) => {
-    let cliTemplatePath = utils.getTemplatePath()
+    let cliTemplatePath = app.getTemplatePath()
     let templatePath = path.join(path.dirname(__dirname), 'src', 'templates')
     expect(cliTemplatePath).equals(templatePath)
     done()
   })
 
   it('should return cli toolbox path', (done) => {
-    let cliToolboxPath = utils.getToolboxPath()
+    let cliToolboxPath = app.getToolboxPath()
     let toolboxPath = path.join(path.dirname(__dirname), 'src', 'toolbox')
     expect(cliToolboxPath).equals(toolboxPath)
     done()
@@ -41,8 +42,7 @@ describe('cli-utils', (done) => {
     // set custom working path (pwd)
     try {
       process.chdir('/tmp')
-      let projectPath = utils.getProjectPath()
-
+      let projectPath = app.getProjectPath()
       expect(projectPath).equals('/private/tmp')
     } catch (err) {
       console.log('chdir: ' + err)
@@ -51,11 +51,23 @@ describe('cli-utils', (done) => {
   })
 
   it('should return project command path', (done) => {
+    try {
+      process.chdir('/tmp')
+      let projectCommandPath = app.getProjectCommandPath()
+      expect(true).to.be.true
+      expect(projectCommandPath).equals('/private/tmp/src/commands')
+    } catch (err) {
+      console.log('chdir: ' + err)
+    }
+    done()
+  })
+
+  it('should return destination path', (done) => {
     // set custom working path (pwd)
     try {
       process.chdir('/tmp')
-      let projectCommandPath = utils.getProjectCommandPath()
-      expect(projectCommandPath).equals('/private/tmp/src/commands')
+      let destinationPath = app.getDestinationPath()
+      expect(projectCommandPath).equals('/private/tmp')
     } catch (err) {
       console.log('chdir: ' + err)
     }
@@ -66,7 +78,7 @@ describe('cli-utils', (done) => {
     // set custom working path (pwd)
     try {
       process.chdir('/tmp')
-      let projectTemplatePath = utils.getProjectTemplatePath()
+      let projectTemplatePath = app.getProjectTemplatePath()
       expect(projectTemplatePath).equals('/private/tmp/src/templates')
     } catch (err) {
       console.log('chdir: ' + err)
@@ -78,7 +90,7 @@ describe('cli-utils', (done) => {
     // set custom working path (pwd)
     try {
       process.chdir('/tmp')
-      let projectExtensionPath = utils.getProjectExtensionPath()
+      let projectExtensionPath = app.getProjectExtensionPath()
       expect(projectExtensionPath).equals('/private/tmp/src/extensions')
     } catch (err) {
       console.log('chdir: ' + err)

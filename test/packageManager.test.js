@@ -5,13 +5,13 @@ const system = require('../src/toolbox/system.js')
 const filesystem = require('../src/toolbox/filesystem.js')
 const packageManager = require('../src/toolbox/packageManager.js')
 const fs = require('../src/toolbox/filesystem.js')
-const utils = require('../src/utils/cli-utils.js')
+const app = require('../src/toolbox/app.js')
 const mock = require('mock-fs')
 
 after((done) => {
   process.chdir(fs.path.join(fs.homedir(), 'tmp'))
   // make sure we are not in the application directory
-  if (fs.cwd() !== utils.getApplicationPath()) {
+  if (fs.cwd() !== app.getApplicationPath()) {
     system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
   }
   done()
@@ -50,7 +50,10 @@ describe('package manager module', (done) => {
   })
 
   it('should install package to users tmp directory (~/tmp)', (done) => {
+    let destDir = fs.path.join(fs.homedir(), 'tmp')
+
     process.chdir(fs.path.join(fs.homedir(), 'tmp'))
+    system.run('npm init -y')
 
     let result = packageManager.install('colors')
     assert(true, result)

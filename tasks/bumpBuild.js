@@ -17,7 +17,7 @@ fs.writeFileSync('./package.json', JSON.stringify(pkgInfo, null, 2))
 // important, do not add anything other than build number as it supplies
 // return value which is used in the calling script (unless --verbose flag is supplied)
 
-if (process.argv.includes('--verboase')) {
+if (process.argv.includes('--verbose')) {
   let versionStr = `v${pkgInfo.version} build ${currBuild}`
   console.log('\nUpdated To: ' + colors.cyan(versionStr))
 } else {

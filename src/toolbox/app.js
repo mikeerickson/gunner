@@ -1,6 +1,6 @@
 const path = require('path')
 
-class Utils {
+class App {
   constructor() {}
 
   getApplicationPath() {
@@ -27,6 +27,10 @@ class Utils {
     return process.cwd()
   }
 
+  getDestinationPath() {
+    return process.cwd()
+  }
+
   getProjectCommandPath() {
     return path.join(this.getProjectPath(), 'src', 'commands')
   }
@@ -40,4 +44,4 @@ class Utils {
   }
 }
 
-module.exports = new Utils()
+module.exports = new App()

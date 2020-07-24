@@ -1,6 +1,6 @@
 const path = require('path')
 const system = require('./toolbox/system.js')
-const appUtils = require('./utils/cli-utils')
+const app = require('./toolbox/app.js')
 
 const HELP_PAD = 30
 
@@ -24,7 +24,9 @@ class CLI {
     this.packageName = this.pkgInfo.packageName || ''
 
     this.command = this.getCommand(argv)
+
     this.commandName = this.getCommandName(argv) // sub command (see make:command for example)
+
     this.arguments = this.getArguments(argv)
 
     // setup global options
@@ -57,9 +59,10 @@ class CLI {
 
     /** Setup Toolbox */
     this.toolbox = {
-      app: appUtils,
+      app: app,
       arguments: this.arguments,
       colors: require('colors'),
+      commandName: this.commandName,
       config: require('./toolbox/config'),
       debug: require('dumper.js'),
       env: {
@@ -186,8 +189,8 @@ class CLI {
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      path.join(appUtils.getCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
-      path.join(appUtils.getCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
+      path.join(app.getCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
+      path.join(app.getCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
     ]
 
     let filename = ''
@@ -272,7 +275,7 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = appUtils.getCommandPath()
+    let commandPath = app.getCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
     let commands = ''
     let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
@@ -490,7 +493,7 @@ class CLI {
   }
 
   loadExtensions(cli) {
-    let extensionPath = appUtils.getExtensionPath()
+    let extensionPath = app.getExtensionPath()
     if (!this.fs.existsSync(extensionPath)) {
       this.fs.mkdirSync(extensionPath)
     }
