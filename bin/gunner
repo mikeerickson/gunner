@@ -2,5 +2,3 @@
 
 // run the CLI with the current process arguments
 require('../index.js').run(process.argv)
-
-

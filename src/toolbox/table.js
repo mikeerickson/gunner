@@ -6,7 +6,6 @@
 const Table = require('cli-table3')
 const colors = require('ansi-colors')
 const pluralize = require('pluralize')
-const { clearConfigCache } = require('prettier')
 
 const table = {
   render: (header = [], data = []) => {

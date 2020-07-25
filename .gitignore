@@ -9,3 +9,4 @@ NOTES.md
 example/
 .nyc_output/
 .vscode/
+.temp/

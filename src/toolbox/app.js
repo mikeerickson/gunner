@@ -12,6 +12,10 @@ class App {
     return path.join(path.dirname(path.dirname(__dirname)))
   }
 
+  getProjectRoot() {
+    return path.join(path.dirname(path.dirname(__dirname)))
+  }
+
   getCommandPath() {
     return path.join(path.dirname(path.dirname(__dirname)), 'src', 'commands')
   }

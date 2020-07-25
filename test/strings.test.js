@@ -8,8 +8,8 @@ const sinon = require('sinon')
 const semver = require('semver')
 const colors = require('colors')
 const { expect, assert } = require('chai')
-const print = require('../src/toolbox/print')(false)
 const strings = require('../src/toolbox/strings')
+const print = require('../src/toolbox/print')()
 
 describe('string module', (done) => {
   it('should have version 1.4 or greater', (done) => {

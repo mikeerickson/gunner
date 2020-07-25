@@ -5,8 +5,9 @@
 
 const os = require('os')
 const which = require('which')
-const { execSync } = require('child_process')
 const exec = require('sync-exec')
+const { execSync } = require('child_process')
+
 const system = {
   run: (cmd) => {
     return execSync(cmd, { inherit: true }).toString()

@@ -4,8 +4,8 @@
  * -----------------------------------------------------------------------------------------*/
 
 const sinon = require('sinon')
-const { expect, assert } = require('chai')
 const CLI = require('../src/gunner')
+const { expect, assert } = require('chai')
 
 let gunner
 

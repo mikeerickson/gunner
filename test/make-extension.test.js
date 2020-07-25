@@ -7,8 +7,8 @@ const path = require('path')
 const { expect } = require('chai')
 const execSync = require('sync-exec')
 const { exec } = require('child_process')
-const fs = require('../src/toolbox/filesystem')
 const app = require('../src/toolbox/app.js')
+const fs = require('../src/toolbox/filesystem')
 
 describe('make:extension', (done) => {
   let testExtensionFilename = ''

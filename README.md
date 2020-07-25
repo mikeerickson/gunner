@@ -2,7 +2,7 @@
 
 ## Description
 
-Codedungeon Slimlined CLI Framework
+Codedungeon Slim lined CLI Framework
 
 ## Installation
 
@@ -42,7 +42,7 @@ const app = new CLI(process.argv)
 Copyright &copy; 2019-2020 Mike Erickson
 Released under the MIT license
 
-### Credits
+## Credits
 
 Gunner written by Mike Erickson
 

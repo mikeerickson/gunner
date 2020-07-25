@@ -3,9 +3,9 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const homedir = require('os').homedir()
 const Configstore = require('configstore')
 const pkgInfo = require('../../package.json')
-const homedir = require('os').homedir()
 
 const conf = new Configstore(pkgInfo.name)
 const fs = require('fs-extra-promise')

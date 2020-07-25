@@ -8,7 +8,6 @@ class CLI {
   constructor(argv = [], projectRootDir = null) {
     const inspector = require('./inspector.js')
     inspector.startup()
-
     if (argv.length === 0) {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
@@ -101,6 +100,8 @@ class CLI {
     this.loadExtensions(this)
 
     this.debug && this.verbose ? this.toolbox.table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
+
+    return this
   }
 
   src(path = '') {

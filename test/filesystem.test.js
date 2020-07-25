@@ -6,9 +6,9 @@
 const os = require('os')
 const path = require('path')
 const { expect } = require('chai')
+const { assert } = require('console')
 const fs = require('../src/toolbox/filesystem')
 const system = require('../src/toolbox/system')
-const { assert } = require('console')
 
 describe('filesystem patching', (done) => {
   it('should validate .eol property', (done) => {

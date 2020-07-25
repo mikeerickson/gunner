@@ -4,11 +4,11 @@
  * -----------------------------------------------------------------------------------------*/
 
 const path = require('path')
-const fs = require('../src/toolbox/filesystem')
 const { expect } = require('chai')
-const { exec } = require('child_process')
 const execSync = require('sync-exec')
+const { exec } = require('child_process')
 const app = require('../src/toolbox/app.js')
+const fs = require('../src/toolbox/filesystem')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''

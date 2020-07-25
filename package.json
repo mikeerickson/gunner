@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.9.7",
-  "build": "168",
+  "build": "169",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -16,7 +16,7 @@
   ],
   "main": "index.js",
   "bin": {
-    "gunner": "bin/gunner"
+    "gunner": "index.js"
   },
   "engines": {
     "node": ">=8.6"
@@ -27,7 +27,7 @@
     "lint": "./tasks/lint.sh",
     "test": "./tasks/test.js $1",
     "test:all": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
-    "test:spec": "mocha --reporter spec --fgrep",
+    "test:spec": "mocha --reporter spec",
     "test:commit": "mocha ./test/*.test.js --reporter dot  && node ./test/utils/testCleanup.js",
     "test:coverage": "nyc mocha ./test/*.test.js",
     "test:watch": "mocha ./test/*.test.js --growl --watch --reporter progress",

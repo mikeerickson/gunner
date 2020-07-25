@@ -3,15 +3,15 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const mock = require('mock-fs')
 const execSync = require('sync-exec')
 const { exec } = require('child_process')
 const { expect, assert } = require('chai')
+const app = require('../src/toolbox/app.js')
 const system = require('../src/toolbox/system.js')
+const fs = require('../src/toolbox/filesystem.js')
 const filesystem = require('../src/toolbox/filesystem.js')
 const packageManager = require('../src/toolbox/packageManager.js')
-const fs = require('../src/toolbox/filesystem.js')
-const app = require('../src/toolbox/app.js')
-const mock = require('mock-fs')
 
 after((done) => {
   process.chdir(fs.path.join(fs.homedir(), 'tmp'))

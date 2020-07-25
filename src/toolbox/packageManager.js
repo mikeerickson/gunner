@@ -3,11 +3,11 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const system = require('./system.js')
-const filesystem = require('./filesystem.js')
-const fs = require('./filesystem.js')
-const { assert } = require('chai')
 const colors = require('colors')
+const { assert } = require('chai')
+const system = require('./system.js')
+const fs = require('./filesystem.js')
+const filesystem = require('./filesystem.js')
 
 const pkgMgr = {
   hasYarn: async () => {

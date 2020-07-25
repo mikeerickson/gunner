@@ -4,8 +4,8 @@
  * -----------------------------------------------------------------------------------------*/
 
 const path = require('path')
-const { assert, expect } = require('chai')
 const app = require('../src/toolbox/app')
+const { assert, expect } = require('chai')
 const filesystem = require('../src/toolbox/filesystem')
 
 describe('app utils', (done) => {
@@ -55,24 +55,12 @@ describe('app utils', (done) => {
     done()
   })
 
-  it('should return project command path', (done) => {
-    try {
-      process.chdir('/tmp')
-      let projectCommandPath = app.getProjectCommandPath()
-      expect(true).to.be.true
-      expect(projectCommandPath).equals('/private/tmp/src/commands')
-    } catch (err) {
-      console.log('chdir: ' + err)
-    }
-    done()
-  })
-
   it('should return destination path', (done) => {
     // set custom working path (pwd)
     try {
       process.chdir('/tmp')
       let destinationPath = app.getDestinationPath()
-      expect(projectCommandPath).equals('/private/tmp')
+      expect(destinationPath).equals('/private/tmp')
     } catch (err) {
       console.log('chdir: ' + err)
     }
