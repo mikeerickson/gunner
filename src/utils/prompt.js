@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const { prompt, Input } = require('enquirer')
 const colors = require('ansi-colors')
 
@@ -10,11 +15,11 @@ module.exports = {
       styles: { primary: colors.blue },
       initial: true,
       separator: () => '',
-      format: () => ''
+      format: () => '',
     }
 
     prompt(Object.assign(defaultOptions, overrides))
-      .then(answer => response(answer))
+      .then((answer) => response(answer))
       .catch(console.error)
   },
   input: (message = '', overrides = {}, response) => {
@@ -23,7 +28,7 @@ module.exports = {
         {
           message,
           initial: '',
-          styles: { primary: colors.blue }
+          styles: { primary: colors.blue },
         },
         overrides
       )
@@ -31,10 +36,10 @@ module.exports = {
 
     prompt
       .run()
-      .then(answer => {
+      .then((answer) => {
         console.log(answer)
       })
       .catch(console.error)
   },
-  multiple: (questions = []) => {}
+  multiple: (questions = []) => {},
 }

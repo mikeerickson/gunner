@@ -1,8 +1,13 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 module.exports = {
   env: {
     es6: true,
     node: true,
-    jest: false
+    jest: false,
   },
   parser: 'babel-eslint',
   plugins: ['prettier'],
@@ -10,8 +15,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2017,
     ecmaFeatures: {
-      experimentalObjectRestSpread: true
-    }
+      experimentalObjectRestSpread: true,
+    },
   },
   rules: {
     indent: ['error', 2],
@@ -22,8 +27,8 @@ module.exports = {
     'no-console': [
       'error',
       {
-        allow: ['log', 'error', 'dir']
-      }
-    ]
-  }
+        allow: ['log', 'error', 'dir'],
+      },
+    ],
+  },
 }

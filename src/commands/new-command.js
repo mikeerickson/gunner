@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 /*
  - create commands directory
   - create sample command (hello-world.js)
@@ -14,7 +19,6 @@ module.exports = {
   description: 'Generate New toolbox Application',
   usage: 'new name <command> <flags>',
   flags: {
-    // name: { aliases: ['n'], description: 'Command name', required: false },
     description: { aliases: ['d'], description: 'Command description', required: false },
   },
   execute(toolbox) {
@@ -27,12 +31,16 @@ module.exports = {
     }
     // create folder
     toolbox.filesystem.mkdirSync(toolbox.commandName)
+
     // create package.json
     toolbox.filesystem.chdir(toolbox.commandName)
     toolbox.system.run('npm init -y')
+
+    // create core directories
     toolbox.filesystem.mkdirSync('src')
     toolbox.filesystem.mkdirSync('src/commands')
     toolbox.filesystem.mkdirSync('src/extensions')
+
     // see gluegun
     console.log('')
     toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')

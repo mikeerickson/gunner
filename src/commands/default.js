@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 module.exports = {
   name: 'default',
   description: '',
@@ -7,6 +12,6 @@ module.exports = {
   },
   execute(toolbox) {
     let msg = toolbox.arguments.message || 'Hello World'
-    toolbox.print.info(`Default Command: ${msg}`)
+    return toolbox.print.info(`Default Command: ${msg}`)
   },
 }

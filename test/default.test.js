@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const { expect } = require('chai')
 const { exec } = require('child_process')
 const pkgInfo = require('../package.json')
@@ -17,13 +22,6 @@ describe('default', (done) => {
     done()
   })
 
-  it('should execute default command', (done) => {
-    exec('gunner', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contains('Default Command: Hello World')
-    })
-    done()
-  })
   it('should execute sample command help', (done) => {
     exec('gunner default --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')

@@ -1,7 +1,12 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 /* eslint-disable no-control-regex */
 const sinon = require('sinon')
 const { expect, assert } = require('chai')
-const print = require('../src/toolbox/print')
+const print = require('../src/toolbox/print')(false)
 
 describe('print module', (done) => {
   let printMock

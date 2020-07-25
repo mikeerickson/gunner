@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.9.6",
-  "build": "166",
+  "build": "168",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -16,7 +16,7 @@
   ],
   "main": "index.js",
   "bin": {
-    "gunner": "./index.js"
+    "gunner": "bin/gunner"
   },
   "engines": {
     "node": ">=8.6"

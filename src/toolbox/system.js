@@ -1,5 +1,10 @@
-var os = require('os')
-var which = require('which')
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
+const os = require('os')
+const which = require('which')
 const { execSync } = require('child_process')
 const exec = require('sync-exec')
 const system = {

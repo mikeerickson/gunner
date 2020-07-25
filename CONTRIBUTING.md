@@ -1,3 +1,9 @@
+# Contributing
+
+## Overview
+
+We welcome any suggestions or issues you may experiencing using Gunner
+
 ### Commit Subjects
 
 If your patch **changes the API or fixes a bug** please use one of the

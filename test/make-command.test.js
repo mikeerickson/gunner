@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const path = require('path')
 const fs = require('../src/toolbox/filesystem')
 const { expect } = require('chai')
@@ -34,7 +39,7 @@ describe('make:command', (done) => {
     let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
     let msg = result.stdout.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js created successfully`)
-    fs.delete(testCommandFilename)
+    // fs.delete(testCommandFilename)
     done()
   })
 

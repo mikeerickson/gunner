@@ -20,6 +20,7 @@ class CLI {
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
     this.version = this.pkgInfo.version
     this.appName = this.pkgInfo.packageName
+    this.packageName = this.pkgInfo.packageName
     this.tagline = this.pkgInfo.tagline || ''
     this.packageName = this.pkgInfo.packageName || ''
 
@@ -34,6 +35,7 @@ class CLI {
     this.debug = this.arguments.debug || this.arguments.d || false
     this.overwrite = this.arguments.overwrite || this.arguments.o || false
     this.help = this.arguments.help || this.arguments.h || this.arguments.H || false
+    this.quiet = this.arguments.quiet || this.arguments.q || false
 
     // // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
@@ -59,6 +61,12 @@ class CLI {
 
     /** Setup Toolbox */
     this.toolbox = {
+      // toolbox properties (some replication, see `env` for more properties)
+      appName: this.packageName,
+      version: this.version,
+      packageName: this.packageName,
+
+      // toolbox modules
       app: app,
       arguments: this.arguments,
       colors: require('colors'),
@@ -80,7 +88,7 @@ class CLI {
       filesystem: this.fs,
       fs: this.fs,
       path,
-      print: require('./toolbox/print'),
+      print: require('./toolbox/print')(this.quiet),
       semver: require('semver'),
       strings: require('./toolbox/strings'),
       system,
@@ -103,8 +111,7 @@ class CLI {
   }
 
   run(commandInfo = {}) {
-    let result = this.handleCommand(this.argv, commandInfo)
-    process.exit(result)
+    return this.handleCommand(this.argv, commandInfo)
   }
 
   name(name = '') {
@@ -140,6 +147,7 @@ class CLI {
         '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
+        '  --quiet, -q                   Quiet mode (suppress console output)',
         '  --version, -v, -V             Show Version',
         '  --verbose                     Verbose Output [only used in conjuction with --debug]',
         this.toolbox.colors.magenta.italic('                                 (includes table of gunner options)'),

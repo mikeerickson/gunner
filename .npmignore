@@ -1,0 +1,9 @@
+tasks/
+test/
+.vscode/
+.eslintrc.js
+.mocharc.js
+.prettierrc
+CHANGELOG.md
+CONTRIBUTING.md
+package-lock.json

@@ -17,13 +17,6 @@ describe('commands', (done) => {
     done()
   })
 
-  it('should execute default command', (done) => {
-    exec('gunner', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).equal('Default Command: Hello World')
-    })
-    done()
-  })
   it('should execute sample command help', (done) => {
     exec('gunner default --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')

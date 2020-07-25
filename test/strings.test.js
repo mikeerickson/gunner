@@ -1,9 +1,14 @@
 /* eslint-disable no-control-regex */
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const sinon = require('sinon')
 const semver = require('semver')
 const colors = require('colors')
 const { expect, assert } = require('chai')
-const print = require('../src/toolbox/print')
+const print = require('../src/toolbox/print')(false)
 const strings = require('../src/toolbox/strings')
 
 describe('string module', (done) => {
