@@ -3,10 +3,10 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const path = require('path')
 const app = require('../src/toolbox/app')
 const { assert, expect } = require('chai')
 const filesystem = require('../src/toolbox/filesystem')
+const { path } = require('../src/toolbox/filesystem')
 
 describe('app utils', (done) => {
   it('should return application (gunner) path', (done) => {
@@ -88,6 +88,17 @@ describe('app utils', (done) => {
     } catch (err) {
       console.log('chdir: ' + err)
     }
+    done()
+  })
+
+  it('should return shorten filename', (done) => {
+    let testFilename = app.getShortenFilename(__filename)
+    expect(testFilename).equals('./test/app.test.js')
+
+    let commandFilename = path.join(app.getCommandPath(), 'make-command.js')
+    let shortFilename = app.getShortenFilename(commandFilename)
+    expect(shortFilename).equals('./src/commands/make-command.js')
+
     done()
   })
 })

@@ -12,6 +12,10 @@ class App {
     return path.join(path.dirname(path.dirname(__dirname)))
   }
 
+  getShortenFilename(filename) {
+    return filename.replace(this.getProjectRoot(), '.')
+  }
+
   getProjectRoot() {
     return path.join(path.dirname(path.dirname(__dirname)))
   }

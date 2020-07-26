@@ -44,6 +44,10 @@ fs.delete = (filename = '') => {
   }
 }
 
+fs.exists = (path = '') => {
+  return fs.existsSync(path)
+}
+
 fs.trash = (filename = '') => {
   if (fs.existsSync(filename)) {
     trash(filename)
