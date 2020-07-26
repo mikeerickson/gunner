@@ -3,6 +3,7 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const app = require('../toolbox/app')
 const { debug } = require('../toolbox/print')
 const pkgInfo = require('../../package.json')
 
@@ -46,9 +47,10 @@ module.exports = {
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
           let ret = toolbox.filesystem.writeFileSync(commandFilename, templateData)
-          toolbox.print.success(`${toolbox.utils.tildify(commandFilename)} created successfully`, 'SUCCESS')
+          let shortFilename = app.getShortenFilename(commandFilename)
+          toolbox.print.success(`${shortFilename} created successfully`, 'SUCCESS')
         } catch (e) {
-          toolbox.print.error(`Error creating ${toolbox.utils.tildify(commandFilename)}`, 'ERROR')
+          toolbox.print.error(`Error creating ${shortFilename}`, 'ERROR')
         }
       } else {
         toolbox.print.note(`${toolbox.utils.tildify(commandFilename)} already exists`, 'NOTE')

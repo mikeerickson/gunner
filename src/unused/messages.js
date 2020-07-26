@@ -8,6 +8,9 @@ const messages = {
   TEMPLATE_NOT_FOUND: '`\n🚫  Template Not Found <%=name%>',
   FILE_NOT_FOUND: 'Unable to locate file',
   FILE_EXISTS: 'File already exists',
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+  FAIL: 'FAIL',
 }
 
 module.exports = messages

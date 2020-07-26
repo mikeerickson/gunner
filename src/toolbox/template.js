@@ -6,6 +6,7 @@
 const app = require('./app.js')
 const Mustache = require('mustache')
 const filesystem = require('./filesystem.js')
+const { error, success } = require('./print.js')()
 
 const template = {
   generateFile: function (template = '', target = '', data = {}, options = { overwrite: true }) {
@@ -18,10 +19,10 @@ const template = {
         filesystem.delete(targetFilename)
       }
       try {
-        let result = this.writeFile(targetFilename, renderedData, options)
+        this.writeFile(targetFilename, renderedData, options)
         return 0
       } catch (err) {
-        console.log(err.message)
+        error(err.message)
       }
     } else {
       return 'FILE_NOT_FOUND'
