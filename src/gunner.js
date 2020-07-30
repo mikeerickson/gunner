@@ -1,6 +1,11 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const path = require('path')
-const system = require('./toolbox/system.js')
 const app = require('./toolbox/app.js')
+const system = require('./toolbox/system.js')
 
 const HELP_PAD = 30
 
@@ -120,9 +125,6 @@ class CLI {
     return this
   }
 
-  /**
-   * help override methods
-   */
   usage(usage = '') {
     this.usageInfo = usage
     return this
