@@ -5,7 +5,7 @@
 
 const os = require('os')
 const which = require('which')
-const exec = require('sync-exec')
+const { exec } = require('child_process').execSync
 const { execSync } = require('child_process')
 
 const system = {

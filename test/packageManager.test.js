@@ -4,8 +4,7 @@
  * -----------------------------------------------------------------------------------------*/
 
 const mock = require('mock-fs')
-const execSync = require('sync-exec')
-const { exec } = require('child_process')
+const { exec } = require('child_process').execSync
 const { expect, assert } = require('chai')
 const app = require('../src/toolbox/app.js')
 const system = require('../src/toolbox/system.js')

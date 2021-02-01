@@ -5,7 +5,7 @@
 
 const path = require('path')
 const { expect } = require('chai')
-const execSync = require('sync-exec')
+const execSync = require('child_process').execSync
 const { exec } = require('child_process')
 const app = require('../src/toolbox/app.js')
 const fs = require('../src/toolbox/filesystem')
