@@ -5,7 +5,7 @@
 
 const path = require('path')
 const { expect } = require('chai')
-const { exec } = require('child_process').execSync
+const { exec, execSync } = require('child_process')
 const app = require('../src/toolbox/app.js')
 const fs = require('../src/toolbox/filesystem')
 
@@ -31,7 +31,7 @@ describe('make:extension', (done) => {
 
     let testExtension = '_TestExtension_'
     let result = execSync(`gunner make:extension ${testExtension} --name testExtension`)
-    expect(result.stdout).contain('Extension Name:')
+    expect(result.toString()).contain('Extension Name:')
     // expect(result.stdout).contain(`${testExtension}.js created successfully`)
     done()
   })

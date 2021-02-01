@@ -5,8 +5,7 @@
 
 const path = require('path')
 const { expect } = require('chai')
-const execSync = require('child_process').execSync
-const { exec } = require('child_process')
+const { exec, execSync } = require('child_process')
 const app = require('../src/toolbox/app.js')
 const fs = require('../src/toolbox/filesystem')
 
@@ -35,9 +34,10 @@ describe('make:command', (done) => {
   it('should create test command', (done) => {
     let testCommandName = '_TestCommand_'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-
     let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
-    let msg = result.stdout.replace(/\n/gi, '')
+    result = result.toString()
+
+    let msg = result.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js created successfully`)
     // fs.delete(testCommandFilename)
     done()

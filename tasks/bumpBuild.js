@@ -19,7 +19,8 @@ fs.writeFileSync('./package.json', JSON.stringify(pkgInfo, null, 2))
 
 if (process.argv.includes('--verbose')) {
   let versionStr = `v${pkgInfo.version} build ${currBuild}`
-  console.log('\nUpdated To: ' + colors.cyan(versionStr))
+  console.log(colors.green(`${pkgInfo.name} updated to: `) + colors.cyan(versionStr))
+  console.log('\n')
 } else {
   console.log(currBuild)
 }

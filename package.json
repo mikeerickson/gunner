@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.10.3",
-  "build": "180",
+  "build": "195",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -19,7 +19,7 @@
     "gunner": "index.js"
   },
   "engines": {
-    "node": ">=10.0.0 <15.7.0"
+    "node": ">=10.0.0 <=15.7.0"
   },
   "scripts": {
     "bump": "./tasks/bumpBuild.js",
