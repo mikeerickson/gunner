@@ -16,7 +16,7 @@ const process = require('process')
 
 module.exports = {
   name: 'new',
-  description: 'Generate New toolbox Application',
+  description: 'Generate New Gunner CLI',
   usage: 'new name <command> <flags>',
   flags: {
     description: { aliases: ['d'], description: 'Command description', required: false },

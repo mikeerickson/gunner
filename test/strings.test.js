@@ -43,8 +43,9 @@ describe('string module', (done) => {
   })
 
   it('should produce correct raw value', (done) => {
-    let result = print.success('Michael Joseph Erickson')
-    expect(result.raw.length).equal(23)
+    let result = colors.green('Michael Joseph Erickson')
+    expect(result.length).equal(33)
+    expect(strings.raw(result).length).equal(23)
     done()
   })
 

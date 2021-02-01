@@ -4,7 +4,6 @@
  * -----------------------------------------------------------------------------------------*/
 
 const colors = require('colors')
-const { assert } = require('chai')
 const system = require('./system.js')
 const fs = require('./filesystem.js')
 const filesystem = require('./filesystem.js')
@@ -34,8 +33,10 @@ const pkgMgr = {
       console.log(colors.cyan(command + ' ' + installCommand))
     }
     let result = system.run(command + ' ' + installCommand)
-    let success = result.match(/success|added|updated/g).length > 0
-    assert(true, success)
+
+    // actual package manager outline will vary depending on version
+    // updated to support npm 7 output "up to date"
+    return result.match(/success|added|updated|up to date/g).length > 0
   },
   remove: function (removeCommand = '', options = { showCommand: false }) {
     let command = this.hasYarnLock() ? 'yarn remove' : 'npm uninstall'
@@ -43,8 +44,7 @@ const pkgMgr = {
       console.log(colors.cyan(command + ' ' + removeCommand))
     }
     let result = system.run(command + ' ' + removeCommand)
-    let success = result.match(/success|removed/g).length > 0
-    assert(true, success)
+    return result.match(/success|removed/g).length > 0
   },
 }
 
