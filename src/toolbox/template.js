@@ -28,6 +28,24 @@ const template = {
       return 'FILE_NOT_FOUND'
     }
   },
+  mergeFile: function (template = '', target = '', data = {}, options = { overwrite: true }) {
+    let templateFilename = filesystem.path.join(app.getTemplatePath(), template)
+    if (filesystem.exists(templateFilename)) {
+      let templateData = this.readFile(templateFilename, 'utf8')
+      let renderedData = Mustache.render(templateData, data)
+      if (filesystem.exists(target) && options.overwrite) {
+        filesystem.delete(target)
+      }
+      try {
+        this.writeFile(target, renderedData, options)
+        return 0
+      } catch (err) {
+        error(err.message)
+      }
+    } else {
+      return 'FILE_NOT_FOUND'
+    }
+  },
   readFile: function (filename) {
     if (filesystem.exists(filename)) {
       return filesystem.read(filename, 'utf-8')

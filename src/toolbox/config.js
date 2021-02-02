@@ -36,7 +36,7 @@ const config = {
   },
   getConfigData(jsonFormat = false) {
     let data = fs.readFileSync(this.configFilename(), 'utf-8')
-    return jsonFormat ? JSON.parse(data) : data
+    return !jsonFormat ? JSON.parse(data) : data
   },
 }
 

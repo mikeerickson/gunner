@@ -33,14 +33,33 @@ fs.copy = (src = '', dest = '', options = {}) => {
   return fsj.copy(src, dest, options)
 }
 
+fs.pwd = (opts = '') => {
+  // const jetParent = fsj.pwd(opts)
+  return __dirname
+}
+
 fs.cwd = (opts = '') => {
   const jetParent = fsj.cwd(opts)
   return jetParent.cwd()
 }
 
-fs.delete = (filename = '') => {
-  if (fs.existsSync(filename)) {
-    fs.unlinkSync(filename)
+fs.delete = (path = '') => {
+  if (fs.existsSync(path)) {
+    if (fs.lstatSync(path).isDirectory()) {
+      fs.rmdir(path)
+    } else {
+      fs.unlinkSync(path)
+    }
+  }
+}
+
+fs.rmdir = (dir = '') => {
+  if (fs.existsSync(dir)) {
+    try {
+      fs.rmdirSync(dir, { recursive: true })
+    } catch (err) {
+      console.error(`Error while deleting ${dir}.`)
+    }
   }
 }
 
@@ -62,15 +81,13 @@ fs.write = (filename, data, options = { overwrite: false }) => {
   if (fs.existsSync(filename)) {
     if (options.overwrite) {
       fs.unlinkSync(filename)
-    } else {
-      return ERROR
     }
-    return SUCCESS
   }
   let parentPath = path.dirname(filename)
   if (!fs.existsSync(parentPath)) {
     fs.mkdirSync(parentPath)
   }
+
   fs.writeFileSync(filename, data)
 }
 

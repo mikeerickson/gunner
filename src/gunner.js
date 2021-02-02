@@ -41,7 +41,7 @@ class CLI {
     this.help = this.arguments.help || this.arguments.h || this.arguments.H || false
     this.quiet = this.arguments.quiet || this.arguments.q || false
 
-    // // help is activated
+    // help is activated
     if (this.arguments.help || this.arguments.h || this.arguments.H) {
       this.arguments.help = this.arguments.h = this.arguments.H = true
     }
@@ -92,6 +92,7 @@ class CLI {
       filesystem: this.fs,
       fs: this.fs,
       path,
+      packageManager: require('./toolbox/packageManager'),
       print: require('./toolbox/print')(this.quiet),
       semver: require('semver'),
       strings: require('./toolbox/strings'),
