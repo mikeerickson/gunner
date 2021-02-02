@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "build": "196",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
