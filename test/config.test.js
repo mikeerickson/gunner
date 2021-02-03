@@ -50,18 +50,17 @@ describe('config module', (done) => {
   })
 
   it('should return config data as text', (done) => {
-    config.set('appName', 'gunner')
-    let configData = JSON.parse(config.getConfigData())
-    assert(configData.appName, 'gunner')
-    config.delete('appName')
+    let configData = config.getConfigData(true)
+    assert(typeof configData, 'string')
     done()
   })
 
   it('should return config data as json', (done) => {
-    config.set('appName', 'gunner')
-    let configData = config.getConfigData(true)
-    assert(configData.appName, 'gunner')
-    config.delete('appName')
+    config.set('appName2', 'gunner')
+    let configData = config.getConfigData()
+    assert(typeof configData, 'object')
+    assert(configData.hasOwnProperty('appName2'))
+    config.delete('appName2')
     done()
   })
 })
