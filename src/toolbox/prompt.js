@@ -81,6 +81,15 @@ prompts = {
     config['type'] = 'select'
     return select(config)
   },
+  show: async (questions) => {
+    const response = await prompt(questions).catch((err) => {
+      if (err) {
+        console.error(err)
+      }
+      return false
+    })
+    return response
+  },
 }
 
 module.exports = prompts

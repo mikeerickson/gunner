@@ -3,15 +3,6 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-/*
- - create commands directory
-  - create sample command (hello-world.js)
- - initialize package.json
- - create ./index.js
- - create config file (.myapprc.json or myapp.config.js)
-
-*/
-
 const execa = require('execa')
 const colors = require('chalk')
 const process = require('process')
@@ -34,15 +25,27 @@ module.exports = {
     description: { aliases: ['d'], description: 'Command description', required: false },
   },
   async execute(toolbox) {
+    const gitUserLocal = require('git-user-local')
+    const githubUsername = require('github-username')
+
+    // read github info
+    let info = await gitUserLocal()
+    let ghUserName = await githubUsername(info.user.email)
+
+    console.log('')
+
     const buildQuestion = (type, name, message, alternateOptions = {}) => {
       return { type, name, message, ...alternateOptions }
     }
 
-    let fname = toolbox.config.get('fname')
-    let lname = toolbox.config.get('lname')
-    let email = toolbox.config.get('email')
-    let gitUserName = toolbox.config.get('gitUserName')
-    let pkgMgr = toolbox.config.get('pkgMgr')
+    let ghLocal = await gitUserLocal()
+    let [githubFirstName, githubLastName] = ghLocal.user.name.split(' ')
+
+    let fname = toolbox.config.get('fname') || githubFirstName
+    let lname = toolbox.config.get('lname') || githubLastName
+    let email = toolbox.config.get('email') || info.user.email
+    let gitUserName = toolbox.config.get('gitUserName') || ghUserName
+    let pkgMgr = toolbox.config.get('pkgMgr') || 'npm'
 
     let questions = []
     questions.push(buildQuestion('input', 'fname', 'What is your first name?', { initial: fname }))
@@ -57,42 +60,45 @@ module.exports = {
       hint: 'Make sure you dont mix tools',
       initial: pkgMgr,
     }
+
     questions.push(buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions))
 
-    prompt(questions)
-      .then(async (answers) => {
-        // if we have changed any answer, prompt to save changes
-        if (
-          fname !== answers.fname ||
-          lname !== answers.lname ||
-          email !== answers.email ||
-          gitUserName !== answers.gitUserName ||
-          pkgMgr !== answers.pkgMgr
-        ) {
-          console.log('\n')
-          const { Confirm } = require('enquirer')
-          const savePrompt = new Confirm({ name: 'save', message: 'Would you like to save answers for future use?' })
-          if (await savePrompt.run()) {
-            toolbox.print.success('✔ Answers Saved...')
-            Object.keys(answers).forEach((key) => toolbox.config.set(key, answers[key]))
-          }
+    let answers = await toolbox.prompts.show(questions)
+    if (answers === false) {
+      console.log('')
+      toolbox.print.warning('CLI Creation Aborted', 'ABORT')
+      console.log()
+    } else {
+      // if we have changed any answer, prompt to save changes
+      if (
+        fname !== answers.fname ||
+        lname !== answers.lname ||
+        email !== answers.email ||
+        gitUserName !== answers.gitUserName ||
+        pkgMgr !== answers.pkgMgr
+      ) {
+        console.log('\n')
+        const { Confirm } = require('enquirer')
+        const savePrompt = new Confirm({ name: 'save', message: 'Would you like to save answers for future use?' })
+        if (await savePrompt.run()) {
+          toolbox.print.success('✔ Answers Saved...')
+          Object.keys(answers).forEach((key) => toolbox.config.set(key, answers[key]))
         }
+      }
 
-        this.generate(toolbox, answers.fname, answers.lname, answers.email, answers.gitUserName, answers.pkgMgr)
-      })
-      .catch((err) => {
-        console.log('')
+      // create new cli config file
+      let configFilename = toolbox.config.configFilename()
+      let newConfigFilename = configFilename.replace('gunner', toolbox.commandName)
 
-        if (err) {
-          console.error(err)
-          console.log('')
-          toolbox.print.error('CLI Creation Aborted', 'ERROR')
-          console.log()
-        } else {
-          toolbox.print.warn('CLI creation cancelled', 'CANCELLED')
-          console.log('')
-        }
-      })
+      // if we dont already have a local config file, create
+      if (!toolbox.filesystem.exists(configFilename)) {
+        toolbox.filesystem.write(configFilename, JSON.stringify(answers))
+      }
+
+      toolbox.filesystem.write(newConfigFilename, JSON.stringify(answers))
+
+      this.generate(toolbox, answers.fname, answers.lname, answers.email, answers.gitUserName, answers.pkgMgr)
+    }
   },
 
   generate(toolbox, fname = '', lname = '', email = '', git = '', pkgMgr = 'npm') {
@@ -135,7 +141,12 @@ module.exports = {
       toolbox.filesystem.copy(src, join(dest, 'src'))
       toolbox.filesystem.delete(join(dest, 'src', 'commands', 'new-command.js'))
       toolbox.filesystem.delete(join(dest, 'src', 'templates', 'package.json.mustache'))
+      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'LICENSE.mustache'))
+      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'README.md.mustache'))
+      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'app.test.mustache'))
       toolbox.filesystem.delete(join(dest, 'src', 'toolbox', '_deprecated_'))
+      toolbox.filesystem.delete(join(dest, 'src', 'unused'))
+      toolbox.filesystem.delete(join(dest, 'src', 'utils'))
 
       toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'index.js'), join(dest, 'index.js'))
       spinner.text = toolbox.colors.green('Source Files Created...')
@@ -151,12 +162,28 @@ module.exports = {
 
       let github = git.length > 0 ? `(https://github.com/${git})` : ''
       let repo = `https://github.com/${git}/${toolbox.commandName}`
-      let result = toolbox.template.mergeFile(
+      toolbox.template.mergeFile(
         'package.json.mustache',
         pkgFilename,
         { name: toolbox.commandName, fname, lname, email, gituser: git, github, repo },
         { overwrite: true }
       )
+
+      toolbox.template.mergeFile('LICENSE.mustache', join(dest, 'LICENSE'), {
+        fname,
+        lname,
+        year: new Date().getFullYear(),
+      })
+
+      toolbox.template.mergeFile('README.md.mustache', join(dest, 'README.md'), {
+        name: toolbox.commandName,
+        fname,
+        lname,
+        gitUserName: git,
+        year: new Date().getFullYear(),
+        email,
+      })
+
       spinner.indent = 0
       spinner.text = toolbox.colors.green('Project Files Created...')
       spinner.succeed()

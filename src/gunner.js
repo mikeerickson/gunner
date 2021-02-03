@@ -3,9 +3,11 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const { dd } = require('dumper.js')
 const path = require('path')
 const app = require('./toolbox/app.js')
 const system = require('./toolbox/system.js')
+const print = require('./toolbox/print')(this.quiet)
 
 const HELP_PAD = 30
 
@@ -17,6 +19,9 @@ class CLI {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
     }
+
+    // load CLI globals
+    require('./toolbox/globals').init()
 
     this.argv = argv
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
@@ -93,6 +98,7 @@ class CLI {
       fs: this.fs,
       path,
       packageManager: require('./toolbox/packageManager'),
+      prompts: require('./toolbox/prompt'),
       print: require('./toolbox/print')(this.quiet),
       semver: require('semver'),
       strings: require('./toolbox/strings'),
@@ -154,7 +160,9 @@ class CLI {
         '  --quiet, -q                   Quiet mode (suppress console output)',
         '  --version, -v, -V             Show Version',
         '  --verbose                     Verbose Output [only used in conjuction with --debug]',
-        this.toolbox.colors.magenta.italic('                                 (includes table of gunner options)'),
+        this.toolbox.colors.magenta.italic(
+          `                                 (includes table of ${this.packageName} options)`
+        ),
       ]
 
       this.optionInfo = options.join('\n')
@@ -487,6 +495,10 @@ class CLI {
     if (command === '<command>') {
       this.command = ''
       command = ''
+    }
+
+    if (!command.includes(':command')) {
+      command += ':command'
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {

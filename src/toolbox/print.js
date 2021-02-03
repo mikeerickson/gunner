@@ -46,6 +46,14 @@ module.exports = (quiet = false) => {
     debug: (msg = '', label = '') => {
       return quiet ? msg : messenger.debug(msg, label)
     },
+    dd: (data) => {
+      console.log('')
+      messenger.dd(data)
+    },
+    dump: (data) => {
+      console.log('')
+      messenger.dump(data)
+    },
   }
   return print
 }
