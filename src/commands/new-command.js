@@ -139,6 +139,12 @@ module.exports = {
       spinner.start()
 
       toolbox.filesystem.copy(src, join(dest, 'src'))
+      toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'bin'), join(dest, 'bin'))
+      toolbox.filesystem.copy(
+        join(toolbox.env.projectRoot, 'tasks', 'bumpBuild.js'),
+        join(dest, 'tasks', 'bumpBuild.js')
+      )
+
       toolbox.filesystem.delete(join(dest, 'src', 'commands', 'new-command.js'))
       toolbox.filesystem.delete(join(dest, 'src', 'templates', 'package.json.mustache'))
       toolbox.filesystem.delete(join(dest, 'src', 'templates', 'LICENSE.mustache'))

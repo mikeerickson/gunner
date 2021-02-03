@@ -1,4 +1,4 @@
-const colors = require('colors')
+const colors = require('chalk')
 
 let msg = process.argv[2] !== undefined ? process.argv[2] : 'No errors found'
 

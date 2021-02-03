@@ -6,7 +6,7 @@
 
 const sinon = require('sinon')
 const semver = require('semver')
-const colors = require('colors')
+const colors = require('chalk')
 const { expect, assert } = require('chai')
 const strings = require('../src/toolbox/strings')
 const print = require('../src/toolbox/print')()

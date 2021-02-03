@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------------------------
- * Copyright (c) Mike Erickson / Codedungeon.  All rights reserved.
+ * Copyright (c) 2021 Mike Erickson / Codedungeon.  All rights reserved.
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
@@ -13,8 +13,8 @@ const HELP_PAD = 30
 
 class CLI {
   constructor(argv = [], projectRootDir = null) {
-    const inspector = require('./inspector.js')
-    inspector.startup()
+    require('./inspector.js').startup()
+
     if (argv.length === 0) {
       argv.push(system.which('node'))
       argv.push(system.which('gunner'))
@@ -78,7 +78,7 @@ class CLI {
       // toolbox modules
       app: app,
       arguments: this.arguments,
-      colors: require('colors'),
+      colors: require('chalk'),
       commandName: this.commandName,
       config: require('./toolbox/config'),
       debug: require('dumper.js'),
@@ -406,6 +406,7 @@ class CLI {
     if (this.commandInfo.length > 0) {
       return this.commandInfo
     }
+
     let module = this.loadModule(command)
 
     if (!this.toolbox.utils.has(module, 'name')) {
@@ -497,8 +498,9 @@ class CLI {
       command = ''
     }
 
-    if (!command.includes(':command')) {
+    if (command === 'new') {
       command += ':command'
+      this.command = command
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {

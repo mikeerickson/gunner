@@ -5,7 +5,7 @@
 // NOTE: ./node_modules/.bin/leasot
 
 const { spawnSync } = require('child_process')
-const colors = require('colors')
+const colors = require('chalk')
 
 // get all flags
 const output = process.argv.indexOf('-o') > 0 || process.argv.indexOf('--output') > 0

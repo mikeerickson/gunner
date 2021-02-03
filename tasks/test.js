@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const colors = require('colors')
+const colors = require('chalk')
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

@@ -2,9 +2,9 @@
 	"name": "{{name}}",
 	"packageName": "{{name}}",
 	"version": "0.0.1",
-	"build": "",
+	"build": "1",
 	"description": "{{name}} CLI",
-	"tagline": "Crafted by {{fname}} {{lname}}...",
+	"tagline": "Crafted with love by {{fname}} {{lname}}...",
 	"author": "{{fname}} {{lname}} <{{email}}> {{{github}}}",
 	"repository": "{{{repo}}}",
 	"contributors": [
@@ -21,7 +21,9 @@
 	"engines": {
 		"node": ">=10.0.0 <=15.7.0"
 	},
-	"scripts": {},
+	"scripts": {
+		"bump": "node ./tasks/bumpBuild.js"
+	},
 	"keywords": [
 		"cli",
 		"{{gituser}}",

@@ -1,4 +1,4 @@
-const colors = require('colors')
+const colors = require('chalk')
 
 class Environment {
   constructor(msg = 'World') {

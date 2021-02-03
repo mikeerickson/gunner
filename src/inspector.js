@@ -9,7 +9,8 @@ const inspector = {
     pleaseUpgradeNode(pkg, {
       exitCode: 0,
       message: (requiredVersion) => {
-        return colors.yellow('\n 🚧 Gunner requires Node version ' + requiredVersion + ' or greater.')
+        requiredVersion = '>=' + requiredVersion
+        return colors.yellow('\n 🚧 Gunner requires Node version ' + requiredVersion + '.\n')
       },
     })
 

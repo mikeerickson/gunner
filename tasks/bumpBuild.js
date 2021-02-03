@@ -2,7 +2,7 @@
 /* global require */
 
 const fs = require('fs')
-const colors = require('colors')
+const colors = require('chalk')
 
 const pkgInfo = require('../package.json')
 

@@ -3,7 +3,7 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const colors = require('colors')
+const colors = require('chalk')
 const system = require('./system.js')
 const fs = require('./filesystem.js')
 const filesystem = require('./filesystem.js')
