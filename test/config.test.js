@@ -5,7 +5,7 @@
 
 const fs = require('fs')
 const sinon = require('sinon')
-const { expect, assert } = require('chai')
+const { expect } = require('chai')
 const pkgInfo = require('../package.json')
 const config = require('../src/toolbox/config')
 
@@ -14,14 +14,14 @@ describe('config module', (done) => {
     config.set('testKey', 'testValue')
     let value = config.get('testKey')
     config.delete('testKey')
-    assert(value, 'testValue')
+    expect(value).to.equal('testValue')
     done()
   })
 
   it('should get value', (done) => {
     config.set('testKey', 'testValue')
     let value = config.get('testKey')
-    assert(value, 'testValue')
+    expect(value).to.equal('testValue')
     config.delete('testKey')
     done()
   })
@@ -45,21 +45,21 @@ describe('config module', (done) => {
   it('should return config filename', (done) => {
     let configFilename = config.configFilename()
     expect(configFilename).contains(pkgInfo.packageName + '.json')
-    assert(fs.existsSync(configFilename), true)
+    expect(fs.existsSync(configFilename)).to.be.true
     done()
   })
 
   it('should return config data as text', (done) => {
     let configData = config.getConfigData(true)
-    assert(typeof configData, 'string')
+    expect(typeof configData).to.equal('string')
     done()
   })
 
   it('should return config data as json', (done) => {
     config.set('appName2', 'gunner')
     let configData = config.getConfigData()
-    assert(typeof configData, 'object')
-    assert(configData.hasOwnProperty('appName2'))
+    expect(typeof configData).to.equal('object')
+    expect(configData.hasOwnProperty('appName2')).to.be.true
     config.delete('appName2')
     done()
   })

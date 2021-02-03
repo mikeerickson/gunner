@@ -5,7 +5,7 @@
 
 const sinon = require('sinon')
 const CLI = require('../src/gunner')
-const { expect, assert } = require('chai')
+const { expect } = require('chai')
 
 let gunner
 

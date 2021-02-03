@@ -60,7 +60,7 @@ describe('package manager module', (done) => {
     system.run('npm init -y')
 
     let result = packageManager.install('colors')
-    assert(true, result)
+    expect(result).to.be.true
     done()
   })
 
@@ -69,7 +69,7 @@ describe('package manager module', (done) => {
 
     let result = packageManager.install('colors')
     let removeResult = packageManager.remove('colors')
-    assert(true, removeResult)
+    expect(removeResult).to.be.true
     done()
   })
 })

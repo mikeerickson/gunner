@@ -7,7 +7,7 @@
 const sinon = require('sinon')
 const semver = require('semver')
 const colors = require('chalk')
-const { expect, assert } = require('chai')
+const { expect } = require('chai')
 const strings = require('../src/toolbox/strings')
 const print = require('../src/toolbox/print')()
 
@@ -19,26 +19,27 @@ describe('string module', (done) => {
   })
 
   it('should have voca instance', (done) => {
-    let result = strings.sprintf('%s %s %s', 'Michael', 'Jospeh', 'Erickson')
-    assert(result, 'Michael Joseph Erickson')
+    let result = strings.sprintf('%s %s %s', 'Michael', 'Joseph', 'Erickson')
+
+    expect(result).to.equal('Michael Joseph Erickson')
     done()
   })
 
   it('should produce titleCase', (done) => {
     let result = strings.titleCase('mike erickson')
-    assert(result, 'Mike Erickson')
+    expect(result).to.equal('Mike Erickson')
     done()
   })
 
   it('should produce kebab-case', (done) => {
     let result = strings.kebabCase('mike erickson')
-    assert(result, 'mike-erickson')
+    expect(result).to.equal('mike-erickson')
     done()
   })
 
   it('should produce slug', (done) => {
     let result = strings.slugify('gunner is terrific')
-    assert(result, 'gunner-is-terrific')
+    expect(result).to.equal('gunner-is-terrific')
     done()
   })
 

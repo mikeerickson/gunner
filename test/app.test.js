@@ -4,14 +4,14 @@
  * -----------------------------------------------------------------------------------------*/
 
 const app = require('../src/toolbox/app')
-const { assert, expect } = require('chai')
+const { expect } = require('chai')
 const filesystem = require('../src/toolbox/filesystem')
 const { path } = require('../src/toolbox/filesystem')
 
 describe('app utils', (done) => {
   it('should return application (gunner) path', (done) => {
     let appPath = app.getApplicationPath()
-    assert(true, appPath.includes('gunner'))
+    expect(appPath.includes('gunner')).to.be.true
     done()
   })
 

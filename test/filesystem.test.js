@@ -6,7 +6,6 @@
 const os = require('os')
 const path = require('path')
 const { expect } = require('chai')
-const { assert } = require('console')
 const fs = require('../src/toolbox/filesystem')
 const system = require('../src/toolbox/system')
 
@@ -46,8 +45,7 @@ describe('filesystem patching', (done) => {
     fs.trash(testFilename)
 
     let trashFilename2 = fs.path.join(fs.homedir(), '.Trash', 'dog.txt')
-    assert(true, fs.existsSync(trashFilename2))
-
+    expect(fs.existsSync(trashFilename2)).to.be.false
     done()
   })
 
