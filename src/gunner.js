@@ -73,7 +73,7 @@ class CLI {
     this.toolbox = {
       // toolbox properties (some replication, see `env` for more properties)
       appName: this.packageName,
-      version: this.versionStr,
+      version: this.versionInfo,
       packageName: this.packageName,
 
       // toolbox modules
@@ -94,7 +94,7 @@ class CLI {
         packageName: this.packageName,
         projectRoot: this.projectRoot,
         verbose: this.verbose,
-        version: this.versionStr,
+        version: this.versionInfo,
       },
       filesystem: this.fs,
       fs: this.fs,

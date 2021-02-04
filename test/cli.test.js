@@ -208,9 +208,8 @@ describe('CLI', (done) => {
 
   it('version', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('version')
-
     expect(result).to.be.true
-    expect(gunner.version).equals(pkgInfo.version)
+    expect(gunner.versionInfo).equals(pkgInfo.version)
 
     done()
   })

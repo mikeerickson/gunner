@@ -150,8 +150,7 @@ describe('toolbox', (done) => {
     let pkgVersion = require('../package.json').version
     let result = gunner.toolbox.env.hasOwnProperty('version')
     expect(result).to.be.true
-
-    expect(gunner.version).equals(pkgVersion)
+    expect(gunner.toolbox.env.version).equals(pkgVersion)
     done()
   })
 })
