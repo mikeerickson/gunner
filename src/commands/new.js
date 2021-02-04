@@ -10,6 +10,7 @@ const { execSync } = require('child_process')
 const { prompt } = require('enquirer')
 
 const Ora = require('ora')
+const { DefaultDeserializer } = require('v8')
 
 const spinner = new Ora({
   discardStdin: false,
@@ -34,6 +35,12 @@ module.exports = {
     const gitUserLocal = require('git-user-local')
     const githubUsername = require('github-username')
 
+    // if (toolbox.commandName.length === 0) {
+    //   console.log('')
+    //   toolbox.print.error('You must supply project name `gunner new <name>`', 'ERROR')
+    //   console.log('')
+    //   process.exit(0)
+    // }
     // read github info
     let info = await gitUserLocal()
     let ghUserName = await githubUsername(info.user.email)
@@ -54,6 +61,23 @@ module.exports = {
     let pkgMgr = toolbox.config.get('pkgMgr') || 'npm'
 
     let questions = []
+    if (toolbox.commandName.length === 0) {
+      questions.push(
+        buildQuestion('input', 'name', 'Please supply project name?', {
+          validate: (value, state, item, index) => {
+            if (value.length > 0) {
+              let dest = toolbox.path.join(toolbox.app.getProjectPath(), value)
+              if (toolbox.filesystem.exists(dest)) {
+                return toolbox.colors.red(toolbox.utils.tildify(dest) + ' already exists')
+              }
+            } else {
+              return toolbox.colors.red('project name must be at least one character')
+            }
+            return true
+          },
+        })
+      )
+    }
     questions.push(buildQuestion('input', 'fname', 'What is your first name?', { initial: fname }))
     questions.push(buildQuestion('input', 'lname', 'What is your last name?', { initial: lname }))
     questions.push(buildQuestion('input', 'email', 'What is your email?', { initial: email }))
@@ -70,6 +94,7 @@ module.exports = {
     questions.push(buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions))
 
     let answers = await toolbox.prompts.show(questions)
+
     if (answers === false) {
       console.log('')
       toolbox.print.warning('CLI Creation Aborted', 'ABORT')
@@ -88,7 +113,11 @@ module.exports = {
         const savePrompt = new Confirm({ name: 'save', message: 'Would you like to save answers for future use?' })
         if (await savePrompt.run()) {
           toolbox.print.success('✔ Answers Saved...')
-          Object.keys(answers).forEach((key) => toolbox.config.set(key, answers[key]))
+          Object.keys(answers).forEach((key) => {
+            if (key !== 'name') {
+              toolbox.config.set(key, answers[key])
+            }
+          })
         }
       }
 
@@ -103,6 +132,9 @@ module.exports = {
 
       toolbox.filesystem.write(newConfigFilename, JSON.stringify(answers))
 
+      if (toolbox.commandName.length === 0) {
+        toolbox.commandName = answers.name
+      }
       this.generate(toolbox, answers.fname, answers.lname, answers.email, answers.gitUserName, answers.pkgMgr)
     }
   },
@@ -216,7 +248,7 @@ module.exports = {
           setTimeout(() => {
             console.log('')
             toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')
-            toolbox.print.notice('\nNext:\n')
+            toolbox.print.notice('\nNext Steps:\n')
             toolbox.print.notice(`  > cd ${toolbox.commandName}`)
             toolbox.print.notice(`  > ${pkgMgr} link ${toolbox.commandName}`)
             toolbox.print.notice(`  > ${toolbox.commandName} --help`)
