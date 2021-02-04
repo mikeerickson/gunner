@@ -8,6 +8,10 @@ const path = require('path')
 class App {
   constructor() {}
 
+  getAppPath() {
+    return path.join(path.dirname(path.dirname(__dirname)))
+  }
+
   getApplicationPath() {
     return path.join(path.dirname(path.dirname(__dirname)))
   }

@@ -6,11 +6,12 @@
 const app = require('../toolbox/app')
 const { debug } = require('../toolbox/print')
 const pkgInfo = require('../../package.json')
+const colors = require('chalk')
 
 module.exports = {
   name: 'make:command',
   description: `Create a new ${pkgInfo.packageName} command`,
-  usage: 'make:command <CommandName> [flags]',
+  usage: `make:command ${colors.blue('[CommandName]')} ${colors.magenta('<flags>')}`,
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: false },
     description: { aliases: ['d'], description: 'Command description', required: false },
@@ -44,19 +45,21 @@ module.exports = {
       if (toolbox.arguments.overwrite) {
         toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.delete(commandFilename) : null
       }
+      let shortFilename = app.getShortenFilename(commandFilename)
+
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
           let ret = toolbox.filesystem.writeFileSync(commandFilename, templateData)
-          let shortFilename = app.getShortenFilename(commandFilename)
           toolbox.print.success(`${shortFilename} created successfully`, 'SUCCESS')
         } catch (e) {
           toolbox.print.error(`Error creating ${shortFilename}`, 'ERROR')
         }
       } else {
-        toolbox.print.note(`${toolbox.utils.tildify(commandFilename)} already exists`, 'NOTE')
+        toolbox.print.error(`${shortFilename} already exists`, 'ERROR')
       }
     } else {
       toolbox.print.error(`${toolbox.utils.tildify(templateFilename)} template not found`, 'ERROR')
     }
+    console.log('')
   },
 }

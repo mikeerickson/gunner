@@ -1,0 +1,5 @@
+module.exports = (cli) => {
+  cli.{{funcName}} = ({ toolbox } = cli) => {
+    return toolbox.system.run('defaults read loginwindow SystemVersionStampAsString')
+  }
+}

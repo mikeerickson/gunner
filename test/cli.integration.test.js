@@ -33,7 +33,7 @@ describe('cli: integration', (done) => {
 
   it('should return cli version in help', (done) => {
     const output = gunner2('--help')
-    expect(output).contains(pkgInfo.version)
+    expect(output).to.contain(pkgInfo.version)
 
     done()
   })
@@ -47,8 +47,8 @@ describe('cli: integration', (done) => {
   })
 
   it('should run default command', (done) => {
-    let result = gunner.run({ name: 'default' })
-    expect(result).contain('Default Command: Hello World')
+    const output = gunner2('')
+    expect(output).contain('Default Command: Hello World')
 
     done()
   })

@@ -1,15 +1,15 @@
-const print = require('./print')
+const { dd, dump } = require('dumper.js')
 
 const globals = {
   init: () => {
     global.dd = (data) => {
       console.log('')
-      print.dd(data)
+      dd(data)
     }
 
     global.dump = (data) => {
       console.log('')
-      print.dump(data)
+      dump(data)
     }
   },
 }

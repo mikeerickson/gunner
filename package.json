@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.10.8",
-  "build": "197",
+  "build": "198",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -61,6 +61,7 @@
   "dependencies": {
     "@codedungeon/messenger": "0.9.1",
     "@codedungeon/utils": "0.0.12",
+    "apisauce": "2.0.1",
     "chalk": "4.1.0",
     "cli-table3": "0.6.0",
     "configstore": "5.0.1",

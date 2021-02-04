@@ -76,6 +76,7 @@ class CLI {
       packageName: this.packageName,
 
       // toolbox modules
+      api: require('apisauce'),
       app: app,
       arguments: this.arguments,
       colors: require('chalk'),
@@ -434,23 +435,26 @@ class CLI {
       process.exit(0)
     }
     let keys = Object.keys(module.flags)
-    console.log(this.toolbox.colors.yellow('Options:'))
-    keys.forEach((flag) => {
-      const description = module.flags[flag]['description'] || module.flags[flag]
+    if (keys.length > 0) {
+      console.log(this.toolbox.colors.yellow('Options:'))
+      keys.forEach((flag) => {
+        const description = module.flags[flag]['description'] || module.flags[flag]
 
-      let defaultValue = ''
-      if (module.flags[flag].hasOwnProperty('default')) {
-        defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
-        defaultValue = defaultValue.replace(/,/gi, ', ')
-      }
-      let aliases = ''
-      if (module.flags[flag].hasOwnProperty('aliases')) {
-        aliases = ', ' + '-' + module.flags[flag].aliases
-      }
+        let defaultValue = ''
+        if (module.flags[flag].hasOwnProperty('default')) {
+          defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
+          defaultValue = defaultValue.replace(/,/gi, ', ')
+        }
+        let aliases = ''
+        if (module.flags[flag].hasOwnProperty('aliases')) {
+          aliases = ', ' + '-' + module.flags[flag].aliases
+        }
 
-      let flags = '  --' + flag + aliases
-      console.log(flags.padEnd(HELP_PAD + 1), description, defaultValue)
-    })
+        let flags = '  --' + flag + aliases
+        console.log(flags.padEnd(HELP_PAD + 1), description, defaultValue)
+      })
+      console.log('')
+    }
 
     return `${module.name} help displayed`
   }
@@ -498,11 +502,6 @@ class CLI {
       command = ''
     }
 
-    if (command === 'new') {
-      command += ':command'
-      this.command = command
-    }
-
     if (this.argumentHasOption(args, ['V', 'version'])) {
       console.log()
       this.showVersion()
@@ -515,6 +514,12 @@ class CLI {
       return this.showCommandHelp(this.command)
     }
 
+    // if no command or --help supplied, use default command if it exists
+    if (command.length === 0 && !this.help) {
+      command = this.fs.exists(path.resolve(app.getCommandPath(), 'default.js')) ? 'default' : ''
+    }
+
+    // if did not supply command show help
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
   }
 

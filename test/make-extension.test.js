@@ -30,18 +30,18 @@ describe('make:extension', (done) => {
     }
 
     let testExtension = '_TestExtension_'
-    let result = execSync(`gunner make:extension ${testExtension} --name testExtension`)
-    expect(result.toString()).contain('Extension Name:')
+    let result = execSync(`gunner make:extension ${testExtension}`)
+    expect(result.toString()).contain(testExtension)
     // expect(result.stdout).contain(`${testExtension}.js created successfully`)
     done()
   })
 
   it('should show warning when extension already exists', (done) => {
     let testExtension = 'sample'
-    exec(`gunner make:extension ${testExtension} --name sampleExtension`, async (err, stdout, stderr) => {
+    exec(`gunner make:extension ${testExtension}`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       // expect(result).contain(`${testExtension}.js already exists`)
-      expect(result).contain('Extension Name:')
+      expect(result).contain(testExtension + '-extension.js')
     })
     done()
   })

@@ -34,7 +34,6 @@ fs.copy = (src = '', dest = '', options = {}) => {
 }
 
 fs.pwd = (opts = '') => {
-  // const jetParent = fsj.pwd(opts)
   return __dirname
 }
 

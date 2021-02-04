@@ -12,6 +12,9 @@ module.exports = {
   },
   execute(toolbox) {
     let msg = toolbox.arguments.message || 'Hello World'
-    return toolbox.print.info(`Default Command: ${msg}`)
+    console.log('')
+    toolbox.print.info(`Default Command: ${msg}`, 'INFO')
+    console.log('')
+    return
   },
 }

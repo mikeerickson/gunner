@@ -20,9 +20,15 @@ const spinner = new Ora({
 module.exports = {
   name: 'new',
   description: 'Generate New Gunner CLI',
-  usage: 'new name <command> <flags>',
+  usage: `new ${colors.blue('[name]')} ${colors.magenta('<flags>')}            ${colors.blue.bold(
+    '[name]'
+  )} of new CLI`,
   flags: {
-    description: { aliases: ['d'], description: 'Command description', required: false },
+    overwrite: {
+      aliases: ['o'],
+      description: `Overwrite existing directory matching ${colors.blue.bold('[name]')}`,
+      required: false,
+    },
   },
   async execute(toolbox) {
     const gitUserLocal = require('git-user-local')
@@ -212,7 +218,7 @@ module.exports = {
             toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')
             toolbox.print.notice('\nNext:\n')
             toolbox.print.notice(`  > cd ${toolbox.commandName}`)
-            toolbox.print.notice(`  > npm link ${toolbox.commandName}`)
+            toolbox.print.notice(`  > ${pkgMgr} link ${toolbox.commandName}`)
             toolbox.print.notice(`  > ${toolbox.commandName} --help`)
             console.log('')
           }, 1000)
