@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.15.0",
-  "build": "204",
+  "build": "206",
   "description": "Node CLI Framework",
   "tagline": "Crafted with love by Codedungeon",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -33,7 +33,7 @@
     "test:coverage": "nyc mocha ./test/*.test.js",
     "test:watch": "mocha ./test/*.test.js --growl --watch --reporter progress",
     "todo": "node tasks/todo.js",
-    "pre-commit": "npm run lint && npm run test:commit"
+    "pre-commit": "npm run lint && npm run todo && npm run test:commit"
   },
   "keywords": [
     "cli",

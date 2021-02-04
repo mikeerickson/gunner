@@ -136,7 +136,7 @@ module.exports = {
     }
   },
 
-  generate(
+  async generate(
     toolbox,
     answers = { fname: '', lname: '', email: '', git: '', pkgMgr: 'npm', usePrettier: false, useEslint: false }
   ) {
@@ -224,7 +224,7 @@ module.exports = {
       }
 
       toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'index.js'), join(dest, 'index.js'))
-      spinner.text = toolbox.colors.green('Source Files Created...')
+      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
       spinner.succeed()
     }, 3000)
 
