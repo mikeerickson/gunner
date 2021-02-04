@@ -27,7 +27,7 @@ class CLI {
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
     this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
-    this.version = this.pkgInfo.version
+    this.versionInfo = this.pkgInfo.version
     this.appName = this.pkgInfo.packageName
     this.packageName = this.pkgInfo.packageName
     this.tagline = this.pkgInfo.tagline || ''
@@ -67,12 +67,13 @@ class CLI {
     this.commandInfo = ''
     this.optionInfo = ''
     this.exampleInfo = ''
+    this.versionStr = ''
 
     /** Setup Toolbox */
     this.toolbox = {
       // toolbox properties (some replication, see `env` for more properties)
       appName: this.packageName,
-      version: this.version,
+      version: this.versionStr,
       packageName: this.packageName,
 
       // toolbox modules
@@ -93,7 +94,7 @@ class CLI {
         packageName: this.packageName,
         projectRoot: this.projectRoot,
         verbose: this.verbose,
-        version: this.version,
+        version: this.versionStr,
       },
       filesystem: this.fs,
       fs: this.fs,
@@ -167,6 +168,13 @@ class CLI {
       ]
 
       this.optionInfo = options.join('\n')
+    }
+    return this
+  }
+
+  version(version = '') {
+    if (version.length > 0) {
+      this.versionStr = version
     }
     return this
   }
@@ -351,15 +359,19 @@ class CLI {
   }
 
   showVersion() {
-    let versionStr = this.pkgInfo.version
-    let buildStr = this.pkgInfo.build
+    if (this.versionStr.length > 0) {
+      console.log(this.versionStr)
+    } else {
+      let versionStr = this.pkgInfo.version
+      let buildStr = this.pkgInfo.build
 
-    const name = this.toolbox.strings.titleCase(this.packageName)
-    console.log(
-      `🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + versionStr + ' build ' + buildStr)}`
-    )
-    console.log(`   ${this.toolbox.colors.magenta.italic(this.tagline)}`)
-    console.log()
+      const name = this.toolbox.strings.titleCase(this.packageName)
+      console.log(
+        `🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + versionStr + ' build ' + buildStr)}`
+      )
+      console.log(`   ${this.toolbox.colors.magenta.italic(this.tagline)}`)
+      console.log()
+    }
   }
 
   showHelp() {

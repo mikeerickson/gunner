@@ -25,14 +25,18 @@ Using yarn
 ```js
 #!/usr/bin/env node
 
-const path = require('path')
-let CLI = require('@codedungeon/gunner')
+const CLI = require('./src/gunner')
+const pkgInfo = require('./package.json')
 
-const app = new CLI(process.argv)
-  .usage('gunner make:command TestCommand --name test:command')
-  .options()
-  .examples('make:command TestCommand --name hello')
-  .run({ name: 'default' })
+const app = new CLI(process.argv, __dirname)
+  .usage(`${pkgInfo.packageName} make:command TestCommand --name test:command`)
+  .options(/* if not called, options will be suppressed in help dialog */)
+  .version(/* version string override, if not supplied default version info will be displayed */)
+  .examples(
+    /* if not called, examples will be suppressed in help dialog */
+    `${pkgInfo.packageName} make:command TestCommand --name hello`
+  )
+  .run()
 ```
 
 - Create new command in the `commands` directory (create if it does not exists)
