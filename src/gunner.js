@@ -3,7 +3,6 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { dd } = require('dumper.js')
 const path = require('path')
 const app = require('./toolbox/app.js')
 const system = require('./toolbox/system.js')
@@ -40,7 +39,7 @@ class CLI {
     this.arguments = this.getArguments(argv)
 
     // setup global options
-    this.verbose = this.arguments.verbose || false
+    this.verbose = this.arguments.verbose || false // dont add shortcut -v as that is reserved for version
     this.debug = this.arguments.debug || this.arguments.d || false
     this.overwrite = this.arguments.overwrite || this.arguments.o || false
     this.help = this.arguments.help || this.arguments.h || this.arguments.H || false
@@ -55,12 +54,6 @@ class CLI {
     if (this.arguments.version || this.arguments.v || this.arguments.V) {
       this.arguments.version = this.arguments.v = this.arguments.V = true
     }
-
-    /**
-     * Gunner Help Information
-     * each of the following will be displayed when CLI help is requested
-     * eg .help() .usage() .commands() .options() .examples()
-     */
 
     this.helpInfo = ''
     this.usageInfo = ''
@@ -113,6 +106,7 @@ class CLI {
     // load project extensions (will be appended to app namespace)
     this.loadExtensions(this)
 
+    // show gunner object properties if debug mode and verbose options supplied
     this.debug && this.verbose ? this.toolbox.table.verboseInfo(['Property', 'Value'], Object.entries(this)) : ''
 
     return this
@@ -149,7 +143,6 @@ class CLI {
     return this
   }
 
-  // TODO: This needs to be refactored so options will appear regards of being called in index.js method as is rest of help info
   options(options = '') {
     if (options.length > 0) {
       this.optionInfo = options

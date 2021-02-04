@@ -11,9 +11,7 @@ const promptColors = require('ansi-colors')
 const pkgInfo = require('../../package.json')
 
 class Helpers {
-  constructor() {
-    console.log('Initialize CLI Helper')
-  }
+  constructor() {}
 
   getPackageName() {
     return pkgInfo.packageName
@@ -50,9 +48,9 @@ class Helpers {
     return false
   }
 
-  // see template.js for more verbose implemenation using .mustache syntax
-  // TODO: ideally, this should be refatored to only use .mustache
-  compile(template = '', data = {}) {
+  // simple merging
+  // see template.js 'mergeFile' for more verbose implemenation using .mustache syntax
+  merge(template = '', data = {}) {
     Object.keys(data).map((key) => {
       let regex = new RegExp(`<%${key}%>`, 'gi')
       template = template.replace(regex, data[key])

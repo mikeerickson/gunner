@@ -11,11 +11,12 @@ const { prompt } = require('enquirer')
 
 const Ora = require('ora')
 const { DefaultDeserializer } = require('v8')
+const { dd } = require('dumper.js')
 
 const spinner = new Ora({
   discardStdin: false,
   color: 'blue',
-  text: colors.blue('Preparing Project...'),
+  text: '',
 })
 
 module.exports = {
@@ -35,13 +36,6 @@ module.exports = {
     const gitUserLocal = require('git-user-local')
     const githubUsername = require('github-username')
 
-    // if (toolbox.commandName.length === 0) {
-    //   console.log('')
-    //   toolbox.print.error('You must supply project name `gunner new <name>`', 'ERROR')
-    //   console.log('')
-    //   process.exit(0)
-    // }
-    // read github info
     let info = await gitUserLocal()
     let ghUserName = await githubUsername(info.user.email)
 
@@ -92,6 +86,8 @@ module.exports = {
     }
 
     questions.push(buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions))
+    questions.push(buildQuestion('confirm', 'usePrettier', 'Would you like to use Prettier?'))
+    questions.push(buildQuestion('confirm', 'useEslint', 'Would you like to use ESLint?'))
 
     let answers = await toolbox.prompts.show(questions)
 
@@ -114,7 +110,7 @@ module.exports = {
         if (await savePrompt.run()) {
           toolbox.print.success('✔ Answers Saved...')
           Object.keys(answers).forEach((key) => {
-            if (key !== 'name') {
+            if (key !== 'name' && key !== 'usePrettier') {
               toolbox.config.set(key, answers[key])
             }
           })
@@ -135,17 +131,23 @@ module.exports = {
       if (toolbox.commandName.length === 0) {
         toolbox.commandName = answers.name
       }
-      this.generate(toolbox, answers.fname, answers.lname, answers.email, answers.gitUserName, answers.pkgMgr)
+
+      this.generate(toolbox, answers)
     }
   },
 
-  generate(toolbox, fname = '', lname = '', email = '', git = '', pkgMgr = 'npm') {
+  generate(
+    toolbox,
+    answers = { fname: '', lname: '', email: '', git: '', pkgMgr: 'npm', usePrettier: false, useEslint: false }
+  ) {
     let join = toolbox.path.join
     console.log('')
 
+    let { fname, lname, email, gitUserName: git, pkgMgr, usePrettier, useEslint } = answers
+
     let dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
 
-    if (toolbox.arguments.overwrite) {
+    if (toolbox.env.overwrite) {
       toolbox.filesystem.rmdir(dest)
     }
 
@@ -161,13 +163,14 @@ module.exports = {
     setTimeout(() => {
       spinner.start()
       // spinner.spinner = 'bouncingBar'
+      spinner.text = toolbox.colors.blue(`Preparing '${toolbox.commandName}' Project...`)
     }, 500)
 
     setTimeout(() => {
       spinner.color = 'blue'
       spinner.text = toolbox.colors.blue('Initializing Project...')
       toolbox.filesystem.mkdirSync(toolbox.commandName)
-      spinner.text = toolbox.colors.green('Project Initialized...')
+      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Initialized...`)
       spinner.succeed()
     }, 2000)
 
@@ -192,6 +195,34 @@ module.exports = {
       toolbox.filesystem.delete(join(dest, 'src', 'unused'))
       toolbox.filesystem.delete(join(dest, 'src', 'utils'))
 
+      if (usePrettier) {
+        toolbox.filesystem.copy(
+          join(toolbox.env.projectRoot, 'src', 'templates', 'prettier.config.js'),
+          join(dest, 'prettier.config.js')
+        )
+      }
+
+      if (useEslint) {
+        /*eslint-disable */
+        let eslintExtends = 'eslint:recommended'
+        if (usePrettier) {
+          eslintExtends = "'prettier'"
+        }
+
+        let eslintPlugins = ''
+        if (answers.usePrettier) {
+          eslintPlugins = "'prettier'"
+        }
+        /*eslint-enable */
+
+        toolbox.template.mergeFile(
+          '.eslintrc.js.mustache',
+          join(dest, '.eslintrc.js'),
+          { eslintExtends, eslintPlugins, useEslint, usePrettier },
+          { overwrite: true }
+        )
+      }
+
       toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'index.js'), join(dest, 'index.js'))
       spinner.text = toolbox.colors.green('Source Files Created...')
       spinner.succeed()
@@ -204,12 +235,28 @@ module.exports = {
       spinner.start()
       let pkgFilename = join(dest, 'package.json')
 
+      let options = ''
+      if (usePrettier) {
+        options = '"prettier": ">=2",'
+      }
+      if (useEslint) {
+        options += '\n    "babel-eslint": ">=5",'
+        options += '\n    "eslint": ">=7",'
+        if (usePrettier) {
+          options += '\n    "eslint-config-prettier": ">=7",'
+          options += '\n    "eslint-plugin-prettier": ">=3",'
+        }
+      }
+
+      // trim trailing comma
+      options = options.replace(/(^,)|(,$)/g, '')
+
       let github = git.length > 0 ? `(https://github.com/${git})` : ''
-      let repo = `https://github.com/${git}/${toolbox.commandName}`
+      let repo = github.length > 0 ? `https://github.com/${git}/${toolbox.commandName}` : ''
       toolbox.template.mergeFile(
         'package.json.mustache',
         pkgFilename,
-        { name: toolbox.commandName, fname, lname, email, gituser: git, github, repo },
+        { name: toolbox.commandName, fname, lname, email, gituser: git, github, repo, options, useEslint, usePrettier },
         { overwrite: true }
       )
 
@@ -229,7 +276,7 @@ module.exports = {
       })
 
       spinner.indent = 0
-      spinner.text = toolbox.colors.green('Project Files Created...')
+      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Files Created...`)
       spinner.succeed()
     }, 4000)
 
@@ -239,6 +286,7 @@ module.exports = {
       spinner.indent = 2
       spinner.text = toolbox.colors.yellow(`Installing Depedencies (using ${pkgMgr})...`)
       toolbox.filesystem.chdir(dest)
+
       execa(pkgMgr, pkgMgr === 'npm' ? ['install'] : [])
         .then((result) => {
           spinner.color = 'green'
