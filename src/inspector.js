@@ -1,3 +1,8 @@
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) 2018-2021 Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const colors = require('ansi-colors')
 const pkg = require('../package.json')
 const updateNotifier = require('update-notifier')
