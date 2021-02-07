@@ -8,6 +8,12 @@ const path = require('path')
 class App {
   constructor() {}
 
+  getAppName() {
+    let packageFilename = path.join(path.dirname(path.dirname(__dirname)), 'package.json')
+    let pkgInfo = require(packageFilename)
+    return pkgInfo.packageName
+  }
+
   getAppPath() {
     return path.join(path.dirname(path.dirname(__dirname)))
   }

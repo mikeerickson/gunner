@@ -25,7 +25,7 @@
 		"bump": "node ./tasks/bumpBuild.js",
     "test": "echo \"Error: no test specified\" && exit 1"{{#useEslint}},{{/useEslint}}
     {{#useEslint}}
-    "lint": "eslint \"./**/*.{ts,tsx,js,jsx,vue}\" \"$@\""
+    "lint": "node ./tasks/lint.js"
     {{/useEslint}}
 	},
 	"keywords": [

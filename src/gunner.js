@@ -3,10 +3,12 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const { dd } = require('dumper.js')
 const path = require('path')
 const app = require('./toolbox/app.js')
 const system = require('./toolbox/system.js')
 const print = require('./toolbox/print')(this.quiet)
+const strings = require('./toolbox/strings')
 
 const HELP_PAD = 30
 
@@ -27,16 +29,19 @@ class CLI {
     this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
     this.versionInfo = this.pkgInfo.version
+    this.name = this.pkgInfo.name
     this.appName = this.pkgInfo.packageName
     this.packageName = this.pkgInfo.packageName
     this.tagline = this.pkgInfo.tagline || ''
+    this.author = this.pkgInfo.author || ''
+    this.contributors = this.pkgInfo.contributors || []
     this.packageName = this.pkgInfo.packageName || ''
 
     this.command = this.getCommand(argv)
 
     this.commandName = this.getCommandName(argv) // sub command (see make:command for example)
 
-    this.arguments = this.getArguments(argv)
+    this.arguments = this.getArguments(argv, this.command)
 
     // setup global options
     this.verbose = this.arguments.verbose || false // dont add shortcut -v as that is reserved for version
@@ -91,12 +96,14 @@ class CLI {
       },
       filesystem: this.fs,
       fs: this.fs,
+      datetime: require('dayjs'),
       path,
       packageManager: require('./toolbox/packageManager'),
       prompts: require('./toolbox/prompt'),
       print: require('./toolbox/print')(this.quiet),
       semver: require('semver'),
       strings: require('./toolbox/strings'),
+      arrays: require('./toolbox/arrays'),
       system,
       table: require('./toolbox/table.js'),
       template: require('./toolbox/template'),
@@ -154,8 +161,8 @@ class CLI {
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --quiet, -q                   Quiet mode (suppress console output)',
         '  --version, -v, -V             Show Version',
-        '  --verbose                     Verbose Output [only used in conjuction with --debug]',
-        this.toolbox.colors.magenta.italic(
+        `  --verbose                     Verbose Output [only used in ${this.toolbox.colors.magenta('--debug')} mode]`,
+        this.toolbox.colors.blue.italic(
           `                                 (includes table of ${this.packageName} options)`
         ),
       ]
@@ -195,11 +202,38 @@ class CLI {
     return parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
   }
 
-  getArguments(argv) {
+  getArguments(argv, module) {
     let argsParser = require('minimist')
     let args = argsParser(argv)
+    let argKeys = Object.keys(args)
     if (args.hasOwnProperty('_')) {
       delete args['_']
+    }
+
+    if (args) {
+      let moduleRef = this.loadModule(module)
+      if (moduleRef) {
+        Object.keys(args).forEach((arg) => {
+          if (moduleRef?.flags?.hasOwnProperty(arg)) {
+            if (moduleRef.flags[arg].hasOwnProperty('aliases')) {
+              const aliases = moduleRef.flags[arg].aliases
+              aliases.forEach((alias) => {
+                args[alias] = args[arg]
+              })
+            }
+          }
+        })
+
+        // see if argument has an associated alias
+        if (moduleRef.hasOwnProperty('flags')) {
+          const flags = Object.keys(moduleRef.flags)
+          flags.forEach((flag) => {
+            moduleRef.flags[flag].aliases.forEach((alias) => {
+              argKeys.includes(alias) ? (args[flag] = args[alias]) : null
+            })
+          })
+        }
+      }
     }
     return args
   }
@@ -211,8 +245,8 @@ class CLI {
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      path.join(app.getCommandPath(), this.toolbox.strings.kebabCase(module) + '.js'),
-      path.join(app.getCommandPath(), this.toolbox.strings.camelCase(module) + '.js'),
+      path.join(app.getCommandPath(), strings.kebabCase(module) + '.js'),
+      path.join(app.getCommandPath(), strings.camelCase(module) + '.js'),
     ]
 
     let filename = ''
@@ -245,7 +279,10 @@ class CLI {
     let keys = Object.keys(flags)
     let defaults = {}
     keys.map((flag) => {
-      let alias = flags[flag].aliases[0]
+      let alias = ''
+      if (flags[flag].hasOwnProperty('aliases')) {
+        alias = flags[flag].aliases[0]
+      }
       let defaultValue = this.toolbox.utils.dot.get(flags[flag].default)
       if (defaultValue === undefined) {
         defaultValue = null
@@ -358,11 +395,20 @@ class CLI {
       let versionStr = this.pkgInfo.version
       let buildStr = this.pkgInfo.build
 
-      const name = this.toolbox.strings.titleCase(this.packageName)
+      const name = this.packageName.length > 0 ? this.packageName : this.toolbox.strings.titleCase(this.name)
       console.log(
-        `🚧 ${this.toolbox.colors.cyan(name)} ${this.toolbox.colors.cyan('v' + versionStr + ' build ' + buildStr)}`
+        `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
       )
-      console.log(`   ${this.toolbox.colors.magenta.italic(this.tagline)}`)
+      if (this.contributors.length > 0) {
+        let info = this.contributors[0]
+        console.log(
+          `   ${this.toolbox.colors.green.italic('Crafted with love by ' + info.name + ' (' + info?.url + ')')}`
+        )
+      }
+      if (this.tagline.length > 0) {
+        console.log(`   ${this.toolbox.colors.magenta.italic.dim(this.tagline)}`)
+      }
+
       console.log()
     }
   }
@@ -405,6 +451,7 @@ class CLI {
       }
     } else {
       this.showCommandHelp(this.command)
+      this.showCommandHelpExample(this.command)
     }
   }
 
@@ -440,28 +487,65 @@ class CLI {
       process.exit(0)
     }
     let keys = Object.keys(module.flags)
+
+    let COL_WIDTH = 20
+    keys.forEach((key) => {
+      if (key.length >= COL_WIDTH) {
+        COL_WIDTH = key.length + 5
+      }
+    })
+
     if (keys.length > 0) {
-      console.log(this.toolbox.colors.yellow('Options:'))
-      keys.forEach((flag) => {
-        const description = module.flags[flag]['description'] || module.flags[flag]
-
-        let defaultValue = ''
-        if (module.flags[flag].hasOwnProperty('default')) {
-          defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
-          defaultValue = defaultValue.replace(/,/gi, ', ')
-        }
-        let aliases = ''
-        if (module.flags[flag].hasOwnProperty('aliases')) {
-          aliases = ', ' + '-' + module.flags[flag].aliases
-        }
-
-        let flags = '  --' + flag + aliases
-        console.log(flags.padEnd(HELP_PAD + 1), description, defaultValue)
+      let flags = keys.filter((item) => {
+        return !module.flags['name']?.hidden
       })
-      console.log('')
+      if (flags.length > 0) {
+        console.log(this.toolbox.colors.yellow('Options:'))
+        keys.forEach((flag) => {
+          if (module.flags[flag]?.hidden) {
+            return false
+          }
+
+          const description = module.flags[flag]['description'] || module.flags[flag]
+
+          let defaultValue = ''
+          if (module.flags[flag].hasOwnProperty('default')) {
+            defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
+            defaultValue = defaultValue.replace(/,/gi, ', ')
+          }
+
+          let required = ''
+          if (module.flags[flag].hasOwnProperty('required')) {
+            required = this.toolbox.colors.red('-required-')
+          }
+
+          let aliases = ''
+          if (module.flags[flag].hasOwnProperty('aliases')) {
+            aliases = ', ' + '-' + module.flags[flag].aliases
+          }
+
+          let flags = '  --' + flag + aliases
+          // pad 7 to include flag alias
+          console.log(flags.padEnd(COL_WIDTH + 5), description, defaultValue, required)
+        })
+        console.log('')
+      }
     }
 
     return `${module.name} help displayed`
+  }
+
+  showCommandHelpExample(command = '') {
+    let module = this.loadModule(command)
+    if (!module.disabled) {
+      if (module.hasOwnProperty('examples')) {
+        console.log(this.toolbox.colors.yellow('Examples:'))
+        module.examples.forEach((example) => {
+          console.log('  ' + this.appName + ' ' + example)
+        })
+        console.log('')
+      }
+    }
   }
 
   executeCommand(command, args) {
@@ -516,14 +600,22 @@ class CLI {
     this.debug ? this.showDebugCommand(command) : null
 
     if (this.command.length > 0 && this.arguments.help) {
-      return this.showCommandHelp(this.command)
+      this.showCommandHelp(this.command)
+      this.showCommandHelpExample(this.command)
+      return
     }
 
     // if no command or --help supplied, use default command if it exists
-    if (command.length === 0 && !this.help) {
-      command = this.fs.exists(path.resolve(app.getCommandPath(), 'default.js')) ? 'default' : ''
+    if (commandInfo.hasOwnProperty('default')) {
+      let defaultCommand = this.toolbox.strings.camelCase(commandInfo.default.replace('.js', ''))
+      if (this.fs.exists(path.resolve(app.getCommandPath(), defaultCommand + '.js'))) {
+        command = commandInfo.default
+      }
+    } else {
+      if (command.length === 0 && !this.help) {
+        command = this.fs.exists(path.resolve(app.getCommandPath(), 'default.js')) ? 'default' : ''
+      }
     }
-
     // if did not supply command show help
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
   }

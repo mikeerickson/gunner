@@ -6,12 +6,13 @@
 const execa = require('execa')
 const colors = require('chalk')
 const process = require('process')
-const { execSync } = require('child_process')
 const { prompt } = require('enquirer')
 
 const Ora = require('ora')
-const { DefaultDeserializer } = require('v8')
-const { dd } = require('dumper.js')
+
+const buildQuestion = (type, name, message, alternateOptions = {}) => {
+  return { type, name, message, ...alternateOptions }
+}
 
 const spinner = new Ora({
   discardStdin: false,
@@ -27,12 +28,16 @@ module.exports = {
   )} of new CLI`,
   flags: {
     overwrite: {
-      aliases: ['o'],
+      aliases: ['o', 'w'],
       description: `Overwrite existing directory matching ${colors.blue.bold('[name]')}`,
       required: false,
     },
   },
+
   async execute(toolbox) {
+    this.spinner = spinner
+    this.join = toolbox.path.join
+
     const gitUserLocal = require('git-user-local')
     const githubUsername = require('github-username')
 
@@ -41,12 +46,7 @@ module.exports = {
 
     console.log('')
 
-    const buildQuestion = (type, name, message, alternateOptions = {}) => {
-      return { type, name, message, ...alternateOptions }
-    }
-
-    let ghLocal = await gitUserLocal()
-    let [githubFirstName, githubLastName] = ghLocal.user.name.split(' ')
+    let [githubFirstName, githubLastName] = info.user.name.split(' ')
 
     let fname = toolbox.config.get('fname') || githubFirstName
     let lname = toolbox.config.get('lname') || githubLastName
@@ -60,9 +60,9 @@ module.exports = {
         buildQuestion('input', 'name', 'Please supply project name?', {
           validate: (value, state, item, index) => {
             if (value.length > 0) {
-              let dest = toolbox.path.join(toolbox.app.getProjectPath(), value)
-              if (toolbox.filesystem.exists(dest)) {
-                return toolbox.colors.red(toolbox.utils.tildify(dest) + ' already exists')
+              const newProject = this.join(toolbox.app.getProjectPath(), value)
+              if (toolbox.filesystem.exists(newProject)) {
+                return toolbox.colors.red(toolbox.utils.tildify(newProject) + ' already exists')
               }
             } else {
               return toolbox.colors.red('project name must be at least one character')
@@ -140,173 +140,218 @@ module.exports = {
     toolbox,
     answers = { fname: '', lname: '', email: '', git: '', pkgMgr: 'npm', usePrettier: false, useEslint: false }
   ) {
-    let join = toolbox.path.join
+    this.src = this.join(toolbox.env.projectRoot, 'src')
+    this.dest = this.join(toolbox.app.getProjectPath(), toolbox.commandName)
+    this.answers = { ...answers }
+
     console.log('')
 
-    let { fname, lname, email, gitUserName: git, pkgMgr, usePrettier, useEslint } = answers
-
-    let dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
-
     if (toolbox.env.overwrite) {
-      toolbox.filesystem.rmdir(dest)
+      toolbox.filesystem.rmdir(this.dest)
     }
 
-    if (toolbox.filesystem.existsSync(dest)) {
+    if (toolbox.filesystem.existsSync(this.dest)) {
       console.log()
-      toolbox.print.error(`./${toolbox.path.basename(dest)} already exists`, 'ERROR')
+      toolbox.print.error(`./${toolbox.path.basename(this.dest)} already exists`, 'ERROR')
       console.log('')
       process.exit(0)
     }
 
-    let src = toolbox.path.join(toolbox.env.projectRoot, 'src')
-
+    // setup
     setTimeout(() => {
-      spinner.start()
-      // spinner.spinner = 'bouncingBar'
-      spinner.text = toolbox.colors.blue(`Preparing '${toolbox.commandName}' Project...`)
+      this.setup(toolbox)
     }, 500)
 
+    // initialize project
     setTimeout(() => {
-      spinner.color = 'blue'
-      spinner.text = toolbox.colors.blue('Initializing Project...')
-      toolbox.filesystem.mkdirSync(toolbox.commandName)
-      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Initialized...`)
-      spinner.succeed()
+      this.initializeProject(toolbox)
     }, 2000)
 
+    // prepare source files
     setTimeout(() => {
-      spinner.color = 'blue'
-      spinner.text = toolbox.colors.blue('Preparing Source Files...')
-      spinner.start()
-
-      toolbox.filesystem.copy(src, join(dest, 'src'))
-      toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'bin'), join(dest, 'bin'))
-      toolbox.filesystem.copy(
-        join(toolbox.env.projectRoot, 'tasks', 'bumpBuild.js'),
-        join(dest, 'tasks', 'bumpBuild.js')
-      )
-
-      toolbox.filesystem.delete(join(dest, 'src', 'commands', 'new-command.js'))
-      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'package.json.mustache'))
-      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'LICENSE.mustache'))
-      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'README.md.mustache'))
-      toolbox.filesystem.delete(join(dest, 'src', 'templates', 'app.test.mustache'))
-      toolbox.filesystem.delete(join(dest, 'src', 'toolbox', '_deprecated_'))
-      toolbox.filesystem.delete(join(dest, 'src', 'unused'))
-      toolbox.filesystem.delete(join(dest, 'src', 'utils'))
-
-      if (usePrettier) {
-        toolbox.filesystem.copy(
-          join(toolbox.env.projectRoot, 'src', 'templates', 'prettier.config.js'),
-          join(dest, 'prettier.config.js')
-        )
-      }
-
-      if (useEslint) {
-        /*eslint-disable */
-        let eslintExtends = 'eslint:recommended'
-        if (usePrettier) {
-          eslintExtends = "'prettier'"
-        }
-
-        let eslintPlugins = ''
-        if (answers.usePrettier) {
-          eslintPlugins = "'prettier'"
-        }
-        /*eslint-enable */
-
-        toolbox.template.mergeFile(
-          '.eslintrc.js.mustache',
-          join(dest, '.eslintrc.js'),
-          { eslintExtends, eslintPlugins, useEslint, usePrettier },
-          { overwrite: true }
-        )
-      }
-
-      toolbox.filesystem.copy(join(toolbox.env.projectRoot, 'index.js'), join(dest, 'index.js'))
-      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
-      spinner.succeed()
+      this.prepareSourceFiles(toolbox)
     }, 3000)
 
+    // create project files
     setTimeout(() => {
-      spinner.color = 'blue'
-      spinner.text = toolbox.colors.blue('Creating Project Files...')
-      spinner.indent = 2
-      spinner.start()
-      let pkgFilename = join(dest, 'package.json')
-
-      let options = ''
-      if (usePrettier) {
-        options = '"prettier": ">=2",'
-      }
-      if (useEslint) {
-        options += '\n    "babel-eslint": ">=5",'
-        options += '\n    "eslint": ">=7",'
-        if (usePrettier) {
-          options += '\n    "eslint-config-prettier": ">=7",'
-          options += '\n    "eslint-plugin-prettier": ">=3",'
-        }
-      }
-
-      // trim trailing comma
-      options = options.replace(/(^,)|(,$)/g, '')
-
-      let github = git.length > 0 ? `(https://github.com/${git})` : ''
-      let repo = github.length > 0 ? `https://github.com/${git}/${toolbox.commandName}` : ''
-      toolbox.template.mergeFile(
-        'package.json.mustache',
-        pkgFilename,
-        { name: toolbox.commandName, fname, lname, email, gituser: git, github, repo, options, useEslint, usePrettier },
-        { overwrite: true }
-      )
-
-      toolbox.template.mergeFile('LICENSE.mustache', join(dest, 'LICENSE'), {
-        fname,
-        lname,
-        year: new Date().getFullYear(),
-      })
-
-      toolbox.template.mergeFile('README.md.mustache', join(dest, 'README.md'), {
-        name: toolbox.commandName,
-        fname,
-        lname,
-        gitUserName: git,
-        year: new Date().getFullYear(),
-        email,
-      })
-
-      spinner.indent = 0
-      spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Files Created...`)
-      spinner.succeed()
+      this.createProjectFiles(toolbox)
     }, 4000)
 
+    // install dependencies
     setTimeout(() => {
-      spinner.start()
-      spinner.color = 'yellow'
-      spinner.indent = 2
-      spinner.text = toolbox.colors.yellow(`Installing Depedencies (using ${pkgMgr})...`)
-      toolbox.filesystem.chdir(dest)
-
-      execa(pkgMgr, pkgMgr === 'npm' ? ['install'] : [])
-        .then((result) => {
-          spinner.color = 'green'
-          spinner.indent = 0
-          spinner.text = toolbox.colors.green('Installation Complete...')
-          spinner.succeed()
-          setTimeout(() => {
-            console.log('')
-            toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')
-            toolbox.print.notice('\nNext Steps:\n')
-            toolbox.print.notice(`  > cd ${toolbox.commandName}`)
-            toolbox.print.notice(`  > ${pkgMgr} link ${toolbox.commandName}`)
-            toolbox.print.notice(`  > ${toolbox.commandName} --help`)
-            console.log('')
-          }, 1000)
-        })
-        .catch((err) => {
-          spinner.fail('An error occured installing depdencies')
-          toolbox.print.error(err)
-        })
+      this.installDependencies(toolbox)
     }, 5000)
+  },
+
+  setup: async function (toolbox) {
+    this.spinner.start()
+    this.spinner.text = toolbox.colors.blue(`Preparing '${toolbox.commandName}' Project...`)
+    return true
+  },
+
+  initializeProject: async function (toolbox) {
+    spinner.color = 'blue'
+    spinner.text = toolbox.colors.blue('Initializing Project...')
+    toolbox.filesystem.mkdirSync(toolbox.commandName)
+    spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Initialized...`)
+    spinner.succeed()
+    return true
+  },
+
+  prepareSourceFiles: async function (toolbox) {
+    this.spinner.color = 'blue'
+    this.spinner.text = toolbox.colors.blue('Preparing Source Files...')
+    this.spinner.start()
+
+    toolbox.filesystem.copy(this.src, this.join(this.dest, 'src'))
+    toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'bin'), this.join(this.dest, 'bin'))
+    toolbox.filesystem.copy(
+      this.join(toolbox.env.projectRoot, 'tasks', 'bumpBuild.js'),
+      this.join(this.dest, 'tasks', 'bumpBuild.js')
+    )
+
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'commands', 'new.js'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'package.json.mustache'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'LICENSE.mustache'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'README.md.mustache'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'app.test.mustache'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'toolbox', '_deprecated_'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'unused'))
+    toolbox.filesystem.delete(this.join(this.dest, 'src', 'utils'))
+
+    if (this.answers.usePrettier) {
+      toolbox.filesystem.copy(
+        this.join(toolbox.env.projectRoot, 'src', 'templates', 'prettier.config.js'),
+        this.join(this.dest, 'prettier.config.js')
+      )
+    }
+
+    if (this.answers.useEslint) {
+      /*eslint-disable */
+      let eslintExtends = 'eslint:recommended'
+      if (this.answers.usePrettier) {
+        eslintExtends = "'prettier'"
+      }
+
+      let eslintPlugins = ''
+      if (this.answers.usePrettier) {
+        eslintPlugins = "'prettier'"
+      }
+      /*eslint-enable */
+
+      toolbox.filesystem.copy(
+        this.join(toolbox.env.projectRoot, 'tasks', 'lint.js'),
+        this.join(this.dest, 'tasks', 'lint.js')
+      )
+
+      toolbox.template.mergeFile(
+        '.eslintrc.js.mustache',
+        this.join(this.dest, '.eslintrc.js'),
+        { eslintExtends, eslintPlugins, useEslint: this.answers.useEslint, usePrettier: this.answers.usePrettier },
+        { overwrite: true }
+      )
+    }
+
+    toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'index.js'), this.join(this.dest, 'index.js'))
+    this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
+    this.spinner.succeed()
+
+    return true
+  },
+
+  createProjectFiles: async function (toolbox) {
+    this.spinner.color = 'blue'
+    this.spinner.text = toolbox.colors.blue('Creating Project Files...')
+    this.spinner.indent = 2
+    this.spinner.start()
+    let pkgFilename = this.join(this.dest, 'package.json')
+
+    let options = ''
+    if (this.answers.usePrettier) {
+      options = '"prettier": ">=2",'
+    }
+    if (this.answers.useEslint) {
+      options += '\n    "babel-eslint": ">=5",'
+      options += '\n    "eslint": ">=7",'
+      if (this.answers.usePrettier) {
+        options += '\n    "eslint-config-prettier": ">=7",'
+        options += '\n    "eslint-plugin-prettier": ">=3",'
+      }
+    }
+
+    // trim trailing comma
+    options = options.replace(/(^,)|(,$)/g, '')
+
+    let github = this.answers.gitUserName.length > 0 ? `(https://github.com/${this.answers.gitUserName})` : ''
+    let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}}/${toolbox.commandName}` : ''
+    toolbox.template.mergeFile(
+      'package.json.mustache',
+      pkgFilename,
+      {
+        name: toolbox.commandName,
+        fname: this.answers.fname,
+        lname: this.answers.lname,
+        email: this.answers.email,
+        gituser: this.answers.gitUserName,
+        github,
+        repo,
+        options,
+        useEslint: this.answers.useEslint,
+        usePrettier: this.answers.usePrettier,
+      },
+      { overwrite: true }
+    )
+
+    toolbox.template.mergeFile('LICENSE.mustache', this.join(this.dest, 'LICENSE'), {
+      fname: this.answers.fname,
+      lname: this.answers.lname,
+      year: new Date().getFullYear(),
+    })
+
+    toolbox.template.mergeFile('README.md.mustache', this.join(this.dest, 'README.md'), {
+      name: toolbox.commandName,
+      fname: this.answers.fname,
+      lname: this.answers.lname,
+      gitUserName: this.answers.git,
+      year: new Date().getFullYear(),
+      email: this.answers.email,
+    })
+
+    this.spinner.indent = 0
+    this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Files Created...`)
+    this.spinner.succeed()
+
+    return true
+  },
+
+  installDependencies: async function (toolbox) {
+    this.spinner.start()
+    this.spinner.color = 'yellow'
+    this.spinner.indent = 2
+    this.spinner.text = toolbox.colors.yellow(`Installing Depedencies (using ${this.answers.pkgMgr})...`)
+    toolbox.filesystem.chdir(this.dest)
+
+    execa(this.answers.pkgMgr, this.answers.pkgMgr === 'npm' ? ['install'] : [])
+      .then((result) => {
+        this.spinner.color = 'green'
+        this.spinner.indent = 0
+        this.spinner.text = toolbox.colors.green('Installation Complete...')
+        this.spinner.succeed()
+        setTimeout(() => {
+          console.log('')
+          toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')
+          toolbox.print.notice('\nNext Steps:\n')
+          toolbox.print.notice(`  > cd ${toolbox.commandName}`)
+          toolbox.print.notice(`  > ${this.answers.pkgMgr} link ${toolbox.commandName}`)
+          toolbox.print.notice(`  > ${toolbox.commandName} --help`)
+          console.log('')
+        }, 1000)
+      })
+      .catch((err) => {
+        this.spinner.fail('An error occured installing depdencies')
+        toolbox.print.error(err)
+      })
+
+    return true
   },
 }

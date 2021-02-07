@@ -11,4 +11,4 @@ const app = new CLI(process.argv, __dirname)
     /* if not called, examples will be suppressed in help dialog */
     `${pkgInfo.packageName} make:command TestCommand --name hello`
   )
-  .run()
+  .run({ default: 'say-hello' })

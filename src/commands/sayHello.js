@@ -14,5 +14,6 @@ module.exports = {
     let name = toolbox.strings.titleCase(toolbox.arguments.name || 'world')
     console.log()
     toolbox.print.success(`Hello ${name}!`, 'SUCCESS')
+    console.log('')
   },
 }

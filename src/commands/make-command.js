@@ -13,9 +13,11 @@ module.exports = {
   description: `Create a new ${pkgInfo.packageName} command`,
   usage: `make:command ${colors.blue('[CommandName]')} ${colors.magenta('<flags>')}`,
   flags: {
-    name: { aliases: ['n'], description: 'Command name (eg make:command)', required: false },
-    description: { aliases: ['d'], description: 'Command description', required: false },
+    name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
+    description: { aliases: ['s'], description: 'Command description', required: false, default: 'x' },
   },
+  examples: ['make:command --description="Command Description"'],
+
   execute(toolbox) {
     if (toolbox.arguments.name === null) {
       let cmdName = toolbox.strings.kebabCase(toolbox.commandName)

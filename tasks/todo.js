@@ -31,3 +31,4 @@ if (output) {
   console.log('')
   console.log(colors.green(`✅  ${todoFilename} file created successfully`))
 }
+console.log('')
