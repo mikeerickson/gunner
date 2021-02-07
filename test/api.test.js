@@ -8,7 +8,7 @@ const { expect } = require('chai')
 
 before(() => {})
 
-describe.only('api module', (done) => {
+describe('api module', (done) => {
   it('should make simple api call (get)', async (done) => {
     expect(true).to.be.true
     done()

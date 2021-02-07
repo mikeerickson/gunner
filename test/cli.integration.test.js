@@ -9,6 +9,7 @@ const system = require('../src/toolbox/system')
 const filesystem = require('../src/toolbox/filesystem')
 const { expect } = require('chai')
 const pkgInfo = require('../package.json')
+const { dd } = require('dumper.js')
 
 const src = filesystem.path.join(__dirname, '..')
 const gunner2 = (cmd) => system.run('node ' + filesystem.path.join(src, 'index.js') + ` ${cmd}`)

@@ -8,6 +8,7 @@ const { expect } = require('chai')
 const { exec, execSync } = require('child_process')
 const app = require('../src/toolbox/app.js')
 const fs = require('../src/toolbox/filesystem')
+const { dd } = require('dumper.js')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''
@@ -34,7 +35,7 @@ describe('make:command', (done) => {
   it('should create test command', (done) => {
     let testCommandName = '_TestCommand_'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-    let result = execSync(`gunner make:command ${testCommandName} --overwrite`)
+    let result = execSync(`gunner make:command ${testCommandName} --name test --overwrite`)
     result = result.toString()
 
     let msg = result.replace(/\n/gi, '')
@@ -45,7 +46,7 @@ describe('make:command', (done) => {
 
   it('should show warning when command already exists', (done) => {
     let testCommandName = 'sample'
-    exec(`gunner make:command ${testCommandName}`, async (err, stdout, stderr) => {
+    exec(`gunner make:command ${testCommandName} --name test`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       expect(result).contain(`${testCommandName}.js already exists`)
     })

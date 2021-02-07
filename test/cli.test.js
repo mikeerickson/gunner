@@ -173,15 +173,6 @@ describe('CLI', (done) => {
     done()
   })
 
-  it('tagline', (done) => {
-    let result = gunner.hasOwnProperty('tagline')
-
-    expect(result).to.be.true
-    expect(gunner.tagline).equals(pkgInfo.tagline)
-
-    done()
-  })
-
   it('template', (done) => {
     let result = gunner.toolbox.hasOwnProperty('template')
     expect(result).to.be.true
