@@ -9,6 +9,7 @@ const process = require('process')
 const { prompt } = require('enquirer')
 
 const Ora = require('ora')
+const { dd } = require('dumper.js')
 
 const buildQuestion = (type, name, message, alternateOptions = {}) => {
   return { type, name, message, ...alternateOptions }
@@ -83,11 +84,18 @@ module.exports = {
       limit: 2,
       hint: 'Make sure you dont mix tools',
       initial: pkgMgr,
+      result: (value) => {
+        console.log('')
+        return value
+      },
     }
 
     questions.push(buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions))
     questions.push(buildQuestion('confirm', 'usePrettier', 'Would you like to use Prettier?'))
     questions.push(buildQuestion('confirm', 'useEslint', 'Would you like to use ESLint?'))
+    questions.push(
+      buildQuestion('confirm', 'useTodo', 'Would you like to integrate Todo File Generator (uses leasot)?')
+    )
 
     let answers = await toolbox.prompts.show(questions)
 
@@ -138,7 +146,16 @@ module.exports = {
 
   async generate(
     toolbox,
-    answers = { fname: '', lname: '', email: '', git: '', pkgMgr: 'npm', usePrettier: false, useEslint: false }
+    answers = {
+      fname: '',
+      lname: '',
+      email: '',
+      git: '',
+      pkgMgr: 'npm',
+      usePrettier: false,
+      useEslint: false,
+      useTodo: false,
+    }
   ) {
     this.src = this.join(toolbox.env.projectRoot, 'src')
     this.dest = this.join(toolbox.app.getProjectPath(), toolbox.commandName)
@@ -252,6 +269,19 @@ module.exports = {
       )
     }
 
+    // setup test
+    toolbox.filesystem.copy(
+      this.join(toolbox.env.projectRoot, 'src', 'templates', 'test.js.mustache'),
+      this.join(this.dest, 'tasks', 'test.js')
+    )
+
+    if (this.answers.useTodo) {
+      toolbox.filesystem.copy(
+        this.join(toolbox.env.projectRoot, 'tasks', 'todo.js'),
+        this.join(this.dest, 'tasks', 'todo.js')
+      )
+    }
+
     toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'index.js'), this.join(this.dest, 'index.js'))
     this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
     this.spinner.succeed()
@@ -266,10 +296,18 @@ module.exports = {
     this.spinner.start()
     let pkgFilename = this.join(this.dest, 'package.json')
 
+    let scriptItems = [{ bump: 'node ./tasks/bumpBuild.js' }, { test: 'node ./tasks/test.js' }]
+
     let options = ''
     if (this.answers.usePrettier) {
       options = '"prettier": ">=2",'
     }
+
+    if (this.answers.useTodo) {
+      options += '\n    "leasot": ">=11",'
+      scriptItems.push({ todo: 'node ./tasks/todo.js' })
+    }
+
     if (this.answers.useEslint) {
       options += '\n    "babel-eslint": ">=5",'
       options += '\n    "eslint": ">=7",'
@@ -277,10 +315,19 @@ module.exports = {
         options += '\n    "eslint-config-prettier": ">=7",'
         options += '\n    "eslint-plugin-prettier": ">=3",'
       }
+      scriptItems.push({ lint: 'node ./tasks/lint.js' })
     }
+    let scripts = ''
+    scriptItems.forEach((item) => {
+      Object.entries(item).forEach((entry) => {
+        const [key, value] = entry
+        scripts += `"${key}": "${value}",`
+      })
+    })
 
     // trim trailing comma
     options = options.replace(/(^,)|(,$)/g, '')
+    scripts = scripts.replace(/(^,)|(,$)/g, '')
 
     let github = this.answers.gitUserName.length > 0 ? `(https://github.com/${this.answers.gitUserName})` : ''
     let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}}/${toolbox.commandName}` : ''
@@ -296,6 +343,7 @@ module.exports = {
         github,
         repo,
         options,
+        scripts,
         useEslint: this.answers.useEslint,
         usePrettier: this.answers.usePrettier,
       },
@@ -343,6 +391,7 @@ module.exports = {
           toolbox.print.notice('\nNext Steps:\n')
           toolbox.print.notice(`  > cd ${toolbox.commandName}`)
           toolbox.print.notice(`  > ${this.answers.pkgMgr} link ${toolbox.commandName}`)
+          toolbox.print.debug(colors.dim('    info => https://docs.npmjs.com/cli/v6/commands/npm-link'))
           toolbox.print.notice(`  > ${toolbox.commandName} --help`)
           console.log('')
         }, 1000)

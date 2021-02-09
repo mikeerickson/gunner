@@ -7,11 +7,12 @@ const app = require('../toolbox/app')
 const { debug } = require('../toolbox/print')
 const pkgInfo = require('../../package.json')
 const colors = require('chalk')
+const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
   description: `Create a new ${pkgInfo.packageName} command`,
-  usage: `make:command ${colors.blue('[CommandName]')} ${colors.magenta('<flags>')}`,
+  usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
     description: { aliases: ['s'], description: 'Command description', required: false, default: 'x' },

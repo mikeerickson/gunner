@@ -558,6 +558,7 @@ class CLI {
       let disabled = module.disabled || false
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
+
         if (requiredArguments.length > 0) {
           let output = '\n🚫  Missing Required Arguments:\n'
           output += '   - ' + requiredArguments.join(', ')

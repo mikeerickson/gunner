@@ -1,14 +1,6 @@
 #!/usr/bin/env node
 /*eslint no-console: "off"*/
 
-/*-------------------------------------------------------------------------------------------
- * Copyright (c) 2018-2021 Mike Erickson / Codedungeon.  All rights reserved.
- * Licensed under the MIT license.  See LICENSE in the project root for license information.
- * -----------------------------------------------------------------------------------------*/
-
-// NOTE: Make sure `leasot` is installed globally, otherwise you can use package version
-// NOTE: ./node_modules/.bin/leasot
-
 const { spawnSync } = require('child_process')
 const colors = require('chalk')
 
