@@ -17,8 +17,8 @@
  */
 
 module.exports = {
-  name: '{{name}}',
-  description: '{{description}}',
+  name: 'hello:world',
+  description: 'test',
   disabled: false,
   hidden: false,
   usage: 'Do something cool, after all this is your command!',

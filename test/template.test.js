@@ -5,10 +5,12 @@
 
 let template = require('../src/toolbox/template.js')
 const { expect } = require('chai')
+const { dd } = require('dumper.js')
+const path = require('path')
 
 describe('template module', (done) => {
   it('should generate file', (done) => {
-    let templateFilename = 'app.test.mustache'
+    let templateFilename = path.join(__dirname, '..', 'src', 'templates', 'app.test.mustache')
     let destinationFilename = '.temp/test.js'
     let result = template.generateFile(templateFilename, destinationFilename, { name: 'Mike' }, { overwrite: true })
     expect(result).equal(0)

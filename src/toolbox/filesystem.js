@@ -8,6 +8,7 @@ const path = require('path')
 const trash = require('trash')
 const fsj = require('fs-jetpack')
 const fs = require('fs-extra-promise')
+const { chmod, chmodSync, parse } = require('fs-chmod')
 
 const SUCCESS = 0
 const ERROR = -1
@@ -21,8 +22,12 @@ fs.homedir = () => {
   return os.homedir()
 }
 
-fs.chmod = (path = '', mode = '') => {
-  return fs.chmodSync(path, mode)
+fs.executable = (path = '', mode = '+x') => {
+  chmod(path, '+x')
+    .then(() => {
+      /* do nothing on success */
+    })
+    .catch((err) => console.error)
 }
 
 fs.chdir = (path = '') => {

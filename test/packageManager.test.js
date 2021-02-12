@@ -6,7 +6,7 @@
 const mock = require('mock-fs')
 const { exec, execSync } = require('child_process')
 const { expect, assert } = require('chai')
-const app = require('../src/toolbox/app.js')
+const App = require('../src/toolbox/App.js')
 const system = require('../src/toolbox/system.js')
 const fs = require('../src/toolbox/filesystem.js')
 const filesystem = require('../src/toolbox/filesystem.js')
@@ -15,6 +15,7 @@ const packageManager = require('../src/toolbox/packageManager.js')
 after((done) => {
   process.chdir(fs.path.join(fs.homedir(), 'tmp'))
   // make sure we are not in the application directory
+  let app = new App({ projectRoot: '../' })
   if (fs.cwd() !== app.getApplicationPath()) {
     system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
   }

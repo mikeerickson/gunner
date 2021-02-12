@@ -3,51 +3,48 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { dd, dump } = require('dumper.js')
 const path = require('path')
 
 class App {
-  constructor(args) {
-    this.projectRoot = args.projectRoot
-  }
+  constructor() {}
 
   getAppName() {
-    let packageFilename = path.join(path.dirname(path.dirname(this.projectRoot)), 'package.json')
+    let packageFilename = path.join(path.dirname(path.dirname(__dirname)), 'package.json')
     let pkgInfo = require(packageFilename)
     return pkgInfo.packageName
   }
 
   getAppPath() {
-    return path.resolve(path.dirname(this.projectRoot))
+    return path.join(path.dirname(path.dirname(__dirname)))
   }
 
   getApplicationPath() {
-    return path.resolve(path.dirname(this.projectRoot))
+    return path.join(path.dirname(path.dirname(__dirname)))
   }
 
   getShortenFilename(filename) {
-    return filename.replace(process.cwd(), '.')
+    return filename.replace(this.getProjectRoot(), '.')
   }
 
   getProjectRoot() {
-    // return this.projectRoot
     return this.projectRoot
+    // return path.join(path.dirname(path.dirname(__dirname)))
   }
 
   getCommandPath() {
-    return path.join(path.resolve(this.projectRoot), 'src', 'commands')
+    return path.join(path.dirname(path.dirname(__dirname)), 'src', 'commands')
   }
 
   getExtensionPath() {
-    return path.join(path.resolve(this.projectRoot), 'src', 'extensions')
+    return path.join(path.dirname(path.dirname(__dirname)), 'src', 'extensions')
   }
 
   getTemplatePath() {
-    return path.join(path.resolve(this.projectRoot), 'src', 'templates')
+    return path.join(path.dirname(path.dirname(__dirname)), 'src', 'templates')
   }
 
   getToolboxPath() {
-    return path.join(path.resolve(this.projectRoot), 'src', 'toolbox')
+    return path.join(path.dirname(path.dirname(__dirname)), 'src', 'toolbox')
   }
 
   getProjectPath() {
@@ -59,7 +56,7 @@ class App {
   }
 
   getProjectCommandPath() {
-    return path.join(process.cwd(), 'src', 'commands')
+    return path.join(this.getProjectPath(), 'src', 'commands')
   }
 
   getProjectTemplatePath() {
@@ -71,4 +68,4 @@ class App {
   }
 }
 
-module.exports = App
+module.exports = new App('here')

@@ -3,16 +3,13 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const app = require('./app.js')
 const Mustache = require('mustache')
 const filesystem = require('./filesystem.js')
 const { error, success } = require('./print.js')()
 
 const template = {
-  generateFile: function (template = '', target = '', data = {}, options = { overwrite: true }) {
-    let templateFilename = filesystem.path.join(app.getTemplatePath(), template)
+  generateFile: function (templateFilename = '', targetFilename = '', data = {}, options = { overwrite: true }) {
     if (filesystem.exists(templateFilename)) {
-      let targetFilename = filesystem.path.join(app.getProjectRoot(), target)
       let templateData = this.readFile(templateFilename, 'utf8')
       let renderedData = Mustache.render(templateData, data)
       if (filesystem.exists(targetFilename) && options.overwrite) {
@@ -25,11 +22,10 @@ const template = {
         error(err.message)
       }
     } else {
-      return 'FILE_NOT_FOUND'
+      return `FILE_NOT_FOUND: ${templateFilename}`
     }
   },
-  mergeFile: function (template = '', target = '', data = {}, options = { overwrite: true }) {
-    let templateFilename = filesystem.path.join(app.getTemplatePath(), template)
+  mergeFile: function (templateFilename = '', target = '', data = {}, options = { overwrite: true }) {
     if (filesystem.exists(templateFilename)) {
       let templateData = this.readFile(templateFilename, 'utf8')
       let renderedData = Mustache.render(templateData, data)

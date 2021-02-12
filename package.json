@@ -1,8 +1,8 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.17.0",
-  "build": "209",
+  "version": "0.17.34",
+  "build": "212",
   "description": "Node CLI Framework",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
   "repository": "https://github.com/mikeerickson/gunner",
@@ -13,10 +13,10 @@
       "url": "https://github.com/mikeerickson"
     }
   ],
-  "main": "index.js",
   "bin": {
-    "gunner": "index.js"
+    "gunner": "./bin/gunner"
   },
+  "main": "./src/gunner.js",
   "engines": {
     "node": ">=10.0.0"
   },
@@ -26,7 +26,7 @@
     "lint": "node ./tasks/lint.js",
     "test": "./tasks/test.js $1",
     "test:all": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
-    "test:ci": "mocha --reporter dot",
+    "test:ci": "mocha --reporter dot && node ./test/utils/testCleanup.js",
     "test:spec": "mocha --reporter spec",
     "test:commit": "mocha ./test/*.test.js --reporter dot  && node ./test/utils/testCleanup.js",
     "test:coverage": "nyc mocha ./test/*.test.js",
@@ -51,11 +51,13 @@
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
     "leasot": "11.5.0",
+    "mocha": "6.0.2",
     "mocha-better-spec-reporter": "3.1.0",
     "mock-fs": "4.13.0",
     "nyc": "15.1.0",
     "prettier": "2.2.1",
-    "sinon": "9.2.4"
+    "sinon": "9.2.4",
+    "valid-filename": "3.1.0"
   },
   "dependencies": {
     "@codedungeon/messenger": "0.9.1",
@@ -67,7 +69,8 @@
     "dayjs": "1.10.4",
     "dumper.js": "1.3.1",
     "enquirer": "2.3.6",
-    "execa": "0.2.2",
+    "execa": "5.0.0",
+    "fs-chmod": "1.0.6",
     "fs-extra": "9.1.0",
     "fs-extra-promise": "1.0.1",
     "fs-jetpack": "2.4.0",
@@ -77,7 +80,6 @@
     "ip": "1.1.5",
     "min-dot": "0.1.1",
     "minimist": "1.2.5",
-    "mocha": "6.0.2",
     "mustache": "4.1.0",
     "node-ip": "0.1.2",
     "npm-which": "3.0.1",

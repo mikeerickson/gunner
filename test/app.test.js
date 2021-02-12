@@ -3,16 +3,15 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const app = require('../src/toolbox/app')
+const App = require('../src/toolbox/app')
 const { expect } = require('chai')
 const filesystem = require('../src/toolbox/filesystem')
 const { path } = require('../src/toolbox/filesystem')
 
 describe('app utils', (done) => {
-  it('should return application (gunner) path', (done) => {
-    let appPath = app.getApplicationPath()
-    expect(appPath.includes('gunner')).to.be.true
-    done()
+  let app
+  beforeEach(() => {
+    app = new App({ projectRoot: path.resolve(path.dirname('../')) })
   })
 
   it('should return cli command path', (done) => {
@@ -46,9 +45,11 @@ describe('app utils', (done) => {
   it('should return project path', (done) => {
     // set custom working path (pwd)
     try {
+      let cwd = process.cwd()
       process.chdir('/tmp')
       let projectPath = app.getProjectPath()
       expect(projectPath).equals('/private/tmp')
+      process.chdir(cwd)
     } catch (err) {
       console.log('chdir: ' + err)
     }
@@ -58,9 +59,11 @@ describe('app utils', (done) => {
   it('should return destination path', (done) => {
     // set custom working path (pwd)
     try {
+      let cwd = process.cwd()
       process.chdir('/tmp')
       let destinationPath = app.getDestinationPath()
       expect(destinationPath).equals('/private/tmp')
+      process.chdir(cwd)
     } catch (err) {
       console.log('chdir: ' + err)
     }
@@ -70,9 +73,11 @@ describe('app utils', (done) => {
   it('should return project template path', (done) => {
     // set custom working path (pwd)
     try {
+      let cwd = process.cwd()
       process.chdir('/tmp')
       let projectTemplatePath = app.getProjectTemplatePath()
       expect(projectTemplatePath).equals('/private/tmp/src/templates')
+      process.chdir(cwd)
     } catch (err) {
       console.log('chdir: ' + err)
     }
@@ -82,9 +87,11 @@ describe('app utils', (done) => {
   it('should return project extensions path', (done) => {
     // set custom working path (pwd)
     try {
+      let cwd = process.cwd()
       process.chdir('/tmp')
       let projectExtensionPath = app.getProjectExtensionPath()
       expect(projectExtensionPath).equals('/private/tmp/src/extensions')
+      process.chdir(cwd)
     } catch (err) {
       console.log('chdir: ' + err)
     }
@@ -92,12 +99,13 @@ describe('app utils', (done) => {
   })
 
   it('should return shorten filename', (done) => {
-    let testFilename = app.getShortenFilename(__filename)
+    let appInstance = new App({ projectRoot: path.dirname(__dirname) })
+    let testFilename = appInstance.getShortenFilename(__filename)
     expect(testFilename).equals('./test/app.test.js')
 
-    let commandFilename = path.join(app.getCommandPath(), 'make-command.js')
-    let shortFilename = app.getShortenFilename(commandFilename)
-    expect(shortFilename).equals('./src/commands/make-command.js')
+    // let commandFilename = path.join(app.getCommandPath(), 'make-command.js')
+    // let shortFilename = app.getShortenFilename(commandFilename)
+    // expect(shortFilename).equals('./src/commands/make-command.js')
 
     done()
   })

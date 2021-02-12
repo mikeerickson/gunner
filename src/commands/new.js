@@ -78,12 +78,19 @@ module.exports = {
     questions.push(buildQuestion('input', 'email', 'What is your email?', { initial: email }))
     questions.push(buildQuestion('input', 'gitUserName', 'What is your github username?', { initial: gitUserName }))
 
-    altOptions = {
+    let altOptions = {
       choices: ['npm', 'yarn'],
       maxSelected: 1,
       limit: 2,
       hint: 'Make sure you dont mix tools',
       initial: pkgMgr,
+      result: (value) => {
+        console.log('')
+        return value
+      },
+    }
+
+    let spaceOptions = {
       result: (value) => {
         console.log('')
         return value
@@ -96,6 +103,19 @@ module.exports = {
     questions.push(
       buildQuestion('confirm', 'useTodo', 'Would you like to integrate Todo File Generator (uses leasot)?')
     )
+
+    let testOptions = {
+      choices: ['jest', 'mocha', 'none'],
+      maxSelected: 1,
+      limit: 3,
+      initial: 'jest',
+      result: (value) => {
+        console.log('')
+        return value
+      },
+    }
+
+    questions.push(buildQuestion('select', 'testTool', 'Which testing framework would you like to use?', testOptions))
 
     let answers = await toolbox.prompts.show(questions)
 
@@ -155,13 +175,15 @@ module.exports = {
       usePrettier: false,
       useEslint: false,
       useTodo: false,
+      testTool: 'none',
     }
   ) {
     this.src = this.join(toolbox.env.projectRoot, 'src')
     this.dest = this.join(toolbox.app.getProjectPath(), toolbox.commandName)
     this.answers = { ...answers }
 
-    console.log('')
+    this.srcTasksPath = this.join(toolbox.env.projectRoot, 'tasks')
+    this.destTasksPath = this.join(this.dest, 'tasks')
 
     if (toolbox.env.overwrite) {
       toolbox.filesystem.rmdir(this.dest)
@@ -222,10 +244,12 @@ module.exports = {
 
     toolbox.filesystem.copy(this.src, this.join(this.dest, 'src'))
     toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'bin'), this.join(this.dest, 'bin'))
-    toolbox.filesystem.copy(
-      this.join(toolbox.env.projectRoot, 'tasks', 'bumpBuild.js'),
-      this.join(this.dest, 'tasks', 'bumpBuild.js')
+    toolbox.filesystem.renameSync(
+      this.join(this.dest, 'bin', 'gunner'),
+      this.join(this.dest, 'bin', toolbox.commandName)
     )
+    toolbox.filesystem.copy(this.join(this.srcTasksPath, 'bumpBuild.js'), this.join(this.destTasksPath, 'bumpBuild.js'))
+    toolbox.filesystem.executable(this.destTasksPath, 'bumpBuild.js')
 
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'commands', 'new.js'))
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'package.json.mustache'))
@@ -235,6 +259,10 @@ module.exports = {
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'toolbox', '_deprecated_'))
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'unused'))
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'utils'))
+
+    if (this.answers.testTool !== 'none') {
+      toolbox.print.note('copy templates for ' + this.answers.testTool + ' here')
+    }
 
     if (this.answers.usePrettier) {
       toolbox.filesystem.copy(
@@ -256,13 +284,11 @@ module.exports = {
       }
       /*eslint-enable */
 
-      toolbox.filesystem.copy(
-        this.join(toolbox.env.projectRoot, 'tasks', 'lint.js'),
-        this.join(this.dest, 'tasks', 'lint.js')
-      )
+      toolbox.filesystem.copy(this.join(this.srcTasksPath, 'lint.js'), this.join(this.destTasksPath, 'lint.js'))
+      toolbox.filesystem.executable(this.destTasksPath, 'lint.js')
 
       toolbox.template.mergeFile(
-        '.eslintrc.js.mustache',
+        this.join(this.src, 'templates', '.eslintrc.js.mustache'),
         this.join(this.dest, '.eslintrc.js'),
         { eslintExtends, eslintPlugins, useEslint: this.answers.useEslint, usePrettier: this.answers.usePrettier },
         { overwrite: true }
@@ -272,14 +298,13 @@ module.exports = {
     // setup test
     toolbox.filesystem.copy(
       this.join(toolbox.env.projectRoot, 'src', 'templates', 'test.js.mustache'),
-      this.join(this.dest, 'tasks', 'test.js')
+      this.join(this.destTasksPath, 'test.js')
     )
+    toolbox.filesystem.executable(this.destTasksPath, 'test.js')
 
     if (this.answers.useTodo) {
-      toolbox.filesystem.copy(
-        this.join(toolbox.env.projectRoot, 'tasks', 'todo.js'),
-        this.join(this.dest, 'tasks', 'todo.js')
-      )
+      toolbox.filesystem.copy(this.join(this.srcTasksPath, 'todo.js'), this.join(this.destTasksPath, 'todo.js'))
+      toolbox.filesystem.executable(this.destTasksPath, 'todo.js')
     }
 
     toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'index.js'), this.join(this.dest, 'index.js'))
@@ -298,30 +323,48 @@ module.exports = {
 
     let scriptItems = [{ bump: 'node ./tasks/bumpBuild.js' }, { test: 'node ./tasks/test.js' }]
 
-    let options = ''
+    let devDependencies = []
+
     if (this.answers.usePrettier) {
-      options = '"prettier": ">=2",'
+      devDependencies.push({ prettier: '>=2' })
     }
 
     if (this.answers.useTodo) {
-      options += '\n    "leasot": ">=11",'
+      devDependencies.push({ leasot: '>=11' })
       scriptItems.push({ todo: 'node ./tasks/todo.js' })
     }
 
     if (this.answers.useEslint) {
-      options += '\n    "babel-eslint": ">=5",'
-      options += '\n    "eslint": ">=7",'
+      devDependencies.push({ 'babel-eslint': '>=5', eslint: '>=7' })
       if (this.answers.usePrettier) {
-        options += '\n    "eslint-config-prettier": ">=7",'
-        options += '\n    "eslint-plugin-prettier": ">=3",'
+        devDependencies.push({ 'eslint-config-prettier': '>=7', 'eslint-plugin-prettier': '>=3' })
       }
       scriptItems.push({ lint: 'node ./tasks/lint.js' })
     }
+
+    if (this.answers.testTool !== 'none') {
+      if (this.answers.testTool === 'mocha') {
+        devDependencies.push({ chai: '>=4', mocha: '>=6' })
+      }
+
+      if (this.answers.testTool === 'jest') {
+        devDependencies.push({ jest: '>=24' })
+      }
+    }
+
     let scripts = ''
     scriptItems.forEach((item) => {
       Object.entries(item).forEach((entry) => {
         const [key, value] = entry
         scripts += `"${key}": "${value}",`
+      })
+    })
+
+    let options = ''
+    devDependencies.forEach((item) => {
+      Object.entries(item).forEach((entry) => {
+        const [key, value] = entry
+        options += `"${key}": "${value}",`
       })
     })
 
@@ -332,7 +375,7 @@ module.exports = {
     let github = this.answers.gitUserName.length > 0 ? `(https://github.com/${this.answers.gitUserName})` : ''
     let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}}/${toolbox.commandName}` : ''
     toolbox.template.mergeFile(
-      'package.json.mustache',
+      this.join(this.src, 'templates', 'package.json.mustache'),
       pkgFilename,
       {
         name: toolbox.commandName,
@@ -350,20 +393,24 @@ module.exports = {
       { overwrite: true }
     )
 
-    toolbox.template.mergeFile('LICENSE.mustache', this.join(this.dest, 'LICENSE'), {
+    toolbox.template.mergeFile(this.join(this.src, 'templates', 'LICENSE.mustache'), this.join(this.dest, 'LICENSE'), {
       fname: this.answers.fname,
       lname: this.answers.lname,
       year: new Date().getFullYear(),
     })
 
-    toolbox.template.mergeFile('README.md.mustache', this.join(this.dest, 'README.md'), {
-      name: toolbox.commandName,
-      fname: this.answers.fname,
-      lname: this.answers.lname,
-      gitUserName: this.answers.git,
-      year: new Date().getFullYear(),
-      email: this.answers.email,
-    })
+    toolbox.template.mergeFile(
+      this.join(this.src, 'templates', 'README.md.mustache'),
+      this.join(this.dest, 'README.md'),
+      {
+        name: toolbox.commandName,
+        fname: this.answers.fname,
+        lname: this.answers.lname,
+        gitUserName: this.answers.git,
+        year: new Date().getFullYear(),
+        email: this.answers.email,
+      }
+    )
 
     this.spinner.indent = 0
     this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Files Created...`)

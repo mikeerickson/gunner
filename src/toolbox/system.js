@@ -11,15 +11,19 @@ const system = {
   run: (cmd) => {
     return execSync(cmd, { inherit: true }).toString()
   },
+
   exec: (cmd) => {
     return exec(cmd)
   },
+
   which: (app) => {
     return which.sync(app)
   },
+
   node: () => {
     return which('node')
   },
+
   isWindows: () => {
     os.platform === 'win32'
   },

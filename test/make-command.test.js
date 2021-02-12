@@ -6,14 +6,16 @@
 const path = require('path')
 const { expect } = require('chai')
 const { exec, execSync } = require('child_process')
-const app = require('../src/toolbox/app.js')
+const App = require('../src/toolbox/App.js')
 const fs = require('../src/toolbox/filesystem')
-const { dd } = require('dumper.js')
+const execa = require('execa')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''
+  let app
   beforeEach(async () => {
-    testCommandFilename = path.join(app.getProjectCommandPath(), '_TestCommand_.js')
+    app = new App({ projectRoot: path.resolve(path.dirname('../')) })
+    testCommandFilename = path.join(app.getProjectCommandPath(), 'TestCommand.js')
     if (await fs.existsSync(testCommandFilename)) {
       await fs.delete(testCommandFilename)
     }
@@ -33,9 +35,9 @@ describe('make:command', (done) => {
   })
 
   it('should create test command', (done) => {
-    let testCommandName = '_TestCommand_'
+    let testCommandName = 'TestCommand'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-    let result = execSync(`gunner make:command ${testCommandName} --name test --overwrite`)
+    let result = execSync(`gunner make:command ${testCommandName} --name test --description test --overwrite`)
     result = result.toString()
 
     let msg = result.replace(/\n/gi, '')
@@ -45,10 +47,19 @@ describe('make:command', (done) => {
   })
 
   it('should show warning when command already exists', (done) => {
-    let testCommandName = 'sample'
-    exec(`gunner make:command ${testCommandName} --name test`, async (err, stdout, stderr) => {
+    let testCommandName = 'make-command'
+    exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       expect(result).contain(`${testCommandName}.js already exists`)
+    })
+    done()
+  })
+
+  it('should prompt for description`', async (done) => {
+    let testCommandName = '_InvalidName_'
+    exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
+      let result = stdout.replace(/\n/gi, '')
+      expect(result).contain(`Invalid Name:  ${testCommandName}`)
     })
     done()
   })

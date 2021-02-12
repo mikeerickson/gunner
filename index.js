@@ -2,8 +2,9 @@
 
 const CLI = require('./src/gunner')
 const pkgInfo = require('./package.json')
+const path = require('path')
 
-const app = new CLI(process.argv, __dirname)
+const app = new CLI(process.argv, path.join(__dirname))
   .usage(`${pkgInfo.packageName} make:command TestCommand --name test:command`)
   .options(/* if not called, options will be suppressed in help dialog */)
   .version(/* version string override, if not supplied default version info will be displayed */)

@@ -3,18 +3,17 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-// const path = require('path')
 const fs = require('../../src/toolbox/filesystem')
-const print = require('@codedungeon/messenger')
-const app = require('../../src/toolbox/app.js')
+const App = require('../../src/toolbox/App.js')
 const system = require('../../src/toolbox/system.js')
+const path = require('path')
 
 ;(async () => {
-  await fs.delete(app.getProjectCommandPath() + '_TestCommand_.js')
+  let app = new App({ projectRoot: '../..' })
+  await fs.delete(path.join(app.getProjectCommandPath(), '_TestCommand_.js'))
+  await fs.delete(path.join(app.getProjectExtensionPath(), '_TestExtension_-extension.js'))
+  await fs.delete(path.join(app.getProjectExtensionPath(), 'sample-extension.js'))
   system.run(`rm -rf ${fs.path.join(app.getProjectRoot(), '.temp')}`)
-  console.log('')
-  print.success('Testing Complete', 'TESTING')
-  console.log('')
 })().catch((err) => {
   console.error(err)
 })

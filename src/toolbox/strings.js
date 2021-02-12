@@ -5,10 +5,16 @@
 
 /* eslint-disable no-control-regex */
 
-const strings = require('voca') // https://vocajs.com/
+// https://vocajs.com/
+const { dd } = require('dumper.js')
+const strings = require('voca')
 
 strings.raw = (str) => {
   return str.replace(/\x1b\[..?m/g, '')
+}
+
+strings.validName = (str) => {
+  return str.match(/^[0-9a-zA-Z,-]+$/)
 }
 
 if (!String.prototype.hasOwnProperty('raw')) {

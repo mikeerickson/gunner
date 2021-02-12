@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+/*eslint no-console: "off"*/
+
+const colors = require('chalk')
+const path = require('path')
+const { spawnSync } = require('child_process')
+
+let filename = process.argv[2] || '*.test.js' // if no filename supplied, it will run against all tests
+
+// do some test filename massaging in case we didnt supply ".test"
+if (!filename.includes('test')) {
+  let ext = path.extname(filename) || '.js'
+  filename = filename.replace(ext, '') + '.test' + ext
+}
+
+console.log('')
+console.log(colors.cyan(`==> Test Specification './test/${filename}'`))
+spawnSync('./node_modules/bin/mocha', ['./test/' + filename, '--timeout 5000'], {
+  stdio: 'inherit',
+})

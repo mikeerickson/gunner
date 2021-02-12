@@ -54,6 +54,12 @@ async function multiSelect(config) {
 }
 
 prompts = {
+  buildQuestion: (type, name, message, alternateOptions = {}) => {
+    return { type, name, message, ...alternateOptions }
+  },
+
+  input: (msg, initial = false) => {},
+
   boolean: (msg, initial = false, resolve, reject) => {
     const prompt = new BooleanPrompt({
       name: 'answer',

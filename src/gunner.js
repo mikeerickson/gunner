@@ -3,12 +3,12 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { dd } = require('dumper.js')
 const path = require('path')
-const app = require('./toolbox/app.js')
+const App = require('./toolbox/App')
 const system = require('./toolbox/system.js')
 const print = require('./toolbox/print')(this.quiet)
 const strings = require('./toolbox/strings')
+const { dd } = require('dumper.js')
 
 const HELP_PAD = 30
 
@@ -27,6 +27,9 @@ class CLI {
     this.argv = argv
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
     this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
+
+    this.app = new App({ projectRoot: this.projectRoot })
+
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
     this.versionInfo = this.pkgInfo.version
     this.name = this.pkgInfo.name
@@ -76,7 +79,7 @@ class CLI {
 
       // toolbox modules
       api: require('apisauce'),
-      app: app,
+      app: this.app,
       arguments: this.arguments,
       colors: require('chalk'),
       commandName: this.commandName,
@@ -245,8 +248,9 @@ class CLI {
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
-      path.join(app.getCommandPath(), strings.kebabCase(module) + '.js'),
-      path.join(app.getCommandPath(), strings.camelCase(module) + '.js'),
+      path.join(this.app.getCommandPath(), strings.kebabCase(module) + '.js'),
+      path.join(this.app.getCommandPath(), strings.camelCase(module) + '.js'),
+      path.join(this.app.getCommandPath(), strings.snakeCase(module) + '.js'),
     ]
 
     let filename = ''
@@ -334,8 +338,9 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = app.getCommandPath()
+    let commandPath = this.app.getCommandPath()
     let commandFiles = this.fs.readdirSync(commandPath)
+
     let commands = ''
     let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
 
@@ -346,6 +351,7 @@ class CLI {
 
     commandFiles.forEach((filename) => {
       if (path.extname(filename) == '.js') {
+        let moduleFilename = path.basename(filename, '.js')
         let module = this.loadModule(path.basename(filename, '.js'))
         let disabled = module.disabled || false
         let hidden = module.hidden || false
@@ -354,7 +360,7 @@ class CLI {
           let name = module.name || ''
           if (module.hasOwnProperty('flags')) {
             if (Object.keys(module.flags).length > 0) {
-              name += ' <options>'
+              name += ' [args]'
             }
           }
           let description = module.description || `${module.name} command`
@@ -364,6 +370,7 @@ class CLI {
         }
       }
     })
+
     return commands
   }
 
@@ -435,8 +442,11 @@ class CLI {
         this.toolbox.print.log(this.commandInfo + '\n')
       } else {
         let commands = this.showCommands()
+
         if (commands.length > 0) {
           this.toolbox.print.log(commands)
+        } else {
+          this.toolbox.print.log('  No Command Available\n')
         }
       }
 
@@ -515,7 +525,7 @@ class CLI {
           }
 
           let required = ''
-          if (module.flags[flag].hasOwnProperty('required')) {
+          if (module.flags[flag]?.required) {
             required = this.toolbox.colors.red('-required-')
           }
 
@@ -609,12 +619,12 @@ class CLI {
     // if no command or --help supplied, use default command if it exists
     if (commandInfo.hasOwnProperty('default')) {
       let defaultCommand = this.toolbox.strings.camelCase(commandInfo.default.replace('.js', ''))
-      if (this.fs.exists(path.resolve(app.getCommandPath(), defaultCommand + '.js'))) {
+      if (this.fs.exists(path.resolve(this.app.getCommandPath(), defaultCommand + '.js'))) {
         command = commandInfo.default
       }
     } else {
       if (command.length === 0 && !this.help) {
-        command = this.fs.exists(path.resolve(app.getCommandPath(), 'default.js')) ? 'default' : ''
+        command = this.fs.exists(path.resolve(this.app.getCommandPath(), 'default.js')) ? 'default' : ''
       }
     }
     // if did not supply command show help
@@ -622,7 +632,7 @@ class CLI {
   }
 
   loadExtensions(cli) {
-    let extensionPath = app.getExtensionPath()
+    let extensionPath = this.app.getExtensionPath()
     if (!this.fs.existsSync(extensionPath)) {
       this.fs.mkdirSync(extensionPath)
     }

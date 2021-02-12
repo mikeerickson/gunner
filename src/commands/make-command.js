@@ -3,8 +3,6 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const app = require('../toolbox/app')
-const { debug } = require('../toolbox/print')
 const pkgInfo = require('../../package.json')
 const colors = require('chalk')
 const { dd } = require('dumper.js')
@@ -15,11 +13,46 @@ module.exports = {
   usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
-    description: { aliases: ['s'], description: 'Command description', required: false, default: 'x' },
+    description: { aliases: ['s'], description: 'Command description', required: false },
   },
-  examples: ['make:command --description="Command Description"'],
+  examples: ['make:command HelloWorld --name hello:world --description="Command Description"'],
 
-  execute(toolbox) {
+  async execute(toolbox) {
+    let questions = []
+
+    if (toolbox.env.commandName.length === 0) {
+      questions.push(
+        toolbox.prompts.buildQuestion('input', 'commandName', 'Command Name?', {
+          validate: (value, state, item, index) => {
+            return value.length > 0
+          },
+        })
+      )
+    }
+    if (!toolbox.arguments.description) {
+      questions.push(toolbox.prompts.buildQuestion('input', 'description', 'Command Description?'))
+    }
+    if (questions.length > 0) {
+      console.log()
+      let answers = await toolbox.prompts.show(questions)
+      if (answers) {
+        toolbox.env.commandName = answers.commandName || toolbox.env.commandName
+        toolbox.arguments.description = answers.description || toolbox.arguments.description
+      } else {
+        console.log('')
+        toolbox.print.warn('Command Creation Cancelled', 'WARNING')
+        console.log('')
+        process.exit(0)
+      }
+    }
+
+    if (!toolbox.strings.validName(toolbox.commandName)) {
+      console.log('')
+      toolbox.print.error(`🚫  Invalid Name:  ${toolbox.commandName}`)
+      toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
+      process.exit(0)
+    }
+
     if (toolbox.arguments.name === null) {
       let cmdName = toolbox.strings.kebabCase(toolbox.commandName)
       toolbox.arguments.name = cmdName
@@ -48,8 +81,7 @@ module.exports = {
       if (toolbox.arguments.overwrite) {
         toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.delete(commandFilename) : null
       }
-      let shortFilename = app.getShortenFilename(commandFilename)
-
+      let shortFilename = toolbox.app.getShortenFilename(commandFilename)
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
           let ret = toolbox.filesystem.writeFileSync(commandFilename, templateData)

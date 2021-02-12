@@ -24,8 +24,9 @@ describe('toolbox', (done) => {
   })
 
   it('env.arguments', (done) => {
-    let result = gunner.toolbox.env.hasOwnProperty('arguments')
-    expect(result).to.be.true
+    let args = gunner.toolbox.env.hasOwnProperty('arguments')
+    const keys = Object.keys(args)
+    expect(keys.length).to.equal(0)
 
     done()
   })

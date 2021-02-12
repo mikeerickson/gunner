@@ -45,7 +45,7 @@ module.exports = {
       })
 
       extensionFilename = toolbox.path.join(projectExtensionPath, extensionFilename)
-      let shortFilename = app.getShortenFilename(extensionFilename)
+      let shortFilename = toolbox.app.getShortenFilename(extensionFilename)
       if (toolbox.arguments.overwrite) {
         toolbox.filesystem.existsSync(extensionFilename) ? toolbox.filesystem.delete(extensionFilename) : null
       }

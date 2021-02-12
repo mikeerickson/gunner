@@ -6,12 +6,14 @@
 const path = require('path')
 const { expect } = require('chai')
 const { exec, execSync } = require('child_process')
-const app = require('../src/toolbox/app.js')
+const App = require('../src/toolbox/app.js')
 const fs = require('../src/toolbox/filesystem')
 
 describe('make:extension', (done) => {
   let testExtensionFilename = ''
   beforeEach(async () => {
+    app = new App({ projectRoot: path.resolve(path.dirname('../')) })
+
     testExtensionFilename = path.join(app.getProjectExtensionPath(), '_TestExtension_.js')
     if (await fs.existsSync(testExtensionFilename)) {
       await fs.unlinkSync(testExtensionFilename)

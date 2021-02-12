@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+/*eslint no-console: "off"*/
+
+spawnSync('mocha', ['./test/' + filename, '--timeout 5000'], {
+  stdio: 'inherit',
+})
