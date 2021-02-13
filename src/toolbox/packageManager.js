@@ -38,6 +38,9 @@ const pkgMgr = {
     // updated to support npm 7 output "up to date"
     return result.match(/success|added|updated|up to date/g).length > 0
   },
+  add: function (installCommand = '', options = { showCommand: false }) {
+    return this.install(installCommand, options)
+  },
   remove: function (removeCommand = '', options = { showCommand: false }) {
     let command = this.hasYarnLock() ? 'yarn remove' : 'npm uninstall'
     if (options.showCommand) {

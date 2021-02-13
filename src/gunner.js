@@ -3,25 +3,26 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const path = require('path')
 const App = require('./toolbox/App')
-const system = require('./toolbox/system.js')
-const filesystem = require('./toolbox/filesystem')
-const print = require('./toolbox/print')(this.quiet)
-const strings = require('./toolbox/strings')
+
+const path = require('path')
 const colors = require('chalk')
-const api = require('./toolbox/api')
-const datetime = require('dayjs')
-const packageManager = require('./toolbox/packageManager')
 const semver = require('semver')
-const arrays = require('./toolbox/arrays')
-const environment = require('./toolbox/environment')
-const prompts = require('./toolbox/prompt')
-const template = require('./toolbox/template')
-const config = require('./toolbox/config')
+const datetime = require('dayjs')
 const debug = require('dumper.js')
+const api = require('./toolbox/api')
+const arrays = require('./toolbox/arrays')
+const config = require('./toolbox/config')
+const prompts = require('./toolbox/prompt')
 const table = require('./toolbox/table.js')
 const utils = require('@codedungeon/utils')
+const strings = require('./toolbox/strings')
+const system = require('./toolbox/system.js')
+const template = require('./toolbox/template')
+const filesystem = require('./toolbox/filesystem')
+const print = require('./toolbox/print')(this.quiet)
+const environment = require('./toolbox/environment')
+const packageManager = require('./toolbox/packageManager')
 
 const HELP_PAD = 30
 
