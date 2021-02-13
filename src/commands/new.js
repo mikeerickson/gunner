@@ -11,10 +11,6 @@ const { prompt } = require('enquirer')
 const Ora = require('ora')
 const { dd } = require('dumper.js')
 
-const buildQuestion = (type, name, message, alternateOptions = {}) => {
-  return { type, name, message, ...alternateOptions }
-}
-
 const spinner = new Ora({
   discardStdin: false,
   color: 'blue',
@@ -58,7 +54,7 @@ module.exports = {
     let questions = []
     if (toolbox.commandName.length === 0) {
       questions.push(
-        buildQuestion('input', 'name', 'Please supply project name?', {
+        toolbox.prompts.buildQuestion('input', 'name', 'Please supply project name?', {
           validate: (value, state, item, index) => {
             if (value.length > 0) {
               const newProject = this.join(toolbox.app.getProjectPath(), value)
@@ -73,10 +69,12 @@ module.exports = {
         })
       )
     }
-    questions.push(buildQuestion('input', 'fname', 'What is your first name?', { initial: fname }))
-    questions.push(buildQuestion('input', 'lname', 'What is your last name?', { initial: lname }))
-    questions.push(buildQuestion('input', 'email', 'What is your email?', { initial: email }))
-    questions.push(buildQuestion('input', 'gitUserName', 'What is your github username?', { initial: gitUserName }))
+    questions.push(toolbox.prompts.buildQuestion('input', 'fname', 'What is your first name?', { initial: fname }))
+    questions.push(toolbox.prompts.buildQuestion('input', 'lname', 'What is your last name?', { initial: lname }))
+    questions.push(toolbox.prompts.buildQuestion('input', 'email', 'What is your email?', { initial: email }))
+    questions.push(
+      toolbox.prompts.buildQuestion('input', 'gitUserName', 'What is your github username?', { initial: gitUserName })
+    )
 
     let altOptions = {
       choices: ['npm', 'yarn'],
@@ -97,11 +95,17 @@ module.exports = {
       },
     }
 
-    questions.push(buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions))
-    questions.push(buildQuestion('confirm', 'usePrettier', 'Would you like to use Prettier?'))
-    questions.push(buildQuestion('confirm', 'useEslint', 'Would you like to use ESLint?'))
     questions.push(
-      buildQuestion('confirm', 'useTodo', 'Would you like to integrate Todo File Generator (uses leasot)?')
+      toolbox.prompts.buildQuestion('select', 'pkgMgr', 'What package manager would you like to use?', altOptions)
+    )
+    questions.push(toolbox.prompts.buildQuestion('confirm', 'usePrettier', 'Would you like to use Prettier?'))
+    questions.push(toolbox.prompts.buildQuestion('confirm', 'useEslint', 'Would you like to use ESLint?'))
+    questions.push(
+      toolbox.prompts.buildQuestion(
+        'confirm',
+        'useTodo',
+        'Would you like to integrate Todo File Generator (uses leasot)?'
+      )
     )
 
     let testOptions = {
@@ -115,7 +119,9 @@ module.exports = {
       },
     }
 
-    questions.push(buildQuestion('select', 'testTool', 'Which testing framework would you like to use?', testOptions))
+    questions.push(
+      toolbox.prompts.buildQuestion('select', 'testTool', 'Which testing framework would you like to use?', testOptions)
+    )
 
     let answers = await toolbox.prompts.show(questions)
 
@@ -242,7 +248,14 @@ module.exports = {
     this.spinner.text = toolbox.colors.blue('Preparing Source Files...')
     this.spinner.start()
 
-    toolbox.filesystem.copy(this.src, this.join(this.dest, 'src'))
+    // toolbox.filesystem.copy(this.src, this.join(this.dest, 'src'))
+    toolbox.filesystem.mkdirSync(this.join(this.dest, 'src'))
+    toolbox.filesystem.mkdirSync(this.join(this.dest, 'src', 'commands'))
+    toolbox.filesystem.mkdirSync(this.join(this.dest, 'src', 'extensions'))
+    toolbox.filesystem.copy(
+      this.join(this.src, 'commands', 'sayHello.js'),
+      this.join(this.dest, 'src', 'commands', 'sayHello.js')
+    )
     toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'bin'), this.join(this.dest, 'bin'))
     toolbox.filesystem.renameSync(
       this.join(this.dest, 'bin', 'gunner'),
@@ -250,15 +263,6 @@ module.exports = {
     )
     toolbox.filesystem.copy(this.join(this.srcTasksPath, 'bumpBuild.js'), this.join(this.destTasksPath, 'bumpBuild.js'))
     toolbox.filesystem.executable(this.destTasksPath, 'bumpBuild.js')
-
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'commands', 'new.js'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'package.json.mustache'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'LICENSE.mustache'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'README.md.mustache'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'templates', 'app.test.mustache'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'toolbox', '_deprecated_'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'unused'))
-    toolbox.filesystem.delete(this.join(this.dest, 'src', 'utils'))
 
     if (this.answers.testTool !== 'none') {
       if (this.answers.testTool === 'mocha') {
@@ -363,6 +367,14 @@ module.exports = {
         scriptItems.push({ ['test:ci']: 'mocha --reporter dot && node ./test/utils/testCleanup.js' })
         scriptItems.push({ ['test:watch']: 'mocha ./test/*.test.js --growl --watch --reporter progress' })
         scriptItems.push({ ['test:coverage']: 'nyc mocha ./test/*.test.js && node ./test/utils/testCleanup.js' })
+
+        toolbox.template.mergeFile(
+          this.join(this.src, 'templates', 'mocha', 'cli-integration.test.js.mustache'),
+          this.join(this.dest, 'test', 'cli-integration.test.js'),
+          {
+            name: toolbox.commandName,
+          }
+        )
       }
 
       // setup jest tooling

@@ -1,8 +1,7 @@
 const { system, filesystem } = require('@codedungeon/gunner')
 
-const src = filesystem.path(__dirname, '..')
-
-const cli = async (cmd) => system.run('node ' + filesystem.path(src, 'bin', '{{name}}') + ` ${cmd}`)
+const src = filesystem.path.join(__dirname, '..')
+const cli = async (cmd) => system.run('node ' + filesystem.path.join(src, 'bin', '{{name}}') + ` ${cmd}`)
 
 test('outputs version', async () => {
   const output = await cli('--version')

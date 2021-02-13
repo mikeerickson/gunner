@@ -1,0 +1,22 @@
+const { system, filesystem } = require('@codedungeon/gunner')
+const { expect } = require('chai')
+const pkgInfo = require('../package.json')
+
+const src = filesystem.path.join(__dirname, '..')
+
+let cli
+before(() => {
+  cli = async (cmd) => system.run('node ' + filesystem.path.join(src, 'bin', '{{name}}') + ` ${cmd}`)
+})
+
+describe.only('cli: integration', async () => {
+  it('should return cli version', async () => {
+    const output = await cli('--version')
+    expect(output).contains(pkgInfo.version)
+  })
+
+  it('should return cli version', async () => {
+    const output = await cli('--help')
+    expect(output).contains(pkgInfo.version)
+  })
+})
