@@ -1,0 +1,9 @@
+const { join } = require('path')
+const { exec } = require('child_process')
+
+;(async () => {
+  let tempFiles = join('./src', 'commands', '*.temp')
+  exec(`rm -rf ${tempFiles}`)
+})().catch((err) => {
+  console.error(err)
+})

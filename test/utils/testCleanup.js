@@ -4,16 +4,16 @@
  * -----------------------------------------------------------------------------------------*/
 
 const fs = require('../../src/toolbox/filesystem')
-const App = require('../../src/toolbox/App.js')
 const system = require('../../src/toolbox/system.js')
-const path = require('path')
+const { join } = require('path')
 
 ;(async () => {
-  let app = new App({ projectRoot: '../..' })
-  await fs.delete(path.join(app.getProjectCommandPath(), '_TestCommand_.js'))
-  await fs.delete(path.join(app.getProjectExtensionPath(), '_TestExtension_-extension.js'))
-  await fs.delete(path.join(app.getProjectExtensionPath(), 'sample-extension.js'))
-  system.run(`rm -rf ${fs.path.join(app.getProjectRoot(), '.temp')}`)
+  let extensionPath = join('src', 'extensions')
+  await fs.delete(join('src', 'commands', '_TestCommand_.js'))
+  await fs.delete(join(extensionPath, '_TestExtension_-extension.js'))
+  await fs.delete(join(extensionPath, 'sample-extension.js'))
+  let tempFiles = join('./src', 'commands', '*.temp')
+  system.run(`rm -rf ${tempFiles}`)
 })().catch((err) => {
   console.error(err)
 })

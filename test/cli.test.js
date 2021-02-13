@@ -6,7 +6,7 @@
 const os = require('os')
 const path = require('path')
 const { expect } = require('chai')
-const CLI = require('../src/gunner')
+const { CLI } = require('../src/gunner')
 const pkgInfo = require('../package.json')
 
 let gunner

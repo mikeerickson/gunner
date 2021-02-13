@@ -3,7 +3,7 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const CLI = require('../src/gunner')
+const { CLI } = require('../src/gunner')
 const app = require('../src/toolbox/app')
 const system = require('../src/toolbox/system')
 const filesystem = require('../src/toolbox/filesystem')

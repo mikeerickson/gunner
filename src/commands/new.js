@@ -261,8 +261,25 @@ module.exports = {
     toolbox.filesystem.delete(this.join(this.dest, 'src', 'utils'))
 
     if (this.answers.testTool !== 'none') {
-      toolbox.print.note('copy templates for ' + this.answers.testTool + ' here')
+      if (this.answers.testTool === 'mocha') {
+        toolbox.filesystem.copy(
+          this.join(toolbox.env.projectRoot, 'src', 'templates', 'testCleanup.js.mustache'),
+          this.join(this.dest, 'test', 'utils', 'testCleanup.js')
+        )
+
+        toolbox.filesystem.copy(
+          this.join(toolbox.env.projectRoot, 'src', 'templates', 'test-mocha.js.mustache'),
+          this.join(this.destTasksPath, 'test.js'),
+          { overwrite: true }
+        )
+      }
+    } else {
+      toolbox.filesystem.copy(
+        this.join(toolbox.env.projectRoot, 'src', 'templates', 'test.js.mustache'),
+        this.join(this.destTasksPath, 'test.js')
+      )
     }
+    toolbox.filesystem.executable(this.destTasksPath, 'test.js')
 
     if (this.answers.usePrettier) {
       toolbox.filesystem.copy(
@@ -295,19 +312,15 @@ module.exports = {
       )
     }
 
-    // setup test
-    toolbox.filesystem.copy(
-      this.join(toolbox.env.projectRoot, 'src', 'templates', 'test.js.mustache'),
-      this.join(this.destTasksPath, 'test.js')
-    )
-    toolbox.filesystem.executable(this.destTasksPath, 'test.js')
-
     if (this.answers.useTodo) {
       toolbox.filesystem.copy(this.join(this.srcTasksPath, 'todo.js'), this.join(this.destTasksPath, 'todo.js'))
       toolbox.filesystem.executable(this.destTasksPath, 'todo.js')
     }
 
-    toolbox.filesystem.copy(this.join(toolbox.env.projectRoot, 'index.js'), this.join(this.dest, 'index.js'))
+    toolbox.filesystem.copy(
+      this.join(toolbox.env.projectRoot, 'src', 'templates', 'index.js.mustache'),
+      this.join(this.dest, 'index.js')
+    )
     this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
     this.spinner.succeed()
 
@@ -321,17 +334,12 @@ module.exports = {
     this.spinner.start()
     let pkgFilename = this.join(this.dest, 'package.json')
 
-    let scriptItems = [{ bump: 'node ./tasks/bumpBuild.js' }, { test: 'node ./tasks/test.js' }]
+    let scriptItems = [{ bump: 'node ./tasks/bumpBuild.js' }]
 
     let devDependencies = []
 
     if (this.answers.usePrettier) {
       devDependencies.push({ prettier: '>=2' })
-    }
-
-    if (this.answers.useTodo) {
-      devDependencies.push({ leasot: '>=11' })
-      scriptItems.push({ todo: 'node ./tasks/todo.js' })
     }
 
     if (this.answers.useEslint) {
@@ -342,13 +350,40 @@ module.exports = {
       scriptItems.push({ lint: 'node ./tasks/lint.js' })
     }
 
+    if (this.answers.useTodo) {
+      devDependencies.push({ leasot: '>=11' })
+      scriptItems.push({ todo: 'node ./tasks/todo.js' })
+    }
+
     if (this.answers.testTool !== 'none') {
+      // setup mocha tooling
       if (this.answers.testTool === 'mocha') {
-        devDependencies.push({ chai: '>=4', mocha: '>=6' })
+        devDependencies.push({ chai: '>=4', mocha: '>=6', nyc: '>=15' })
+        scriptItems.push({ test: 'node ./tasks/test.js' })
+        scriptItems.push({ ['test:ci']: 'mocha --reporter dot && node ./test/utils/testCleanup.js' })
+        scriptItems.push({ ['test:watch']: 'mocha ./test/*.test.js --growl --watch --reporter progress' })
+        scriptItems.push({ ['test:coverage']: 'nyc mocha ./test/*.test.js && node ./test/utils/testCleanup.js' })
       }
 
+      // setup jest tooling
       if (this.answers.testTool === 'jest') {
         devDependencies.push({ jest: '>=24' })
+        scriptItems.push({ test: 'jest' })
+        scriptItems.push({ ['test:watch']: 'jest --watch' })
+        scriptItems.push({ ['test:snapshot']: 'jest --updateSnapshot' })
+        scriptItems.push({ ['test:coverage']: 'jest --coverage' })
+
+        toolbox.template.mergeFile(
+          this.join(this.src, 'templates', 'jest', 'cli-integration.test.js.mustache'),
+          this.join(this.dest, '__test__', 'cli-integration.test.js'),
+          {
+            name: toolbox.commandName,
+          }
+        )
+      }
+
+      if (this.answers.testTool === 'none') {
+        scriptItems.push({ test: 'node ./tasks/test.js' })
       }
     }
 
@@ -389,6 +424,7 @@ module.exports = {
         scripts,
         useEslint: this.answers.useEslint,
         usePrettier: this.answers.usePrettier,
+        useJest: this.answers.testTool === 'jest',
       },
       { overwrite: true }
     )

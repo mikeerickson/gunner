@@ -29,7 +29,7 @@
     "test:ci": "mocha --reporter dot && node ./test/utils/testCleanup.js",
     "test:spec": "mocha --reporter spec",
     "test:commit": "mocha ./test/*.test.js --reporter dot  && node ./test/utils/testCleanup.js",
-    "test:coverage": "nyc mocha ./test/*.test.js",
+    "test:coverage": "nyc mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
     "test:watch": "mocha ./test/*.test.js --growl --watch --reporter progress",
     "todo": "node ./tasks/todo.js",
     "pre-commit": "npm run lint && npm run todo && npm run test:commit"
@@ -52,12 +52,10 @@
     "eslint-plugin-prettier": "3.0.1",
     "leasot": "11.5.0",
     "mocha": "6.0.2",
-    "mocha-better-spec-reporter": "3.1.0",
     "mock-fs": "4.13.0",
     "nyc": "15.1.0",
     "prettier": "2.2.1",
-    "sinon": "9.2.4",
-    "valid-filename": "3.1.0"
+    "sinon": "9.2.4"
   },
   "dependencies": {
     "@codedungeon/messenger": "0.9.1",
@@ -89,6 +87,7 @@
     "semver": "7.3.4",
     "trash": "7.1.0",
     "update-notifier": "4.1.0",
+    "valid-filename": "3.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
   }

@@ -6,9 +6,22 @@
 const path = require('path')
 const App = require('./toolbox/App')
 const system = require('./toolbox/system.js')
+const filesystem = require('./toolbox/filesystem')
 const print = require('./toolbox/print')(this.quiet)
 const strings = require('./toolbox/strings')
-const { dd } = require('dumper.js')
+const colors = require('chalk')
+const api = require('./toolbox/api')
+const datetime = require('dayjs')
+const packageManager = require('./toolbox/packageManager')
+const semver = require('semver')
+const arrays = require('./toolbox/arrays')
+const environment = require('./toolbox/environment')
+const prompts = require('./toolbox/prompt')
+const template = require('./toolbox/template')
+const config = require('./toolbox/config')
+const debug = require('dumper.js')
+const table = require('./toolbox/table.js')
+const utils = require('@codedungeon/utils')
 
 const HELP_PAD = 30
 
@@ -78,13 +91,13 @@ class CLI {
       packageName: this.packageName,
 
       // toolbox modules
-      api: require('apisauce'),
+      api,
       app: this.app,
       arguments: this.arguments,
-      colors: require('chalk'),
+      colors,
       commandName: this.commandName,
-      config: require('./toolbox/config'),
-      debug: require('dumper.js'),
+      config,
+      debug,
       env: {
         appName: this.appName,
         arguments: this.arguments,
@@ -99,18 +112,18 @@ class CLI {
       },
       filesystem: this.fs,
       fs: this.fs,
-      datetime: require('dayjs'),
+      datetime,
       path,
-      packageManager: require('./toolbox/packageManager'),
-      prompts: require('./toolbox/prompt'),
-      print: require('./toolbox/print')(this.quiet),
-      semver: require('semver'),
-      strings: require('./toolbox/strings'),
-      arrays: require('./toolbox/arrays'),
+      packageManager,
+      prompts,
+      print,
+      semver,
+      strings,
+      arrays,
       system,
-      table: require('./toolbox/table.js'),
-      template: require('./toolbox/template'),
-      utils: require('@codedungeon/utils'),
+      table,
+      template,
+      utils,
     }
 
     // load project extensions (will be appended to app namespace)
@@ -598,8 +611,8 @@ class CLI {
 
     // if command not supplied, show help regardless
     if (command === '<command>') {
-      this.command = ''
       command = ''
+      this.command = ''
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {
@@ -645,4 +658,19 @@ class CLI {
   }
 }
 
-module.exports = CLI
+module.exports = {
+  CLI,
+  api,
+  arrays,
+  colors,
+  config,
+  environment,
+  filesystem,
+  print,
+  prompts,
+  strings,
+  system,
+  table,
+  template,
+  utils,
+}

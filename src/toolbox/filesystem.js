@@ -34,7 +34,7 @@ fs.chdir = (path = '') => {
   process.chdir(path)
 }
 
-fs.copy = (src = '', dest = '', options = {}) => {
+fs.copy = (src = '', dest = '', options = { overwrite: true }) => {
   return fsj.copy(src, dest, options)
 }
 

@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------------------*/
 
 const sinon = require('sinon')
-const CLI = require('../src/gunner')
+const { CLI } = require('../src/gunner')
 const { expect } = require('chai')
 const { run } = require('../src/toolbox/system')
 

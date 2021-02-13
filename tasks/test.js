@@ -5,7 +5,7 @@ const execa = require('execa')
 const colors = require('chalk')
 const { join } = require('path')
 const { existsSync } = require('fs')
-const { success, error } = require('@codedungeon/messenger')
+const msg = require('@codedungeon/messenger')
 let validFilename = require('valid-filename')
 
 let filename = process.argv[2] || '*.test.js'
@@ -17,7 +17,7 @@ if (!filename.includes('test')) {
 
 if (validFilename(filename)) {
   if (!existsSync(join('./test/', filename))) {
-    error(`Invalid FIlename: ./test/${filename}`, 'ERROR')
+    msg.error(`Invalid FIlename: ./test/${filename}`, 'ERROR')
     console.log('')
     process.exit(0)
   }
@@ -29,21 +29,21 @@ if (validFilename(filename)) {
   try {
     const subprocess = execa(
       './node_modules/mocha/bin/mocha',
-      ['./test/' + filename, '--reporter', 'mocha-better-spec-reporter', '--timeout 5000'],
+      ['./test/' + filename, '--reporter', 'spec', '--timeout 5000'],
       { env: { FORCE_COLOR: 'true' } }
     )
     subprocess.stdout.pipe(process.stdout)
     const { stdout, stderr } = await subprocess
     console.log(stderr)
     if (!stderr) {
-      success('All Tests Passed\n', 'PASSED')
+      msg.success('All Tests Passed\n', 'PASSED')
     } else {
-      error(stderr)
-      error('Testing Failed\n', 'FAIL')
+      msg.error(stderr)
+      msg.error('Testing Failed\n', 'FAIL')
     }
   } catch (error) {
     console.log('')
-    error('Testing Failed\n', 'FAIL')
+    msg.error('Testing Failed\n', 'FAIL')
   }
 
   // cleanup
