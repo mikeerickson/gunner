@@ -18,7 +18,6 @@ before(() => {
 describe('cli: integration', async () => {
   it('should return cli version', async () => {
     const output = await cli('--version')
-    console.log(output)
     expect(output).contains(pkgInfo.version)
   })
 })

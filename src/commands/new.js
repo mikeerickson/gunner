@@ -7,6 +7,7 @@ const execa = require('execa')
 const colors = require('chalk')
 const process = require('process')
 const { prompt } = require('enquirer')
+const pkgInfo = require('../../package.json')
 
 const Ora = require('ora')
 
@@ -40,6 +41,7 @@ module.exports = {
     let info = await gitUserLocal()
     let ghUserName = await githubUsername(info.user.email)
 
+    toolbox.print.info(`\nGunner v${toolbox.version}`)
     console.log('')
 
     let [githubFirstName, githubLastName] = info.user.name.split(' ')
@@ -141,7 +143,7 @@ module.exports = {
         const { Confirm } = require('enquirer')
         const savePrompt = new Confirm({ name: 'save', message: 'Would you like to save answers for future use?' })
         if (await savePrompt.run()) {
-          toolbox.print.success('✔ Answers Saved...')
+          toolbox.print.success('✔ Answers Saved')
           Object.keys(answers).forEach((key) => {
             if (key !== 'name' && key !== 'usePrettier') {
               toolbox.config.set(key, answers[key])
@@ -211,40 +213,60 @@ module.exports = {
       this.initializeProject(toolbox)
     }, 2000)
 
+    // initialize git
+    setTimeout(() => {
+      this.initializeGit(toolbox)
+    }, 3000)
+
     // prepare source files
     setTimeout(() => {
       this.prepareSourceFiles(toolbox)
-    }, 3000)
+    }, 4000)
 
     // create project files
     setTimeout(() => {
       this.createProjectFiles(toolbox)
-    }, 4000)
+    }, 5000)
 
     // install dependencies
     setTimeout(() => {
       this.installDependencies(toolbox)
-    }, 5000)
+    }, 6000)
   },
 
   setup: async function (toolbox) {
     this.spinner.start()
-    this.spinner.text = toolbox.colors.blue(`Preparing '${toolbox.commandName}' Project...`)
+    this.spinner.text =
+      toolbox.colors.blue(`✨ Preparing ${toolbox.colors.yellow(toolbox.commandName)} Project in `) +
+      toolbox.colors.yellow(this.dest) +
+      '...'
     return true
   },
 
   initializeProject: async function (toolbox) {
     spinner.color = 'blue'
-    spinner.text = toolbox.colors.blue('Initializing Project...')
+    spinner.text = toolbox.colors.blue('✨ Initializing Project')
     toolbox.filesystem.mkdirSync(toolbox.commandName)
-    spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Initialized...`)
+    spinner.text = toolbox.colors.green('✨ Project Initialized in ') + toolbox.colors.yellow(this.dest)
+    spinner.succeed()
+    return true
+  },
+
+  initializeGit: async function (toolbox) {
+    spinner.color = 'blue'
+    spinner.text = toolbox.colors.blue('🗃  Initializing Git Repository')
+    this.spinner.start()
+    toolbox.filesystem.chdir(toolbox.commandName)
+    toolbox.system.run('git init')
+    toolbox.filesystem.chdir('..')
+    spinner.text = toolbox.colors.green('🗃  Git Repository Initialized')
     spinner.succeed()
     return true
   },
 
   prepareSourceFiles: async function (toolbox) {
     this.spinner.color = 'blue'
-    this.spinner.text = toolbox.colors.blue('Preparing Source Files...')
+    this.spinner.text = toolbox.colors.blue('📄 Preparing Source Files...')
     this.spinner.start()
 
     // toolbox.filesystem.copy(this.src, this.join(this.dest, 'src'))
@@ -324,7 +346,7 @@ module.exports = {
       this.join(toolbox.env.projectRoot, 'src', 'templates', 'index.js.mustache'),
       this.join(this.dest, 'index.js')
     )
-    this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Source Files Created...`)
+    this.spinner.text = toolbox.colors.green('📄 Source Files Created')
     this.spinner.succeed()
 
     return true
@@ -332,7 +354,7 @@ module.exports = {
 
   createProjectFiles: async function (toolbox) {
     this.spinner.color = 'blue'
-    this.spinner.text = toolbox.colors.blue('Creating Project Files...')
+    this.spinner.text = toolbox.colors.blue('📦 Creating Project Files...')
     this.spinner.indent = 2
     this.spinner.start()
     let pkgFilename = this.join(this.dest, 'package.json')
@@ -421,6 +443,7 @@ module.exports = {
     let github = this.answers.gitUserName.length > 0 ? `(https://github.com/${this.answers.gitUserName})` : ''
     let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}/${toolbox.commandName}` : ''
     let pkgInfo = require('../../package.json')
+
     toolbox.template.mergeFile(
       this.join(this.src, 'templates', 'package.json.mustache'),
       pkgFilename,
@@ -462,7 +485,7 @@ module.exports = {
     )
 
     this.spinner.indent = 0
-    this.spinner.text = toolbox.colors.green(`'${toolbox.commandName}' Project Files Created...`)
+    this.spinner.text = toolbox.colors.green('📦 Project Files Created')
     this.spinner.succeed()
 
     return true
@@ -471,25 +494,24 @@ module.exports = {
   installDependencies: async function (toolbox) {
     this.spinner.start()
     this.spinner.color = 'yellow'
-    this.spinner.indent = 2
-    this.spinner.text = toolbox.colors.yellow(`Installing Depedencies (using ${this.answers.pkgMgr})...`)
+    this.spinner.indent = 0
+    this.spinner.text = toolbox.colors.yellow(`⚙️  Installing Depedencies (using ${this.answers.pkgMgr})...`)
     toolbox.filesystem.chdir(this.dest)
 
     execa(this.answers.pkgMgr, this.answers.pkgMgr === 'npm' ? ['install'] : [])
       .then((result) => {
         this.spinner.color = 'green'
         this.spinner.indent = 0
-        this.spinner.text = toolbox.colors.green('Installation Complete...')
+        this.spinner.text = toolbox.colors.green('⚙️  Installation Complete')
         this.spinner.succeed()
         setTimeout(() => {
           console.log('')
-          toolbox.print.success(`${toolbox.commandName} Project Created Successfully`, 'SUCCESS')
-          toolbox.print.notice('\nNext Steps:\n')
-          toolbox.print.notice(`  > cd ${toolbox.commandName}`)
-          toolbox.print.notice(`  > ${this.answers.pkgMgr} link ${toolbox.commandName}`)
-          toolbox.print.debug(colors.dim('    info => https://docs.npmjs.com/cli/v6/commands/npm-link'))
-          toolbox.print.notice(`  > ${toolbox.commandName} --help`)
-          console.log('')
+          toolbox.print.success(`${toolbox.colors.yellow(toolbox.commandName)} Project Created Successfully`, 'SUCCESS')
+          toolbox.print.notice('\n👉 Next Steps:\n')
+          toolbox.print.notice(`   ${toolbox.colors.gray('$')} cd ${toolbox.commandName}`)
+          toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${this.answers.pkgMgr} link ${toolbox.commandName}`)
+          toolbox.print.debug(colors.dim('     info => https://docs.npmjs.com/cli/v6/commands/npm-link'))
+          toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${toolbox.commandName} --help\n`)
         }, 1000)
       })
       .catch((err) => {
