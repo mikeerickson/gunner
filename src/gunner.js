@@ -92,7 +92,7 @@ class CLI {
       packageName: this.packageName,
 
       // toolbox modules
-      api,
+      api: require('apisauce'),
       app: this.app,
       arguments: this.arguments,
       colors,
@@ -661,7 +661,7 @@ class CLI {
 
 module.exports = {
   CLI,
-  api,
+  api: require('apisauce'),
   arrays,
   colors,
   config,
