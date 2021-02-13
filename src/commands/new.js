@@ -9,7 +9,6 @@ const process = require('process')
 const { prompt } = require('enquirer')
 
 const Ora = require('ora')
-const { dd } = require('dumper.js')
 
 const spinner = new Ora({
   discardStdin: false,
@@ -420,7 +419,8 @@ module.exports = {
     scripts = scripts.replace(/(^,)|(,$)/g, '')
 
     let github = this.answers.gitUserName.length > 0 ? `(https://github.com/${this.answers.gitUserName})` : ''
-    let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}}/${toolbox.commandName}` : ''
+    let repo = github.length > 0 ? `https://github.com/${this.answers.gitUserName}/${toolbox.commandName}` : ''
+    let pkgInfo = require('../../package.json')
     toolbox.template.mergeFile(
       this.join(this.src, 'templates', 'package.json.mustache'),
       pkgFilename,
@@ -437,6 +437,7 @@ module.exports = {
         useEslint: this.answers.useEslint,
         usePrettier: this.answers.usePrettier,
         useJest: this.answers.testTool === 'jest',
+        gunnerVersion: pkgInfo.version,
       },
       { overwrite: true }
     )
