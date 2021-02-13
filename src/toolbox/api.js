@@ -3,8 +3,4 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const apiSauce = require('apisauce')
-
-const api = {}
-
-module.exports = api
+module.exports = require('apisauce')
