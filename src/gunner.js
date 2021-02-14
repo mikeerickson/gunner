@@ -49,7 +49,6 @@ class CLI {
     this.name = this.pkgInfo.name
     this.appName = this.pkgInfo.packageName
     this.packageName = this.pkgInfo.packageName
-    this.tagline = this.pkgInfo.tagline || ''
     this.author = this.pkgInfo.author || ''
     this.contributors = this.pkgInfo.contributors || []
     this.packageName = this.pkgInfo.packageName || ''
@@ -179,9 +178,9 @@ class CLI {
         '  --quiet, -q                   Quiet mode (suppress console output)',
         '  --version, -v, -V             Show Version',
         // `  --verbose                     Verbose Output [only used in ${this.toolbox.colors.magenta('--debug')} mode]`,
-        this.toolbox.colors.blue.italic(
-          `                                 (includes table of ${this.packageName} options)`
-        ),
+        // this.toolbox.colors.blue.italic(
+        //   `                                 (includes table of ${this.packageName} options)`
+        // ),
       ]
 
       this.optionInfo = options.join('\n')
@@ -409,7 +408,7 @@ class CLI {
     }
   }
 
-  showVersion() {
+  showVersion(options = { simple: false }) {
     if (this.versionStr.length > 0) {
       console.log(this.versionStr)
     } else {
@@ -420,21 +419,19 @@ class CLI {
       console.log(
         `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
       )
-      if (this.contributors.length > 0) {
-        let info = this.contributors[0]
-        console.log(
-          `   ${this.toolbox.colors.green.italic('Crafted with love by ' + info.name + ' (' + info?.url + ')')}`
-        )
+      if (!options.simple) {
+        if (this.contributors.length > 0) {
+          let info = this.contributors[0]
+          console.log(
+            `   ${this.toolbox.colors.green.italic('Crafted with love by ' + info.name + ' (' + info?.url + ')')}`
+          )
+        }
       }
-      if (this.tagline.length > 0) {
-        console.log(`   ${this.toolbox.colors.magenta.italic.dim(this.tagline)}`)
-      }
-
       console.log()
     }
   }
 
-  showHelp() {
+  showHelp(appName = '') {
     // if we have defined custom help, display it
     if (this.helpInfo.length > 0) {
       return this.toolbox.print.log(this.helpInfo)
@@ -442,7 +439,6 @@ class CLI {
 
     // otherwise build CLI help
     if (this.command.length === 0) {
-      console.log('')
       this.showVersion()
 
       if (this.usageInfo.length > 0) {
@@ -618,7 +614,7 @@ class CLI {
 
     if (this.argumentHasOption(args, ['V', 'version'])) {
       console.log()
-      this.showVersion()
+      this.showVersion({ simple: true })
       process.exit(0)
     }
 

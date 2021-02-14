@@ -30,10 +30,6 @@ class Helpers {
     return pkgInfo[key]
   }
 
-  getTagline() {
-    return pkgInfo.tagline
-  }
-
   argumentHasOption(args, needles) {
     if (typeof needles === 'undefined') {
       return false

@@ -3,13 +3,11 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const pkgInfo = require('../../package.json')
 const colors = require('chalk')
-const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
-  description: `Create a new ${pkgInfo.packageName} command`,
+  description: 'Create new command',
   usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
@@ -29,9 +27,11 @@ module.exports = {
         })
       )
     }
+
     if (!toolbox.arguments.description) {
       questions.push(toolbox.prompts.buildQuestion('input', 'description', 'Command Description?'))
     }
+
     if (questions.length > 0) {
       console.log()
       let answers = await toolbox.prompts.show(questions)

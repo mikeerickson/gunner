@@ -19,7 +19,7 @@ const spinner = new Ora({
 
 module.exports = {
   name: 'new',
-  description: 'Generate New Gunner CLI',
+  description: 'Generate new CLI project',
   usage: `new ${colors.blue('[name]')} ${colors.magenta('<flags>')}            ${colors.blue.bold(
     '[name]'
   )} of new CLI`,
@@ -259,7 +259,14 @@ module.exports = {
     toolbox.filesystem.chdir(toolbox.commandName)
     toolbox.system.run('git init')
     toolbox.filesystem.chdir('..')
+
+    toolbox.filesystem.copy(
+      this.join(toolbox.env.projectRoot, 'src', 'templates', '.gitignore.mustache'),
+      this.join(this.dest, '.gitignore')
+    )
+
     spinner.text = toolbox.colors.green('🗃  Git Repository Initialized')
+
     spinner.succeed()
     return true
   },

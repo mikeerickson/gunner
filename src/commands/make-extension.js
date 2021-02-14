@@ -4,12 +4,11 @@
  * -----------------------------------------------------------------------------------------*/
 
 const app = require('../toolbox/app')
-const pkgInfo = require('../../package.json')
 const colors = require('chalk')
 
 module.exports = {
   name: 'make:extension',
-  description: `Create new ${pkgInfo.packageName} extension`,
+  description: 'Create new extension',
   usage: `gunner make:extension ${colors.blue('[name]')} ${colors.magenta('<flags>')}`,
   flags: {
     function: { aliases: ['f'], description: 'Extension Function Name', required: false },
