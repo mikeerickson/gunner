@@ -178,7 +178,6 @@ class CLI {
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
         '  --quiet, -q                   Quiet mode (suppress console output)',
         '  --version, -v, -V             Show Version',
-        `  --verbose                     Verbose Output [only used in ${this.toolbox.colors.magenta('--debug')} mode]`,
         this.toolbox.colors.blue.italic(
           `                                 (includes table of ${this.packageName} options)`
         ),
