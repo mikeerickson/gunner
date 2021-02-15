@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "build": "217",
   "description": "Node CLI Framework",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
