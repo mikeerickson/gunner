@@ -10,6 +10,7 @@ const { prompt } = require('enquirer')
 const pkgInfo = require('../../package.json')
 
 const Ora = require('ora')
+const { dd } = require('dumper.js')
 
 const spinner = new Ora({
   discardStdin: false,
@@ -32,23 +33,35 @@ module.exports = {
   },
 
   async execute(toolbox) {
+    this.dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
+    if (toolbox.filesystem.existsSync(this.dest) && !toolbox.arguments.overwrite) {
+      toolbox.print.error(`\nThere's already a directory named ${toolbox.commandName}`)
+      let result = await toolbox.prompts.confirm('Would you like to overwrite it?', { initial: false })
+      if (result.answer) {
+        toolbox.env.overwrite = true
+      } else {
+        console.log('')
+        toolbox.print.warning('CLI Creation Aborted\n', 'ABORT')
+        return
+      }
+    }
+
     this.spinner = spinner
     this.join = toolbox.path.join
 
     const gitUserLocal = require('git-user-local')
     const githubUsername = require('github-username')
 
-    let info = await gitUserLocal()
-    let ghUserName = await githubUsername(info.user.email)
+    let ghUserLocal = await gitUserLocal()
+    let ghUserName = await githubUsername(ghUserLocal.user.email)
 
-    toolbox.print.info(`\nGunner v${toolbox.version}`)
     console.log('')
 
-    let [githubFirstName, githubLastName] = info.user.name.split(' ')
+    let [githubFirstName, githubLastName] = ghUserLocal.user.name.split(' ')
 
     let fname = toolbox.config.get('fname') || githubFirstName
     let lname = toolbox.config.get('lname') || githubLastName
-    let email = toolbox.config.get('email') || info.user.email
+    let email = toolbox.config.get('email') || ghUserLocal.user.email
     let gitUserName = toolbox.config.get('gitUserName') || ghUserName
     let pkgMgr = toolbox.config.get('pkgMgr') || 'npm'
 
@@ -145,7 +158,7 @@ module.exports = {
         if (await savePrompt.run()) {
           toolbox.print.success('✔ Answers Saved')
           Object.keys(answers).forEach((key) => {
-            if (key !== 'name' && key !== 'usePrettier') {
+            if (key === 'fname' || key === 'lname' || key === 'email' || key === 'gitUserName' || key === 'pkgMgr') {
               toolbox.config.set(key, answers[key])
             }
           })
@@ -194,13 +207,6 @@ module.exports = {
 
     if (toolbox.env.overwrite) {
       toolbox.filesystem.rmdir(this.dest)
-    }
-
-    if (toolbox.filesystem.existsSync(this.dest)) {
-      console.log()
-      toolbox.print.error(`./${toolbox.path.basename(this.dest)} already exists`, 'ERROR')
-      console.log('')
-      process.exit(0)
     }
 
     // setup

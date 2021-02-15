@@ -3,8 +3,9 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { prompt } = require('enquirer')
+const { prompt, Confirm, BooleanPrompt } = require('enquirer')
 const colors = require('ansi-colors')
+const { cyan, dim } = require('ansi-colors')
 
 async function input(config) {
   console.log('input prompt')
@@ -54,44 +55,58 @@ async function multiSelect(config) {
 }
 
 prompts = {
-  buildQuestion: (type, name, message, alternateOptions = {}) => {
+  buildQuestion: function (type, name, message, alternateOptions = {}) {
     return { type, name, message, ...alternateOptions }
   },
 
-  input: (msg, initial = false) => {},
+  input: (msg, options = { initial: '' }) => {
+    return prompt({ type: 'input', name: 'answer', message: msg }, options).catch((err) => console.error)
+  },
 
-  boolean: (msg, initial = false, resolve, reject) => {
-    const prompt = new BooleanPrompt({
-      name: 'answer',
-      message: msg,
-      initial: initial,
-    })
+  boolean: (message, initial = false) => {
+    const prompt = new BooleanPrompt({ message, initial })
+    return prompt.run().catch((err) => console.error)
+  },
 
-    prompt
-      .run()
-      .then((answer) => resolve(answer))
-      .catch((err) => reject(console.error(err)))
+  confirm: (msg, options = { initial: false }) => {
+    return prompt({ type: 'confirm', name: 'answer', message: msg }, options).catch((err) => console.error)
   },
-  confirm: (msg, initial, resolve, reject) => {
-    const prompt = new Confirm({
-      name: 'answer',
-      message: msg,
-      initial: initial,
-    })
 
-    prompt
-      .run()
-      .then((answer) => resolve(answer))
-      .catch((err) => reject(console.error(err)))
+  multiSelect: function (msg = '', choices = [], initial = '') {
+    // choices: array of strings or objects
+    // [{name: "item1", message: "Item 1"},{name: "item2", message: "Item 2"}]
+    // initail: array or string (using name)
+    // Example:
+    // let items = [{name: "item1", message: "Item 1"},{name: "item2", message: "Item 2"}]
+    // let result = await toolbox.prompts.multiSelect('What do you want', items, ['item2', 'item3'])
+    let options = {
+      choices,
+      maxSelected: choices.length,
+      hint: '(Use <space> to select, <return> to submit)',
+      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
+      pointer(state, choice) {
+        return choice.index === state.index ? colors.green(colors.symbols.pointer) : ' '
+      },
+      indicator(state, choice) {
+        return choice.enabled ? ' ' + colors.cyan(state.symbols.radio.on) : ' ' + colors.gray(state.symbols.radio.on)
+      },
+      initial,
+    }
+    let question = this.buildQuestion('multiselect', 'answer', msg, options)
+    return this.show(question)
   },
-  multiSelect: (config) => {
-    config['type'] = 'multiselect'
-    return select(config)
+
+  select: function (msg = '', choices = [], initial = '') {
+    let options = {
+      choices,
+      maxSelected: 1,
+      limit: choices.length,
+      initial,
+    }
+    let question = this.buildQuestion('select', 'answer', msg, options)
+    return this.show(question)
   },
-  select: (config) => {
-    config['type'] = 'select'
-    return select(config)
-  },
+
   show: async (questions) => {
     const response = await prompt(questions).catch((err) => {
       if (err) {
