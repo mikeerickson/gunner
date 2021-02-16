@@ -6,15 +6,11 @@
 module.exports = {
   name: 'default',
   description: '',
-  usage: 'Do something cool, after all this is your command!',
-  flags: {
-    message: { aliases: ['m'], description: 'Command message' },
-  },
+  hidden: true,
+  usage: 'Default command',
+  flags: {},
   execute(toolbox) {
-    let msg = toolbox.arguments.message || 'Hello World'
     console.log('')
-    toolbox.print.info(`Default Command: ${msg}`, 'INFO')
-    console.log('')
-    return
+    toolbox.print.info('Default Command\n', 'INFO')
   },
 }

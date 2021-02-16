@@ -255,7 +255,8 @@ class CLI {
   }
 
   isModuleValid(module) {
-    return this.toolbox.utils.has(module, 'name') ** this.toolbox.utils.has(module, 'run')
+    let hidden = module.hasOwnProperty('hidden') && !module.hidden
+    return this.toolbox.utils.has(module, 'name') && !hidden
   }
 
   loadModule(module = '') {
@@ -586,8 +587,13 @@ class CLI {
   executeCommand(command, args) {
     if (command.length > 0) {
       let module = this.loadModule(command)
+      if (Object.keys(module).length === 0) {
+        this.toolbox.print.error(`\n🚫 Invalid Command "${command}"`)
+        this.toolbox.print.note(`   For list of available commands, execute '${this.packageName} --help'\n`)
+        process.exit(1)
+      }
       if (!this.isModuleValid(module)) {
-        this.toolbox.print.error(`🚫  An error occurred accessing: ${command}`)
+        this.toolbox.print.error(`\n🚫 An error occurred accessing: ${command}\n`)
         process.exit(1)
       }
       let disabled = module.disabled || false
