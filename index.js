@@ -8,7 +8,7 @@ const config = require('./src/toolbox/config')
 const begoo = require('begoo')
 
 if (!config.get('init', false)) {
-  const msg =
+  let msg =
     colors.green('Welcome to Gunner') +
     '\n' +
     colors.yellow(pkgInfo.description) +

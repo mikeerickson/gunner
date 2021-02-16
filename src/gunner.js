@@ -23,8 +23,6 @@ const filesystem = require('./toolbox/filesystem')
 const print = require('./toolbox/print')(this.quiet)
 const environment = require('./toolbox/environment')
 const packageManager = require('./toolbox/packageManager')
-const { ray } = require('node-ray')
-const { info } = require('console')
 
 const HELP_PAD = 30
 
@@ -418,7 +416,9 @@ class CLI {
       let buildStr = this.pkgInfo.build
 
       const name = this.packageName.length > 0 ? this.packageName : this.toolbox.strings.titleCase(this.name)
-      console.log()
+      if (!options.simple) {
+        console.log('') // give some breathing room when show --help
+      }
       console.log(
         `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
       )
@@ -498,6 +498,13 @@ class CLI {
       console.log(this.toolbox.colors.red(`\n🚫  Invalid Command: ${command}`))
       process.exit(1)
     }
+
+    console.log(
+      `\n🚧 ${this.toolbox.colors.blue.bold('gunner')} ${this.toolbox.colors.blue(
+        'v' + this.pkgInfo.version + ' build ' + this.pkgInfo.build
+      )}`
+    )
+
     console.log('')
     console.log(this.toolbox.colors.cyan(`🛠  ${module.name}`))
 
@@ -621,7 +628,6 @@ class CLI {
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {
-      console.log()
       this.showVersion({ simple: true })
       process.exit(0)
     }
