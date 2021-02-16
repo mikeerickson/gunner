@@ -23,6 +23,8 @@ const filesystem = require('./toolbox/filesystem')
 const print = require('./toolbox/print')(this.quiet)
 const environment = require('./toolbox/environment')
 const packageManager = require('./toolbox/packageManager')
+const { ray } = require('node-ray')
+const { info } = require('console')
 
 const HELP_PAD = 30
 
@@ -416,15 +418,21 @@ class CLI {
       let buildStr = this.pkgInfo.build
 
       const name = this.packageName.length > 0 ? this.packageName : this.toolbox.strings.titleCase(this.name)
+      console.log()
       console.log(
         `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
       )
       if (!options.simple) {
-        if (this.contributors.length > 0) {
-          let info = this.contributors[0]
-          console.log(
-            `   ${this.toolbox.colors.green.italic('Crafted with love by ' + info.name + ' (' + info?.url + ')')}`
-          )
+        if (this.pkgInfo.hasOwnProperty('info')) {
+          let msg = colors.keyword('pink').dim.italic(this.pkgInfo.info)
+          console.log(`   ${msg}`)
+        } else {
+          if (this.contributors.length > 0) {
+            let info = this.contributors[0]
+            console.log(
+              `   ${this.toolbox.colors.green.italic('Crafted with love by ' + info.name + ' (' + info?.url + ')')}`
+            )
+          }
         }
       }
       console.log()

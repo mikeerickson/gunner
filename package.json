@@ -2,8 +2,9 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.24.0",
-  "build": "217",
+  "build": "220",
   "description": "Node CLI Framework",
+  "info": "created in memory of my trusty sidekick \"Gunner\" who passed away in 2019.\n   his memory will last in my heart forever.",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
   "repository": "https://github.com/mikeerickson/gunner",
   "contributors": [
@@ -46,6 +47,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "10.1.0",
+    "begoo": "1.1.2",
     "chai": "4.3.0",
     "eslint": "5.15.1",
     "eslint-config-prettier": "4.1.0",
@@ -53,6 +55,7 @@
     "leasot": "11.5.0",
     "mocha": "6.0.2",
     "mock-fs": "4.13.0",
+    "node-ray": "1.8.0",
     "nyc": "15.1.0",
     "prettier": "2.2.1",
     "sinon": "9.2.4"

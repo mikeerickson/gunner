@@ -35,7 +35,7 @@ module.exports = {
   async execute(toolbox) {
     this.dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
     if (toolbox.filesystem.existsSync(this.dest) && !toolbox.arguments.overwrite) {
-      toolbox.print.error(`\nThere's already a directory named ${toolbox.commandName}`)
+      toolbox.print.error(`\nThere's already a directory named "${toolbox.commandName}"`)
       let result = await toolbox.prompts.confirm('Would you like to overwrite it?', { initial: false })
       if (result.answer) {
         toolbox.env.overwrite = true
@@ -525,6 +525,8 @@ module.exports = {
           toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${this.answers.pkgMgr} link ${toolbox.commandName}`)
           toolbox.print.debug(colors.dim('     info => https://docs.npmjs.com/cli/v6/commands/npm-link'))
           toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${toolbox.commandName} --help\n`)
+          console.log(colors.keyword('pink').italic('   🐶 Woof!'))
+          console.log(colors.keyword('pink').italic(`      ${pkgInfo.info.replace('   ', '      ')}\n`))
         }, 1000)
       })
       .catch((err) => {
