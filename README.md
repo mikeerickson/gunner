@@ -1,12 +1,13 @@
 <h4 align="center">
-    <img src="docs/images/cli.png" width="10%" height="10%" alt="Gunner Prompts">
+    <img src="docs/images/logo-transparent.png" width="10%" height="10%" alt="Gunner Prompts">
 </h4>
 
 # Gunner
 
 ## Description
 
-Codedungeon Slim CLI Framework
+**NodeJS CLI Framework**
+_created in memory of my trusty sidekick "Gunner" who passed away in 2019, his memory will last in my heart forever._
 
 ## Installation (Globally)
 
