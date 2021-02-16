@@ -23,12 +23,12 @@ describe('commands', (done) => {
   })
 
   it('should execute sample command help', (done) => {
-    exec('gunner default --help', (err, stdout, stderr) => {
+    exec('gunner sayHello --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('default')
+      expect(result).contain('say-hello')
       expect(result).contain('Options:')
-      expect(result).contain('--message, -m')
-      expect(result).contain('Command message')
+      expect(result).contain('--name, -n')
+      expect(result).contain('Hello Name')
     })
     done()
   })

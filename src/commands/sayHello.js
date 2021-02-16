@@ -8,7 +8,7 @@ module.exports = {
   description: 'Say hello to my little friend!',
   usage: 'Do something cool, after all this is your command!',
   flags: {
-    name: { aliases: ['n'], description: 'Command name' },
+    name: { aliases: ['n'], description: 'Hello Name' },
   },
   execute(toolbox) {
     let name = toolbox.strings.titleCase(toolbox.arguments.name || 'world')
