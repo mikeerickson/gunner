@@ -21,7 +21,7 @@ if (!config.get('init', false)) {
   config.set('init', true)
 }
 
-const app = new CLI(process.argv, path.join(__dirname))
+const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
   .usage(`${pkgInfo.packageName} ${colors.magenta('[command]')} ${colors.cyan('<options>')}`)
   .options(/* if not called, options will be suppressed in help dialog */)
   .examples(

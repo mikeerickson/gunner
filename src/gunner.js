@@ -27,8 +27,10 @@ const packageManager = require('./toolbox/packageManager')
 const HELP_PAD = 30
 
 class CLI {
-  constructor(argv = [], projectRootDir = null) {
-    require('./inspector.js').startup()
+  constructor(argv = [], projectRootDir = null, pkgInfo = null) {
+    if (pkgInfo && pkgInfo.name === '@codedungeon/gunner') {
+      require('./inspector.js').startup()
+    }
 
     if (argv.length === 0) {
       argv.push(system.which('node'))

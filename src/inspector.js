@@ -9,7 +9,7 @@ const updateNotifier = require('update-notifier')
 const pleaseUpgradeNode = require('please-upgrade-node')
 
 const inspector = {
-  startup: async () => {
+  startup: async (pkgInfo) => {
     // inspet node version
     pleaseUpgradeNode(pkg, {
       exitCode: 0,
