@@ -11,14 +11,18 @@ module.exports = {
     template: { aliases: ['t'], description: 'Template path (override configuration file)' },
   },
   execute(toolbox) {
-    let constructor = toolbox.getOptionValue(toolbox.arguments, ['construtor', 'c'])
-    let test = toolbox.getOptionValue(toolbox.arguments, ['test', 'u'])
-    let template = toolbox.getOptionValue(toolbox.arguments, ['template', 't'])
-    if (template.length === 0) {
-      template = toolbox.path.join(toolbox.env.projectRoot, 'templates', 'class.mustache')
-    }
+    console.log(Object.keys(toolbox))
+    let constructor = toolbox.getOptionValue(toolbox.arguments, ['construtor', 'c'], false)
+    let test = toolbox.getOptionValue(toolbox.arguments, ['test', 'u'], false)
+    let template = toolbox.getOptionValue(
+      toolbox.arguments,
+      ['template', 't'],
+      toolbox.path.join(toolbox.env.projectRoot, 'templates', 'class.mustache')
+    )
 
-    let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', 'w'])
+    console.log('template: ', template)
+
+    let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', 'w'], false)
 
     console.log(template)
 

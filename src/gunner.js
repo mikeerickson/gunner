@@ -384,7 +384,7 @@ class CLI {
     return false
   }
 
-  getOptionValue(args, optName) {
+  getOptionValue(args, optName, defaultValue = null) {
     if (this.argumentHasOption(args, optName)) {
       let options = typeof optName === 'string' ? [optName] : optName
       for (let i = 0; i < options.length; i++) {
@@ -393,9 +393,9 @@ class CLI {
           return args[option]
         }
       }
-      return ''
+      return defaultValue
     }
-    return ''
+    return defaultValue
   }
 
   /**
