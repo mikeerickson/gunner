@@ -5,5 +5,6 @@
 
 module.exports = {
   timeout: 5000,
+  slow: 1750,
   bail: true,
 }

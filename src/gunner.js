@@ -92,6 +92,9 @@ class CLI {
       version: this.versionInfo,
       packageName: this.packageName,
 
+      getOptionValue: this.getOptionValue,
+      argumentHasOption: this.argumentHasOption,
+
       // toolbox modules
       api,
       app: this.app,
@@ -216,14 +219,44 @@ class CLI {
 
   getCommandName(argv) {
     let parseArgs = require('minimist')
+
+    // do some hacking if argv contains --constructor
+    let idx = argv.indexOf('--constructor')
+    if (idx >= 0) {
+      argv[idx] = 'tempConstructor'
+    }
+
+    // parse arguments
     let parsedArguments = parseArgs(argv)
+
+    // restore --constructor if it exiss
+    if (idx >= 0) {
+      argv[idx] = '--constructor'
+    }
+
     return parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
   }
 
   getArguments(argv, module) {
-    let argsParser = require('minimist')
-    let args = argsParser(argv)
+    let parseArgs = require('minimist')
+
+    // need to hack around a bit her since minimist thinks --constructor argument is bad
+    let idx = argv.indexOf('--constructor')
+    if (idx >= 0) {
+      argv[idx] = '--tempConstructor' // quick rename
+    }
+
+    // now parse with possible temporary constructor argment
+    let args = parseArgs(argv)
+
+    // and if we did have a --construtor argument, restore
+    if (idx >= 0) {
+      args.constructor = true
+      delete args['tempConstructor']
+    }
+
     let argKeys = Object.keys(args)
+
     if (args.hasOwnProperty('_')) {
       delete args['_']
     }
@@ -253,11 +286,18 @@ class CLI {
         }
       }
     }
+
     return args
   }
 
   isModuleValid(module) {
-    let hidden = module.hasOwnProperty('hidden') && !module.hidden
+    let hidden = module.hasOwnProperty('hidden') && module.hidden
+    if (module.hasOwnProperty('name')) {
+      if (module.name === 'default') {
+        hidden = false
+      }
+    }
+
     return this.toolbox.utils.has(module, 'name') && !hidden
   }
 
@@ -320,10 +360,18 @@ class CLI {
   }
 
   argumentHasOption(args, needles) {
-    if (typeof needles === 'undefined') {
+    if (typeof args === 'undefined') {
+      this.print.error('Invalid Arguments')
       return false
     }
+
+    if (typeof needles === 'undefined') {
+      this.print.error('Invalid Option Value')
+      return false
+    }
+
     let items = typeof needles === 'string' ? needles.split(',') : needles
+
     for (let i = 0; i < items.length; i++) {
       if (items[i] === undefined) {
         return false
@@ -599,6 +647,7 @@ class CLI {
         process.exit(1)
       }
       let disabled = module.disabled || false
+
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
 

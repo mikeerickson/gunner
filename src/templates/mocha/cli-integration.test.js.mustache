@@ -9,7 +9,7 @@ before(() => {
   cli = async (cmd) => system.run('node ' + filesystem.path.join(src, 'bin', '{{name}}') + ` ${cmd}`)
 })
 
-describe.only('cli: integration', async () => {
+describe('cli: integration', async () => {
   it('should return cli version', async () => {
     const output = await cli('--version')
     expect(output).contains(pkgInfo.version)
