@@ -172,23 +172,27 @@ class CLI {
   }
 
   options(options = '') {
-    if (options.length > 0) {
+    let optionsType = typeof options
+    if (optionsType === 'string' && options.length > 0) {
       this.optionInfo = options
     } else {
-      let options = [
+      let globalOptions = [
         // '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
         '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
-        '  --quiet, -q                   Quiet mode (suppress console output)',
-        '  --version, -v, -V             Show Version',
-        // `  --verbose                     Verbose Output [only used in ${this.toolbox.colors.magenta('--debug')} mode]`,
-        // this.toolbox.colors.blue.italic(
-        //   `                                 (includes table of ${this.packageName} options)`
-        // ),
       ]
 
-      this.optionInfo = options.join('\n')
+      if (Array.isArray(options)) {
+        for (let index = 0; index < options.length; index++) {
+          globalOptions.push(`  --${options[index].option}`.padEnd(32) + options[index].description)
+        }
+      }
+
+      globalOptions.push('  --quiet, -q                   Quiet mode (suppress console output)')
+      globalOptions.push('  --version, -v, -V             Show Version')
+
+      this.optionInfo = globalOptions.join('\n')
     }
     return this
   }

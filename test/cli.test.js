@@ -120,6 +120,14 @@ describe('CLI', (done) => {
     done()
   })
 
+  it('has custom optionInfo', (done) => {
+    let result = gunner.hasOwnProperty('optionInfo')
+    expect(result).to.be.true
+
+    // expect(gunner.optionInfo).contains('Options:')
+    done()
+  })
+
   it('overwrite flag', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('overwrite')
     expect(result).to.be.true
