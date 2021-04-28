@@ -8,7 +8,10 @@ const which = require('which')
 const { exec, execSync } = require('child_process')
 
 const system = {
-  run: (cmd) => {
+  run: (cmd, showConsoleOutput = false) => {
+    if (showConsoleOutput) {
+      return execSync(cmd, { stdio: 'inherit', inherit: true })
+    }
     return execSync(cmd, { inherit: true }).toString()
   },
 
