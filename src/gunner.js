@@ -220,10 +220,14 @@ class CLI {
   getCommandName(argv) {
     let parseArgs = require('minimist')
 
+    // command name will be 4th position
+    if (argv.length >= 4 && argv[3].startsWith('-')) {
+      return ''
+    }
     // do some hacking if argv contains --constructor
     let idx = argv.indexOf('--constructor')
     if (idx >= 0) {
-      argv[idx] = 'tempConstructor'
+      argv[idx] = ':constructor:'
     }
 
     // parse arguments
@@ -234,7 +238,9 @@ class CLI {
       argv[idx] = '--constructor'
     }
 
-    return parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
+    let commandName = parsedArguments._.length >= 4 ? parsedArguments._[3] : ''
+
+    return commandName
   }
 
   getArguments(argv, module) {
@@ -568,6 +574,13 @@ class CLI {
       console.log('  ' + module.usage)
     }
 
+    if (this.toolbox.utils.has(module, 'arguments')) {
+      this.toolbox.print.warning('\nArguments:')
+      for (const [key, value] of Object.entries(module.arguments)) {
+        console.log(`  ${key}                    ${value.description}`) // "a 5", "b 7", "c 9"
+      }
+    }
+
     console.log('')
     if (!module.hasOwnProperty('flags')) {
       process.exit(0)
@@ -708,6 +721,7 @@ class CLI {
         command = this.fs.exists(path.resolve(this.app.getCommandPath(), 'default.js')) ? 'default' : ''
       }
     }
+
     // if did not supply command show help
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
   }
