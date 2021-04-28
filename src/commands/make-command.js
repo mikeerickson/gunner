@@ -9,6 +9,9 @@ module.exports = {
   name: 'make:command',
   description: 'Create new command',
   usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
+  arguments: {
+    name: { description: 'Command Name', required: true },
+  },
   flags: {
     name: { aliases: ['n'], description: 'Command name (eg make:command)', required: true },
     description: { aliases: ['s'], description: 'Command description', required: false },

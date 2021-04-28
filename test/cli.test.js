@@ -116,15 +116,6 @@ describe('CLI', (done) => {
     let result = gunner.hasOwnProperty('optionInfo')
     expect(result).to.be.true
 
-    // expect(gunner.optionInfo).contains('Options:')
-    done()
-  })
-
-  it('has custom optionInfo', (done) => {
-    let result = gunner.hasOwnProperty('optionInfo')
-    expect(result).to.be.true
-
-    // expect(gunner.optionInfo).contains('Options:')
     done()
   })
 

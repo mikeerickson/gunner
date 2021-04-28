@@ -180,13 +180,12 @@ class CLI {
         // '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
         // '--logs, -l               Output logs to stdout',
-        '  --overwrite, -o               Overwrite Existing Files(s) if creating in command',
       ]
 
       if (Array.isArray(options)) {
-        for (let index = 0; index < options.length; index++) {
-          globalOptions.push(`  --${options[index].option}`.padEnd(32) + options[index].description)
-        }
+        options.forEach((item) => {
+          globalOptions.push(`  --${item.option}`.padEnd(32) + item.description)
+        })
       }
 
       globalOptions.push('  --quiet, -q                   Quiet mode (suppress console output)')
@@ -530,7 +529,7 @@ class CLI {
       }
 
       if (this.optionInfo.length > 1) {
-        this.toolbox.print.warning('Options:')
+        this.toolbox.print.warning('Global Options:')
         this.toolbox.print.log(this.optionInfo + '\n')
       }
 

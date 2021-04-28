@@ -21,9 +21,10 @@ const spinner = new Ora({
 module.exports = {
   name: 'new',
   description: 'Generate new CLI project',
-  usage: `new ${colors.blue('[name]')} ${colors.magenta('<flags>')}            ${colors.blue.bold(
-    '[name]'
-  )} of new CLI`,
+  usage: `new ${colors.blue('[name]')} ${colors.magenta('<flags>')}`,
+  arguments: {
+    name: { description: 'New CLI Name', required: false },
+  },
   flags: {
     overwrite: {
       aliases: ['o', 'w'],
@@ -33,6 +34,11 @@ module.exports = {
   },
 
   async execute(toolbox) {
+    if (!toolbox.commandName) {
+      console.log('')
+      toolbox.print.error('Invalid CLI Name (use gunner new <name>)\n', 'ERROR')
+      return false
+    }
     this.dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
     if (toolbox.filesystem.existsSync(this.dest) && !toolbox.arguments.overwrite) {
       toolbox.print.error(`\nThere's already a directory named "${toolbox.commandName}"`)

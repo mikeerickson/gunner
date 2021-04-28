@@ -10,6 +10,9 @@ module.exports = {
   name: 'make:extension',
   description: 'Create new extension',
   usage: `gunner make:extension ${colors.blue('[name]')} ${colors.magenta('<flags>')}`,
+  arguments: {
+    name: { description: 'Extension Name', required: true },
+  },
   flags: {
     function: { aliases: ['f'], description: 'Extension Function Name', required: false },
   },
