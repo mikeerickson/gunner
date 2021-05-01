@@ -551,9 +551,16 @@ class CLI {
     let module = this.loadModule(command)
 
     if (!this.toolbox.utils.has(module, 'name')) {
-      console.log(this.toolbox.colors.red(`\n🚫  An internal error occurred access ${command}`))
+      let commandFilename = strings.titleCase(strings.camelCase(command)) + '.js'
+      let message = `Unable to locate valid command file matching ${command}`
+
+      console.log('')
+      this.toolbox.print.error(message + '\n', 'ERROR')
+      this.toolbox.print.note(`Make sure command such as ${commandFilename} exits\n`, 'TIP')
+
       process.exit(1)
     }
+
     if (module.disabled) {
       console.log(this.toolbox.colors.red(`\n🚫  Invalid Command: ${command}`))
       process.exit(1)

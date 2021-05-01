@@ -34,7 +34,7 @@ describe('default', (done) => {
     exec('gunner default --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       expect(result).contain('default')
-      expect(result).contain('Default command')
+      expect(result).contain('Default Command')
     })
     done()
   })
