@@ -55,12 +55,77 @@ describe('make:command', (done) => {
     done()
   })
 
-  it('should prompt for description`', async (done) => {
+  it('should prompt for description', async (done) => {
     let testCommandName = '_InvalidName_'
     exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       expect(result).contain(`Invalid Name:  ${testCommandName}`)
     })
+    done()
+  })
+
+  it('should handle --arguments flag', (done) => {
+    let testCommandName = 'TestCommand'
+    exec(
+      `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test`,
+      (err, stdout, stderr) => {
+        let result = stdout.replace(/\n/gi, '')
+
+        let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
+        let data = fs.readFileSync(testCommandFilename, 'utf-8')
+
+        expect(data).to.contain('arguments: {')
+      }
+    )
+    done()
+  })
+
+  it('should suppress doc blocks using quiet flag', (done) => {
+    let testCommandName = 'TestCommand'
+    exec(
+      `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test --quiet`,
+      (err, stdout, stderr) => {
+        let result = stdout.replace(/\n/gi, '')
+
+        let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
+        let data = fs.readFileSync(testCommandFilename, 'utf-8')
+
+        expect(data).to.not.contain('Command Descritption')
+        expect(data).to.not.contain('- you can use the following variables when creating your command')
+      }
+    )
+    done()
+  })
+
+  it('should set hidden to true using hidden flag', (done) => {
+    let testCommandName = 'HiddenCommand'
+    exec(
+      `gunner make:command ${testCommandName} --name test --overwrite --description test --hidden`,
+      (err, stdout, stderr) => {
+        let result = stdout.replace(/\n/gi, '')
+
+        let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
+        let data = fs.readFileSync(testCommandFilename, 'utf-8')
+
+        expect(data).to.contain('hidden: true,')
+      }
+    )
+    done()
+  })
+
+  it('should create command using custom tempalte', (done) => {
+    let testCommandName = 'CustomTemplateCommand'
+    exec(
+      `gunner make:command ${testCommandName} --name test --overwrite --description test --template="custom-templates/make-command.mustache"`,
+      (err, stdout, stderr) => {
+        let result = stdout.replace(/\n/gi, '')
+
+        let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
+        let data = fs.readFileSync(testCommandFilename, 'utf-8')
+
+        expect(data).to.contain('// Custom Template')
+      }
+    )
     done()
   })
 

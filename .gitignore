@@ -10,3 +10,4 @@ example/
 .nyc_output/
 .vscode/
 .temp/
+custom-templates/

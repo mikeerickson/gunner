@@ -63,7 +63,7 @@ class CLI {
 
     // setup global options
     this.verbose = this.arguments.verbose || false // dont add shortcut -v as that is reserved for version
-    this.debug = this.arguments.debug || this.arguments.d || false
+    this.debug = this.arguments.debug || false
     this.overwrite = this.arguments.overwrite || this.arguments.o || false
     this.help = this.arguments.help || this.arguments.h || this.arguments.H || false
     this.quiet = this.arguments.quiet || this.arguments.q || false

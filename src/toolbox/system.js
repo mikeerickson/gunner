@@ -3,9 +3,10 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const os = require('os')
-const which = require('which')
 const { exec, execSync } = require('child_process')
+const execa = require('execa')
+const strings = require('./strings')
+const which = require('which')
 
 const system = {
   run: (cmd, showConsoleOutput = false) => {
@@ -15,8 +16,9 @@ const system = {
     return execSync(cmd, { inherit: true }).toString()
   },
 
-  exec: (cmd) => {
-    return exec(cmd)
+  exec: async (cmd = null, options = []) => {
+    const { stdout } = await execa(cmd, options)
+    return strings.raw(stdout)
   },
 
   which: (app) => {

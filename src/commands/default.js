@@ -7,7 +7,7 @@ module.exports = {
   name: 'default',
   description: '',
   hidden: true,
-  usage: 'Default command',
+  usage: 'Default Command',
   flags: {},
   execute(toolbox) {
     console.log('')
