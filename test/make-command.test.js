@@ -114,18 +114,18 @@ describe('make:command', (done) => {
     done()
   })
 
-  it('should create command using custom tempalte', (done) => {
+  it.skip('should create command using custom template', (done) => {
     let testCommandName = 'CustomTemplateCommand'
     exec(
       `gunner make:command ${testCommandName} --name test --overwrite --description test --template="custom-templates/make-command.mustache"`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
-        // let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-        // console.log('testCommandFilename', testCommandFilename)
-        // let data = fs.readFileSync(testCommandFilename, 'utf-8')
+        let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
+        console.log('testCommandFilename', testCommandFilename)
+        let data = fs.readFileSync(testCommandFilename, 'utf-8')
 
-        // expect(data).to.contain('// Custom Template')
+        expect(data).to.contain('// Custom Template')
       }
     )
     done()

@@ -19,7 +19,7 @@ const packageManager = require('../src/toolbox/packageManager.js')
 //   done()
 // })
 
-describe.skip('package manager module', (done) => {
+describe('package manager module', (done) => {
   it('should check if yarn is installed', (done) => {
     let result = packageManager.hasYarn()
     expect(result).to.not.be.undefined
