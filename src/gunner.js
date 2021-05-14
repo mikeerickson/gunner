@@ -554,8 +554,7 @@ class CLI {
       let commandFilename = strings.titleCase(strings.camelCase(command)) + '.js'
       let message = `Unable to locate valid command file matching ${command}`
 
-      console.log('')
-      this.toolbox.print.error(message + '\n', 'ERROR')
+      console.log(this.toolbox.colors.red(`\n🚫  ${message}\n`))
       this.toolbox.print.note(`Make sure command such as ${commandFilename} exits\n`, 'TIP')
 
       process.exit(1)

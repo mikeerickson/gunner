@@ -26,15 +26,15 @@ describe('make:extension', (done) => {
   })
 
   it('should create test extension', (done) => {
-    let testExtensionFilename = path.join(app.getProjectExtensionPath(), '_TestExtension_.js')
+    let name = 'TestExtension'
+    let testExtensionFilename = path.join(app.getProjectExtensionPath(), `${name}.js`)
     if (fs.existsSync(testExtensionFilename)) {
       fs.unlinkSync(testExtensionFilename)
     }
 
-    let testExtension = '_TestExtension_'
+    let testExtension = name
     let result = execSync(`gunner make:extension ${testExtension}`)
     expect(result.toString()).contain(testExtension)
-    // expect(result.stdout).contain(`${testExtension}.js created successfully`)
     done()
   })
 

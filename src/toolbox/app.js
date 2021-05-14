@@ -3,7 +3,7 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { dd, dump } = require('dumper.js')
+const { existsSync } = require('fs')
 const path = require('path')
 
 class App {

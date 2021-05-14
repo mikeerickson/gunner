@@ -9,17 +9,17 @@ const system = require('../src/toolbox/system.js')
 const fs = require('../src/toolbox/filesystem.js')
 const packageManager = require('../src/toolbox/packageManager.js')
 
-after((done) => {
-  process.chdir(fs.path.join(fs.homedir(), 'tmp'))
-  // make sure we are not in the application directory
-  let app = new App({ projectRoot: '../' })
-  if (fs.cwd() !== app.getApplicationPath()) {
-    system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
-  }
-  done()
-})
+// after((done) => {
+//   process.chdir(fs.path.join(fs.homedir(), 'tmp'))
+//   // make sure we are not in the application directory
+//   let app = new App({ projectRoot: '../' })
+//   if (fs.cwd() !== app.getApplicationPath()) {
+//     system.run('rm -rf node_modules package.json yarn.lock package-lock.json .DS_store')
+//   }
+//   done()
+// })
 
-describe('package manager module', (done) => {
+describe.skip('package manager module', (done) => {
   it('should check if yarn is installed', (done) => {
     let result = packageManager.hasYarn()
     expect(result).to.not.be.undefined

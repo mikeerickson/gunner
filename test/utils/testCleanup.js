@@ -9,11 +9,10 @@ const { join } = require('path')
 
 ;(async () => {
   let extensionPath = join('src', 'extensions')
-  await fs.delete(join('src', 'commands', '_TestCommand_.js'))
   await fs.delete(join('src', 'commands', 'TestCommand.js'))
   await fs.delete(join('src', 'commands', 'HiddenCommand.js'))
   await fs.delete(join('src', 'commands', 'CustomTemplateCommand.js'))
-  await fs.delete(join(extensionPath, '_TestExtension_-extension.js'))
+  await fs.delete(join(extensionPath, 'TestExtension-extension.js'))
   await fs.delete(join(extensionPath, 'sample-extension.js'))
   let tempFiles = join('./src', 'commands', '*.temp')
   system.run(`rm -rf ${tempFiles}`)
