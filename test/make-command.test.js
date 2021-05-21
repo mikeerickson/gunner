@@ -41,7 +41,7 @@ describe('make:command', (done) => {
     result = result.toString()
 
     let msg = result.replace(/\n/gi, '')
-    expect(msg).contain(`${testCommandName}.js created successfully`)
+    expect(msg).contain(`${testCommandName}.js Created Successfully`)
     // fs.delete(testCommandFilename)
     done()
   })
@@ -50,7 +50,7 @@ describe('make:command', (done) => {
     let testCommandName = 'make-command'
     exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
-      expect(result).contain(`${testCommandName}.js already exists`)
+      expect(result).contain(`${testCommandName}.js Already Exists`)
     })
     done()
   })

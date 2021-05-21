@@ -6,11 +6,19 @@
 /* eslint-disable no-control-regex */
 
 // https://vocajs.com/
-const { dd } = require('dumper.js')
+const pluarlize = require('pluralize')
 const strings = require('voca')
 
 strings.raw = (str) => {
   return str.replace(/\x1b\[..?m/g, '')
+}
+
+strings.plural = (str) => {
+  return pluarlize(str)
+}
+
+strings.singular = (str) => {
+  return pluarlize.singular(str)
 }
 
 strings.validName = (str) => {

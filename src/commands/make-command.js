@@ -4,16 +4,17 @@
  * -----------------------------------------------------------------------------------------*/
 
 const colors = require('chalk')
+const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
   description: 'Create new command',
   usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
   arguments: {
-    name: { description: 'Command Name', required: true },
+    name: { description: 'Saved Filename', required: true, help: 'You must supply Name (as it will be saved on disk)' },
   },
   flags: {
-    name: { aliases: ['n'], description: 'Command Name (eg make:command)', required: true },
+    name: { aliases: ['n'], descriptio: 'Command Name (eg make:command)', required: true },
     description: { aliases: ['s'], description: 'Command Description', required: false },
     hidden: { aliases: ['i'], description: 'Command Hidden', required: false },
     arguments: { aliases: ['a'], description: 'Include Arguments Block', required: false },
@@ -26,9 +27,9 @@ module.exports = {
     let questions = []
     let quiet = toolbox.getOptionValue(toolbox.arguments, ['quiet', 'q'])
 
-    if (toolbox.env.commandName.length === 0) {
+    if (toolbox.commandName.length === 0) {
       questions.push(
-        toolbox.prompts.buildQuestion('input', 'commandName', 'Command Name?', {
+        toolbox.prompts.buildQuestion('input', 'commandName', 'Command Filename', {
           validate: (value, state, item, index) => {
             return value.length > 0
           },
@@ -36,9 +37,9 @@ module.exports = {
       )
     }
 
-    if (!toolbox.arguments.description) {
-      questions.push(toolbox.prompts.buildQuestion('input', 'description', 'Command Description?'))
-    }
+    // if (!toolbox.arguments.description) {
+    //   questions.push(toolbox.prompts.buildQuestion('input', 'description', 'Command Description'))
+    // }
 
     // if (!toolbox.arguments.arguments) {
     //   questions.push(toolbox.prompts.buildQuestion('confirm', 'showArguments', 'Include Arguments Block?'))
@@ -47,8 +48,9 @@ module.exports = {
     if (questions.length > 0) {
       console.log()
       let answers = await toolbox.prompts.show(questions)
+
       if (answers) {
-        toolbox.env.commandName = answers.commandName || toolbox.env.commandName
+        toolbox.commandName = answers.commandName || toolbox.commandName
         toolbox.arguments.description = answers.description || toolbox.arguments.description
         toolbox.arguments.showArguments = answers.showArguments || toolbox.arguments.arguments || false
         toolbox.arguments.hidden = toolbox.arguments.hidden || false
@@ -99,23 +101,25 @@ module.exports = {
         toolbox.print.info(toolbox.colors.bold('==> Creating Project `commands` Directory'))
       }
       // check if command name has file extension, if not use ".js"
-      let fileExtension = toolbox.path.extname(toolbox.env.commandName)
+      let fileExtension = toolbox.path.extname(toolbox.commandName)
       fileExtension = fileExtension.length > 0 ? '' : '.js'
 
-      let commandFilename = toolbox.path.join(projectCommandPath, toolbox.env.commandName + fileExtension)
-      if (toolbox.arguments.overwrite) {
+      let commandFilename = toolbox.path.join(projectCommandPath, toolbox.commandName + fileExtension)
+      let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', '-o'])
+
+      if (overwrite) {
         toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.delete(commandFilename) : null
       }
       let shortFilename = toolbox.app.getShortenFilename(commandFilename)
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
           let ret = toolbox.filesystem.writeFileSync(commandFilename, templateData)
-          toolbox.print.success(`${shortFilename} created successfully`, 'SUCCESS')
+          toolbox.print.success(`${shortFilename} Created Successfully`, 'SUCCESS')
         } catch (e) {
           toolbox.print.error(`Error creating ${shortFilename}`, 'ERROR')
         }
       } else {
-        toolbox.print.error(`${shortFilename} already exists`, 'ERROR')
+        toolbox.print.error(`${shortFilename} Already Exists`, 'ERROR')
       }
     } else {
       toolbox.print.error(`${toolbox.utils.tildify(templateFilename)} template not found`, 'ERROR')

@@ -1,4 +1,3 @@
-{{#quiet}}
 /* Command Descritption
  * Filename on disk must match the module name property
  * It will accept kebabCase or camelCase from module name
@@ -18,32 +17,24 @@
  *    - description [optional: Command description (displayed when show help)
  *    - required [optional]: <true|false> optional parameter if flag is required
  */
-{{/quiet}}
 const colors = require('chalk')
 
 module.exports = {
-  name: '{{name}}',
-  description: '{{description}}',
+  name: 'xxx',
+  description: '',
   disabled: false,
-  hidden: {{hidden}},
-  usage: `{{name}} ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
-  {{#showArguments}}
-  arguments: {
-    name: { aliases: ['n'], description: 'Command Filename', required: false },
-  },
-  {{/showArguments}}
+  hidden: false,
+  usage: `xxx ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
   flags: {
     // example flag, adjust accordingly
     name: { aliases: ['n'], description: 'Command name', required: false }
   },
   execute(toolbox) {
-    {{#quiet}}
     /*
      * - you can use the following variables when creating your command
      * - toolbox.commandName
      * - toolbox.arguments
      */
-     {{/quiet}}
     // get quiet flag
     let quiet = toolbox.getOptionValue(toolbox.arguments, ['quiet', 'q'])
 

@@ -11,7 +11,11 @@ module.exports = {
   description: 'Create new extension',
   usage: `gunner make:extension ${colors.blue('[name]')} ${colors.magenta('<flags>')}`,
   arguments: {
-    name: { description: 'Extension Name', required: true },
+    name: {
+      description: 'Extension Name',
+      required: true,
+      help: 'You must supply Extension Name (as it will be saved)',
+    },
   },
   flags: {
     function: { aliases: ['f'], description: 'Extension Function Name', required: false },
@@ -48,18 +52,18 @@ module.exports = {
 
       extensionFilename = toolbox.path.join(projectExtensionPath, extensionFilename)
       let shortFilename = toolbox.app.getShortenFilename(extensionFilename)
-      if (toolbox.arguments.overwrite) {
+      if (toolbox.arguments.overwrite || toolbox.arguments.o) {
         toolbox.filesystem.existsSync(extensionFilename) ? toolbox.filesystem.delete(extensionFilename) : null
       }
       if (!toolbox.filesystem.existsSync(extensionFilename)) {
         try {
           let ret = toolbox.filesystem.writeFileSync(extensionFilename, templateData)
-          toolbox.print.success(`${shortFilename} created successfully`, 'SUCCESS')
+          toolbox.print.success(`${shortFilename} Created Successfully`, 'SUCCESS')
         } catch (e) {
           toolbox.print.error(`Error creating ${shortFilename}`, 'ERROR')
         }
       } else {
-        toolbox.print.error(`${shortFilename} already exists`, 'ERROR')
+        toolbox.print.error(`${shortFilename} Already Exists`, 'ERROR')
       }
     } else {
       toolbox.print.error(`${toolbox.utils.tildify(templateFilename)} template not found`, 'ERROR')
