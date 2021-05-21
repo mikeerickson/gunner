@@ -34,17 +34,19 @@ module.exports = {
   },
 
   async execute(toolbox) {
+    let overwrite = toolox.arguments.overwrite || toolbox.arguments.o
     if (!toolbox.commandName) {
       console.log('')
       toolbox.print.error('Invalid CLI Name (use gunner new <name>)\n', 'ERROR')
       return false
     }
     this.dest = toolbox.path.join(toolbox.app.getProjectPath(), toolbox.commandName)
-    if (toolbox.filesystem.existsSync(this.dest) && !toolbox.arguments.overwrite) {
+    if (toolbox.filesystem.existsSync(this.dest) && !overwrite) {
       toolbox.print.error(`\nThere's already a directory named "${toolbox.commandName}"`)
       let result = await toolbox.prompts.confirm('Would you like to overwrite it?', { initial: false })
       if (result.answer) {
         toolbox.env.overwrite = true
+        toolbox.env.o = true
       } else {
         console.log('')
         toolbox.print.warning('CLI Creation Aborted\n', 'ABORT')
@@ -79,7 +81,7 @@ module.exports = {
             if (value.length > 0) {
               const newProject = this.join(toolbox.app.getProjectPath(), value)
               if (toolbox.filesystem.exists(newProject)) {
-                return toolbox.colors.red(toolbox.utils.tildify(newProject) + ' already exists')
+                return toolbox.colors.red(toolbox.utils.tildify(newProject) + ' Already Exists')
               }
             } else {
               return toolbox.colors.red('project name must be at least one character')

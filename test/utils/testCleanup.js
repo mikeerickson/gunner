@@ -4,15 +4,15 @@
  * -----------------------------------------------------------------------------------------*/
 
 const fs = require('../../src/toolbox/filesystem')
-const system = require('../../src/toolbox/system.js')
+const system = require('../../src/toolbox/system')
 const { join } = require('path')
 
 ;(async () => {
-  let extensionPath = join('src', 'extensions')
-
   await fs.delete(join('src', 'commands', 'TestCommand.js'))
   await fs.delete(join('src', 'commands', 'HiddenCommand.js'))
   await fs.delete(join('src', 'commands', 'CustomTemplateCommand.js'))
+
+  let extensionPath = join('src', 'extensions')
   await fs.delete(join(extensionPath, 'TestExtension-extension.js'))
   await fs.delete(join(extensionPath, 'sample-extension.js'))
 

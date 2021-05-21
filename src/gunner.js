@@ -179,12 +179,13 @@ class CLI {
       let globalOptions = [
         // '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
+        '  --overwrite, -o               Overwrite Existing Resource',
         // '--logs, -l               Output logs to stdout',
       ]
 
       if (Array.isArray(options)) {
         options.forEach((item) => {
-          globalOptions.push(`  --${item.option}`.padEnd(32) + item.description)
+          // globalOptions.push(`  --${item.option}`.padEnd(32) + item?.description)
         })
       }
 
@@ -337,7 +338,12 @@ class CLI {
             let alias = module.flags[flag].aliases[0]
             hasAlias = args.hasOwnProperty(alias)
           }
-          !hasAlias ? missingArguments.push(flag) : null
+
+          if (module.flags[flag].hasOwnProperty('description')) {
+            !hasAlias ? missingArguments.push(module.flags[flag].description) : null
+          } else {
+            !hasAlias ? missingArguments.push(flag) : null
+          }
         }
       }
     }
@@ -436,7 +442,8 @@ class CLI {
               name += ' [args]'
             }
           }
-          let description = module.description || `${module.name} command`
+          let description = module?.description || `${module.name} command`
+
           if (name.length > 0) {
             commands += '  ' + name.padEnd(HELP_PAD) + description + '\n'
           }
@@ -586,7 +593,9 @@ class CLI {
     if (this.toolbox.utils.has(module, 'arguments')) {
       this.toolbox.print.warning('\nArguments:')
       for (const [key, value] of Object.entries(module.arguments)) {
-        console.log(`  ${key}                    ${value.description}`) // "a 5", "b 7", "c 9"
+        console.log(
+          `  ${key}                    ${value.description} ${value?.required ? colors.red('-required-') : ''}`
+        )
       }
     }
 
@@ -614,7 +623,7 @@ class CLI {
             return false
           }
 
-          const description = module.flags[flag]['description'] || module.flags[flag]
+          let description = module.flags[flag]['description'] || colors.yellow('<missing description>')
 
           let defaultValue = ''
           if (module.flags[flag].hasOwnProperty('default')) {
@@ -670,12 +679,23 @@ class CLI {
       }
       let disabled = module.disabled || false
 
+      // debug.dd(this.argv)
+      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && module.arguments.name?.required) {
+        console.log('')
+        if (module.arguments.name.hasOwnProperty('help')) {
+          this.toolbox.print.error(module.arguments.name.help, 'ERROR')
+        } else {
+          this.toolbox.print.error(module.arguments.name.description + ' Required', 'ERROR')
+        }
+        console.log('')
+        process.exit(0)
+      }
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
-
         if (requiredArguments.length > 0) {
-          let output = '\n🚫  Missing Required Arguments:\n'
-          output += '   - ' + requiredArguments.join(', ')
+          let output = '        - ' + requiredArguments.join(', ') + '\n'
+          console.log('')
+          this.toolbox.print.error('Missing Required Arguments:', 'ERROR')
           this.toolbox.print.error(output)
           return output
         }

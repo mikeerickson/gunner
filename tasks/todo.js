@@ -21,6 +21,6 @@ if (output) {
     shell: true,
   })
   console.log('')
-  console.log(colors.green(`✅  ${todoFilename} file created successfully`))
+  console.log(colors.green(`✅  ${todoFilename} Created Successfully`))
 }
 console.log('')
