@@ -116,6 +116,8 @@ describe('make:command', (done) => {
 
         let data = fs.readFileSync(testCommandFilename, 'utf-8')
 
+        fs.delete(testCommandFilename)
+
         expect(data).to.contain('hidden: true,')
       }
     )
@@ -132,6 +134,8 @@ describe('make:command', (done) => {
         let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
 
         let data = fs.readFileSync(testCommandFilename, 'utf-8')
+
+        fs.delete(testCommandFilename)
 
         expect(data).to.contain('// Custom Template')
       }

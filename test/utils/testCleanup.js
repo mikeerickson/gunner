@@ -10,10 +10,6 @@ const { join } = require('path')
 ;(async () => {
   //
   // delete test commands
-  await fs.delete(join('src', 'commands', 'TestCommand.js'))
-  await fs.delete(join('src', 'commands', 'HiddenCommand.js'))
-  await fs.delete(join('src', 'commands', 'CustomTemplateCommand.js'))
-  await fs.delete(join('src', 'commands', 'invalid-name.js'))
 
   // delete test extensions
   let extensionPath = join('src', 'extensions')

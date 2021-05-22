@@ -289,7 +289,7 @@ class CLI {
         if (moduleRef.hasOwnProperty('flags')) {
           const flags = Object.keys(moduleRef.flags)
           flags.forEach((flag) => {
-            moduleRef.flags[flag]?.aliases.forEach((alias) => {
+            moduleRef.flags[flag]?.aliases?.forEach((alias) => {
               argKeys.includes(alias) ? (args[flag] = args[alias]) : null
             })
           })
