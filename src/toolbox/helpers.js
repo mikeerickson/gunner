@@ -11,7 +11,7 @@ const promptColors = require('ansi-colors')
 const pkgInfo = require('../../package.json')
 
 class Helpers {
-  constructor() {}
+  constructor(param = null) {}
 
   getPackageName() {
     return pkgInfo.packageName
@@ -113,4 +113,4 @@ class Helpers {
   }
 }
 
-module.exports = Helpers
+module.exports = new Helpers()

@@ -10,81 +10,86 @@ module.exports = {
   name: 'make:command',
   description: 'Create new command',
   usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
+  showPrompts: true,
   arguments: {
-    name: { description: 'Saved Filename', required: true, help: 'You must supply Name (as it will be saved on disk)' },
+    name: {
+      description: 'Resource Filename',
+      required: true,
+      help: 'You must supply Command Name (as it will be saved on disk)',
+      prompt: {
+        type: 'input',
+        hint: 'Command Name (as it will be saved on disk)',
+      },
+    },
   },
   flags: {
-    name: { aliases: ['n'], descriptio: 'Command Name (eg make:command)', required: true },
+    name: {
+      aliases: ['n'],
+      description: 'Command Name',
+      required: true,
+      prompt: {
+        type: 'input',
+        hint: 'eg make:command',
+        validate: (value, state, item, index) => {
+          return value.length > 0
+        },
+      },
+    },
     description: { aliases: ['s'], description: 'Command Description', required: false },
     hidden: { aliases: ['i'], description: 'Command Hidden', required: false },
     arguments: { aliases: ['a'], description: 'Include Arguments Block', required: false },
     template: { aliases: ['t'], description: 'Custom Template', required: false },
-    quiet: { aliases: ['q'], description: 'Suppress Command Documentation', required: false },
+    noComments: {
+      aliases: ['n'],
+      description: 'Suppress Command Documentation',
+      required: false,
+      prompt: {
+        type: 'confirm',
+        hint: 'Show Confirmation Messages',
+      },
+    },
   },
   examples: ['make:command HelloWorld --name hello:world --description="Command Description"'],
 
   async execute(toolbox) {
     let questions = []
-    let quiet = toolbox.getOptionValue(toolbox.arguments, ['quiet', 'q'])
+    let noComment = toolbox.getOptionValue(toolbox.arguments, ['noComment', 'n'])
+    let answers = this.showPrompts ? await toolbox.prompts.run(toolbox, this) : []
 
-    if (toolbox.commandName.length === 0) {
-      questions.push(
-        toolbox.prompts.buildQuestion('input', 'commandName', 'Command Filename', {
-          validate: (value, state, item, index) => {
-            return value.length > 0
-          },
-        })
-      )
-    }
+    let commandName = toolbox.commandName || answers.commandName
+    let name = toolbox.arguments.name || answers.name
+    let description = toolbox.arguments.description || answers.description || ''
+    let showArguments = toolbox.arguments.arguments || toolbox.arguments.showArguments || answers.showArguments || false
+    let hidden = toolbox.arguments.hidden || answers.hidden || false
+    let template = toolbox.arguments.template || ''
 
-    // if (!toolbox.arguments.description) {
-    //   questions.push(toolbox.prompts.buildQuestion('input', 'description', 'Command Description'))
-    // }
-
-    // if (!toolbox.arguments.arguments) {
-    //   questions.push(toolbox.prompts.buildQuestion('confirm', 'showArguments', 'Include Arguments Block?'))
-    // }
-
-    if (questions.length > 0) {
-      console.log()
-      let answers = await toolbox.prompts.show(questions)
-
-      if (answers) {
-        toolbox.commandName = answers.commandName || toolbox.commandName
-        toolbox.arguments.description = answers.description || toolbox.arguments.description
-        toolbox.arguments.showArguments = answers.showArguments || toolbox.arguments.arguments || false
-        toolbox.arguments.hidden = toolbox.arguments.hidden || false
-      } else {
-        console.log('')
-        toolbox.print.warn('Command Creation Cancelled', 'WARNING')
-        console.log('')
-        process.exit(0)
-      }
-    }
-
-    if (!toolbox.strings.validName(toolbox.commandName)) {
+    if (!(commandName && name)) {
       console.log('')
-      toolbox.print.error(`🚫  Invalid Name:  ${toolbox.commandName}`)
+      toolbox.print.warn('Command Creation Cancelled', 'WARNING')
+      console.log('')
+      process.exit(0)
+    }
+
+    if (!toolbox.strings.validName(commandName)) {
+      console.log('')
+      toolbox.print.error(`🚫  Invalid Name:  ${commandName}`)
       toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
       process.exit(0)
     }
 
-    if (toolbox.arguments.name === null) {
-      let cmdName = toolbox.strings.kebabCase(toolbox.commandName)
-      toolbox.arguments.name = cmdName
-    }
-
     let data = {
-      name: toolbox.arguments.name,
-      showArguments: toolbox.arguments.arguments || false,
-      description: toolbox.arguments.description,
-      template: toolbox.arguments.template || '',
-      hidden: toolbox.arguments.hidden || false,
-      quiet: !quiet,
+      name: commandName,
+      showArguments,
+      description,
+      template,
+      hidden,
+      noComment: !noComment,
     }
 
     console.log('')
     console.log('')
+
+    toolbox.commandName = data.name
 
     let templateFilename = ''
     if (data.template.length > 0) {

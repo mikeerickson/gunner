@@ -9,6 +9,7 @@ const { exec, execSync } = require('child_process')
 const App = require('../src/toolbox/App.js')
 const fs = require('../src/toolbox/filesystem')
 const execa = require('execa')
+const { dd } = require('dumper.js')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''
@@ -37,7 +38,9 @@ describe('make:command', (done) => {
   it('should create test command', (done) => {
     let testCommandName = 'TestCommand'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-    let result = execSync(`gunner make:command ${testCommandName} --name test --description test --overwrite`)
+    let cmd = `gunner make:command ${testCommandName} --name test --description test --overwrite`
+
+    let result = execSync(cmd)
     result = result.toString()
 
     let msg = result.replace(/\n/gi, '')
@@ -57,15 +60,18 @@ describe('make:command', (done) => {
 
   it('should prompt for description', async (done) => {
     let testCommandName = '_InvalidName_'
-    exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain(`Invalid Name:  ${testCommandName}`)
-    })
+    exec(
+      `gunner make:command ${testCommandName} --name test --description test --overwrite`,
+      async (err, stdout, stderr) => {
+        let result = stdout.replace(/\n/gi, '')
+        expect(result).contain(`Invalid Name:  ${testCommandName}`)
+      }
+    )
     done()
   })
 
   it('should handle --arguments flag', (done) => {
-    let testCommandName = 'TestCommand'
+    let testCommandName = 'TestCommandFlag'
     exec(
       `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test`,
       (err, stdout, stderr) => {
@@ -73,7 +79,7 @@ describe('make:command', (done) => {
 
         let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
         let data = fs.readFileSync(testCommandFilename, 'utf-8')
-
+        fs.delete(testCommandFilename)
         expect(data).to.contain('arguments: {')
       }
     )
@@ -81,7 +87,7 @@ describe('make:command', (done) => {
   })
 
   it('should suppress doc blocks using quiet flag', (done) => {
-    let testCommandName = 'TestCommand'
+    let testCommandName = 'TestCommandDocBlocks'
     exec(
       `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test --quiet`,
       (err, stdout, stderr) => {
@@ -92,6 +98,8 @@ describe('make:command', (done) => {
 
         expect(data).to.not.contain('Command Descritption')
         expect(data).to.not.contain('- you can use the following variables when creating your command')
+
+        fs.delete(testCommandFilename)
       }
     )
     done()
@@ -114,15 +122,15 @@ describe('make:command', (done) => {
     done()
   })
 
-  it.skip('should create command using custom template', (done) => {
+  it('should create command using custom template', (done) => {
     let testCommandName = 'CustomTemplateCommand'
     exec(
-      `gunner make:command ${testCommandName} --name test --overwrite --description test --template="custom-templates/make-command.mustache"`,
+      `gunner make:command ${testCommandName} --name test --overwrite --description test --template="test/custom-templates/make-command.mustache"`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
         let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-        console.log('testCommandFilename', testCommandFilename)
+
         let data = fs.readFileSync(testCommandFilename, 'utf-8')
 
         expect(data).to.contain('// Custom Template')

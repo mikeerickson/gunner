@@ -289,7 +289,7 @@ class CLI {
         if (moduleRef.hasOwnProperty('flags')) {
           const flags = Object.keys(moduleRef.flags)
           flags.forEach((flag) => {
-            moduleRef.flags[flag].aliases.forEach((alias) => {
+            moduleRef.flags[flag]?.aliases.forEach((alias) => {
               argKeys.includes(alias) ? (args[flag] = args[alias]) : null
             })
           })
@@ -331,7 +331,8 @@ class CLI {
   hasRequiredArguments(module, args) {
     let missingArguments = []
     for (let flag in module.flags) {
-      if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required) {
+      let hasPrompt = module.flags[flag].hasOwnProperty('prompt')
+      if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required && !hasPrompt) {
         let hasAlias = false
         if (!args.hasOwnProperty(flag)) {
           if (module.flags[flag].hasOwnProperty('aliases')) {
@@ -680,8 +681,12 @@ class CLI {
       let disabled = module.disabled || false
 
       // debug.dd(this.argv)
-      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && module.arguments.name?.required) {
+
+      let required = module?.arguments?.name?.required
+      let prompt = module?.arguments?.name.hasOwnProperty('prompt')
+      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
         console.log('')
+
         if (module.arguments.name.hasOwnProperty('help')) {
           this.toolbox.print.error(module.arguments.name.help, 'ERROR')
         } else {
@@ -690,6 +695,7 @@ class CLI {
         console.log('')
         process.exit(0)
       }
+
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
         if (requiredArguments.length > 0) {

@@ -33,7 +33,8 @@ describe('make:extension', (done) => {
     }
 
     let testExtension = name
-    let result = execSync(`gunner make:extension ${testExtension}`)
+    let result = execSync(`gunner make:extension ${testExtension} -o`)
+
     expect(result.toString()).contain(testExtension)
     done()
   })

@@ -34,7 +34,7 @@ module.exports = {
   },
 
   async execute(toolbox) {
-    let overwrite = toolox.arguments.overwrite || toolbox.arguments.o
+    let overwrite = toolbox.arguments.overwrite || toolbox.arguments.o
     if (!toolbox.commandName) {
       console.log('')
       toolbox.print.error('Invalid CLI Name (use gunner new <name>)\n', 'ERROR')

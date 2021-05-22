@@ -5,7 +5,9 @@
 
 const { prompt, Confirm, BooleanPrompt } = require('enquirer')
 const colors = require('ansi-colors')
-const { cyan, dim } = require('ansi-colors')
+const { cyan, dim, danger } = require('ansi-colors')
+const { dd } = require('dumper.js')
+const helpers = require('./helpers')
 
 async function input(config) {
   console.log('input prompt')
@@ -55,6 +57,55 @@ async function multiSelect(config) {
 }
 
 prompts = {
+  run: async function (toolbox, command) {
+    let commandName = toolbox.commandName
+    let args = toolbox.arguments
+    let answers = []
+    let questions = []
+
+    if (!commandName || commandName.length === 0) {
+      questions.push(
+        this.buildQuestion('input', 'commandName', command.arguments.name.description, {
+          validate: (value, state, item, index) => {
+            if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
+              return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
+            }
+            return true
+          },
+          hint: command.arguments.name.prompt.hint,
+        })
+      )
+    }
+
+    let flags = Object.keys(command.flags)
+    flags.forEach((flag) => {
+      if (command.flags[flag]?.prompt) {
+        let keys = [flag]
+        keys = command.flags[flag]?.aliases ? keys.concat(command.flags[flag].aliases) : keys
+        let optionValue = helpers.getOptionValue(toolbox.arguments, keys)
+        let required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : false
+        let hasPrompt = command.flags[flag].hasOwnProperty('prompt')
+
+        if (!optionValue && required) {
+          let type = command.flags[flag].prompt.hasOwnProperty('type') ? command.flags[flag].prompt.type : 'input'
+          let hint = command.flags[flag].prompt.hasOwnProperty('hint') ? command.flags[flag].prompt.hint : ''
+          let validate = command.flags[flag].prompt.hasOwnProperty('validate')
+            ? command.flags[flag].prompt.validate
+            : null
+
+          let question = this.buildQuestion(type, flag, command.flags[flag].description, { hint, validate })
+          questions.push(question)
+        }
+      }
+    })
+
+    if (questions.length > 0) {
+      answers = await this.show(questions)
+    }
+
+    return answers
+  },
+
   buildQuestion: function (type, name, message, alternateOptions = {}) {
     return { type, name, message, ...alternateOptions }
   },
