@@ -27,6 +27,7 @@ module.exports = {
   disabled: false,
   hidden: {{hidden}},
   usage: `{{command}} ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
+  usePrompts: true,
   {{#showArguments}}
   arguments: {
     name: { description: 'Resource Filename', required: true },

@@ -334,7 +334,7 @@ class CLI {
   hasRequiredArguments(module, args) {
     let missingArguments = []
     for (let flag in module.flags) {
-      let hasPrompt = module.flags[flag].hasOwnProperty('prompt')
+      let hasPrompt = module.flags[flag].hasOwnProperty('prompt') && module?.usePrompts
       if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required && !hasPrompt) {
         let hasAlias = false
         if (!args.hasOwnProperty(flag)) {
@@ -351,6 +351,7 @@ class CLI {
         }
       }
     }
+
     return missingArguments
   }
 
@@ -686,10 +687,9 @@ class CLI {
       }
       let disabled = module.disabled || false
 
-      // debug.dd(this.argv)
-
       let required = module?.arguments?.name?.required
-      let prompt = module?.arguments?.name.hasOwnProperty('prompt')
+      let prompt = module?.arguments?.name.hasOwnProperty('prompt') && module.usePrompts
+
       if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
         console.log('')
 
@@ -704,7 +704,8 @@ class CLI {
 
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
-        if (requiredArguments.length > 0) {
+
+        if (requiredArguments.length > 0 && !prompt) {
           let output = '        - ' + requiredArguments.join(', ') + '\n'
           console.log('')
           this.toolbox.print.error('Missing Required Arguments:', 'ERROR')

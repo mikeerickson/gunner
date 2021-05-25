@@ -49,16 +49,6 @@ describe('make:command', (done) => {
     done()
   })
 
-  it('should alert when required attribute is not supplied and does not have prompt object', (done) => {
-    let testCommandName = 'TestRequired'
-    exec(`gunner test:prompt ${testCommandName}`, async (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('Missing Required Arguments:')
-      expect(result).contain('- test required argument without prompt')
-    })
-    done()
-  })
-
   it('should show warning when command already exists', (done) => {
     let testCommandName = 'make-command'
     exec(`gunner make:command ${testCommandName} --command test --description test`, async (err, stdout, stderr) => {

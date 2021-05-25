@@ -12,7 +12,7 @@ module.exports = {
   name: 'test:prompt',
   description: 'Showcase Prompt Supprot',
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
-  showPrompts: true,
+  usePrompts: true,
   arguments: {
     name: {
       description: 'Resource Filename',
@@ -196,7 +196,7 @@ module.exports = {
             name: 'version',
             validate(value, state, item, index) {
               if (item && item.name === 'version' && !semver.valid(value)) {
-                return prompt.styles.danger('version should be a valid semver value')
+                return colors.red.bold('version should be a valid semver value')
               }
               return true
             },
@@ -237,17 +237,16 @@ module.exports = {
     let args = helpers.getArguments(toolbox.arguments, this.flags)
 
     // show any prompts (arguments or flags marked as required with prompt data)
-    let answers = this.showPrompts ? await toolbox.prompts.run(toolbox, this) : []
+    let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
 
     let result = helpers.sanitizeResults({ ...args, ...answers }, this)
-    dd(result)
+
     let keys = Object.keys(result)
     let onlyRequired = keys.length === 1 && keys[0] === 'test'
     if (!result || onlyRequired) {
       console.log('')
       toolbox.print.warning('Command Aborted\n', 'ABORT')
     } else {
-      dd(result)
       helpers.clearConsole()
       console.log('')
       toolbox.print.info('Result Data\n', 'INFO')

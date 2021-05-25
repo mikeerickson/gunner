@@ -11,7 +11,7 @@ module.exports = {
   name: 'make:command',
   description: 'Create new command',
   usage: `make:command ${colors.blue.bold('[Filename]')} ${colors.magenta.bold('<flags>')}`,
-  showPrompts: true,
+  usePrompts: true,
   arguments: {
     name: {
       description: 'Resource Filename',
@@ -48,7 +48,7 @@ module.exports = {
 
   async execute(toolbox) {
     let args = helpers.getArguments(toolbox.arguments, this.flags)
-    let answers = this.showPrompts ? await toolbox.prompts.run(toolbox, this) : []
+    let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
 
     // merge args and answers
     let result = { ...args, ...answers }
