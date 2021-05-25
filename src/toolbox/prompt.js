@@ -3,11 +3,12 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { prompt, Confirm, BooleanPrompt } = require('enquirer')
-const colors = require('ansi-colors')
-const { cyan, dim, danger } = require('ansi-colors')
+const { prompt, Confirm, BooleanPrompt, NumberPrompt } = require('enquirer')
 const { dd } = require('dumper.js')
 const helpers = require('./helpers')
+const colors = require('ansi-colors')
+const { cyan, dim, danger } = require('ansi-colors')
+const print = require('./print')
 
 async function input(config) {
   console.log('input prompt')
@@ -23,6 +24,14 @@ async function confirm(config) {
 
 async function list(config) {
   console.log('list prompt')
+}
+
+async function number(config) {
+  const prompt = new NumberPrompt({
+    name: 'number',
+    message: 'Please enter a number',
+  })
+  return prompt
 }
 
 async function autoComplete(config) {
@@ -57,24 +66,61 @@ async function multiSelect(config) {
 }
 
 prompts = {
+  validPromptTypes: function () {
+    let types = [
+      'autocomplete',
+      'boolean',
+      'confirm',
+      'input',
+      'invisible',
+      'list',
+      'multiselect',
+      'multi',
+      'numeral',
+      'select',
+      'toggle',
+    ]
+
+    return types.sort()
+  },
+
+  validPrompt: function (prompt = null) {
+    if (!prompt) return false
+    let types = this.validPromptTypes()
+
+    let validPrompt = false
+
+    let type = prompt.hasOwnProperty('type') ? prompt.type : 'input'
+
+    validPrompt = types.includes(type)
+    if (validPrompt && (type === 'select' || type === 'multi' || type === 'multiselect')) {
+      let choices = prompt.hasOwnProperty('choices')
+      validPrompt = choices
+    }
+    return validPrompt
+  },
+
   run: async function (toolbox, command) {
+    console.log('')
     let commandName = toolbox.commandName
     let args = toolbox.arguments
     let answers = []
     let questions = []
 
-    if (!commandName || commandName.length === 0) {
-      questions.push(
-        this.buildQuestion('input', 'commandName', command.arguments.name.description, {
-          validate: (value, state, item, index) => {
-            if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
-              return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
-            }
-            return true
-          },
-          hint: command.arguments.name.prompt.hint,
-        })
-      )
+    if (helpers.getProp(command, 'arguments.name.required')) {
+      if (!commandName || commandName.length === 0) {
+        questions.push(
+          this.buildQuestion('input', 'commandName', command.arguments.name.description, {
+            validate: (value, state, item, index) => {
+              if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
+                return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
+              }
+              return true
+            },
+            hint: command.arguments.name.prompt.hint,
+          })
+        )
+      }
     }
 
     let flags = Object.keys(command.flags)
@@ -82,18 +128,59 @@ prompts = {
       if (command.flags[flag]?.prompt) {
         let keys = [flag]
         keys = command.flags[flag]?.aliases ? keys.concat(command.flags[flag].aliases) : keys
-        let optionValue = helpers.getOptionValue(toolbox.arguments, keys)
+        let optionValue = helpers.getOptionValueEx(toolbox.arguments, keys)
+
         let required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : false
+
+        // configure prompt if exists
         let hasPrompt = command.flags[flag].hasOwnProperty('prompt')
+        let prompt = hasPrompt && command.flags[flag].prompt
 
-        if (!optionValue && required) {
-          let type = command.flags[flag].prompt.hasOwnProperty('type') ? command.flags[flag].prompt.type : 'input'
-          let hint = command.flags[flag].prompt.hasOwnProperty('hint') ? command.flags[flag].prompt.hint : ''
-          let validate = command.flags[flag].prompt.hasOwnProperty('validate')
-            ? command.flags[flag].prompt.validate
-            : null
+        let validPrompt = this.validPrompt(prompt.type)
+        if (!validPrompt) {
+          toolbox.print.error(`${flag}: invalid prompt type '${prompt.type}'`, 'ERROR')
+          toolbox.print.error(`        must be one of: ${this.validPromptTypes().join(', ')}`)
+          console.log('')
+          process.exit()
+        }
 
-          let question = this.buildQuestion(type, flag, command.flags[flag].description, { hint, validate })
+        if (!optionValue && required && validPrompt) {
+          let type = prompt.type
+          let isNumber = type === 'number'
+
+          type = type === 'multi' ? 'multiselect' : type
+          type = type === 'boolean' ? 'confirm' : type
+          type = type === 'list' ? 'input' : type
+
+          let hint = prompt?.hint || ''
+          let validate = prompt?.validate ? prompt.validate : null
+          let choices = prompt?.choices ? prompt.choices : []
+          let initial = prompt?.initial ? prompt.initial : []
+          let limit = prompt?.limit ? prompt.limit : null
+          let maxSelected = prompt?.maxSelected ? prompt.maxSelected : null
+          let sort = prompt?.sort ? prompt.sort : false
+          let scale = prompt?.scale ? prompt.scale : null
+          let margin = prompt?.margin ? prompt.margin : null
+          let fields = prompt?.fields ? prompt.fields : null
+          let required = prompt?.required ? prompt.required : null
+          let template = prompt?.template ? prompt.template : null
+          let description = prompt?.message ? prompt.message : command.flags[flag].description
+
+          let question = this.buildQuestion(type, flag, description, {
+            hint,
+            validate,
+            choices,
+            initial,
+            limit,
+            maxSelected,
+            sort,
+            scale,
+            margin,
+            fields,
+            template,
+            required,
+          })
+
           questions.push(question)
         }
       }
@@ -103,11 +190,28 @@ prompts = {
       answers = await this.show(questions)
     }
 
+    flags.forEach((key) => {
+      if (answers?.hasOwnProperty(key) && command.flags[key].prompt.type === 'list') {
+        answers[key] = answers[key].split(',')
+      }
+    })
+
     return answers
   },
 
   buildQuestion: function (type, name, message, alternateOptions = {}) {
-    return { type, name, message, ...alternateOptions }
+    let defaultOptions = {
+      styles: { em: colors.cyan },
+      pointer(state, choice) {
+        return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
+      },
+      indicator(state, choice) {
+        return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
+      },
+    }
+
+    let options = { ...defaultOptions, ...alternateOptions }
+    return { type, name, message, ...options }
   },
 
   input: (msg, options = { initial: '' }) => {

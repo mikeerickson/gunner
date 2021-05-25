@@ -5,68 +5,83 @@
 
 const colors = require('chalk')
 const { dd } = require('dumper.js')
+const helpers = require('../toolbox/helpers')
 
 module.exports = {
   name: 'make:command',
   description: 'Create new command',
-  usage: `make:command ${colors.blue('[Filename]')} ${colors.magenta('<flags>')}`,
+  usage: `make:command ${colors.blue.bold('[Filename]')} ${colors.magenta.bold('<flags>')}`,
   showPrompts: true,
   arguments: {
     name: {
       description: 'Resource Filename',
       required: true,
-      help: 'You must supply Command Name (as it will be saved on disk)',
       prompt: {
         type: 'input',
-        hint: 'Command Name (as it will be saved on disk)',
+        hint: 'as it will be saved on disk',
       },
     },
   },
   flags: {
-    name: {
-      aliases: ['n'],
+    command: {
+      aliases: ['c'],
       description: 'Command Name',
       required: true,
       prompt: {
         type: 'input',
-        hint: 'eg make:command',
+        hint: 'e.g., make:command',
         validate: (value, state, item, index) => {
-          return value.length > 0
+          if (!/^[a-z.,:][^,; 0-9]+$/.test(value)) {
+            return colors.red.bold('Valid Characters a-z, or -_:')
+          }
+          return true
         },
       },
     },
-    description: { aliases: ['s'], description: 'Command Description', required: false },
+    description: { aliases: ['d'], description: 'Command Description', required: false },
     hidden: { aliases: ['i'], description: 'Command Hidden', required: false },
-    arguments: { aliases: ['a'], description: 'Include Arguments Block', required: false },
+    noArguments: { aliases: ['a'], description: 'Suppress Arguments Block', required: false },
+    noComments: { aliases: ['m'], description: 'Suppress Command Comments', required: false },
     template: { aliases: ['t'], description: 'Custom Template', required: false },
-    noComments: {
-      aliases: ['n'],
-      description: 'Suppress Command Documentation',
-      required: false,
-      prompt: {
-        type: 'confirm',
-        hint: 'Show Confirmation Messages',
-      },
-    },
   },
   examples: ['make:command HelloWorld --name hello:world --description="Command Description"'],
 
   async execute(toolbox) {
-    let questions = []
-    let noComment = toolbox.getOptionValue(toolbox.arguments, ['noComment', 'n'])
+    let args = helpers.getArguments(toolbox.arguments, this.flags)
     let answers = this.showPrompts ? await toolbox.prompts.run(toolbox, this) : []
 
-    let commandName = toolbox.commandName || answers.commandName
-    let name = toolbox.arguments.name || answers.name
-    let description = toolbox.arguments.description || answers.description || ''
-    let showArguments = toolbox.arguments.arguments || toolbox.arguments.showArguments || answers.showArguments || false
-    let hidden = toolbox.arguments.hidden || answers.hidden || false
+    // merge args and answers
+    let result = { ...args, ...answers }
+
+    if (!result.command) {
+      console.log('')
+      toolbox.print.warning('Command Aborted\n', 'ABORT')
+      process.exit()
+    }
+
+    let commandName = toolbox.commandName || result.commandName
+
+    let name = result.name
+    let command = result.command
+    let noComment = result.noComment || false
+    let description = result.description
+    let noArguments = result.noArguments || false
+
+    let hidden = result.hidden || false
+
     let template = toolbox.arguments.template || ''
 
-    if (!(commandName && name)) {
+    if (!toolbox.strings.validName(commandName)) {
       console.log('')
-      toolbox.print.warn('Command Creation Cancelled', 'WARNING')
+      toolbox.print.error(`🚫  Invalid Resource Filename:  ${commandName}`)
+      toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
+      process.exit(0)
+    }
+
+    if (!/^[a-z.,:][^,; 0-9]+$/.test(command)) {
       console.log('')
+      toolbox.print.error(`🚫  Invalid Command:  ${command}`)
+      toolbox.print.warn('    Valid Characters a-z, or -_:-\n')
       process.exit(0)
     }
 
@@ -79,11 +94,12 @@ module.exports = {
 
     let data = {
       name: commandName,
-      showArguments,
+      command,
+      showArguments: !noArguments,
       description,
       template,
       hidden,
-      noComment: !noComment,
+      noComment,
     }
 
     console.log('')
@@ -110,11 +126,10 @@ module.exports = {
       fileExtension = fileExtension.length > 0 ? '' : '.js'
 
       let commandFilename = toolbox.path.join(projectCommandPath, toolbox.commandName + fileExtension)
-      let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', '-o'])
 
-      if (overwrite) {
-        toolbox.filesystem.existsSync(commandFilename) ? toolbox.filesystem.delete(commandFilename) : null
-      }
+      let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', 'o'])
+      overwrite ? toolbox.filesystem.delete(commandFilename) : null
+
       let shortFilename = toolbox.app.getShortenFilename(commandFilename)
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {

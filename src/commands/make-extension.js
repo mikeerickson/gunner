@@ -9,7 +9,7 @@ const colors = require('chalk')
 module.exports = {
   name: 'make:extension',
   description: 'Create new extension',
-  usage: `gunner make:extension ${colors.blue('[name]')} ${colors.magenta('<flags>')}`,
+  usage: `gunner make:extension ${colors.blue.bold('[name]')} ${colors.magenta.bold('<flags>')}`,
   arguments: {
     name: {
       description: 'Extension Name',

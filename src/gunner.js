@@ -13,6 +13,7 @@ const debug = require('dumper.js')
 const api = require('./toolbox/api')
 const arrays = require('./toolbox/arrays')
 const config = require('./toolbox/config')
+const helpers = require('./toolbox/config')
 const prompts = require('./toolbox/prompt')
 const table = require('./toolbox/table.js')
 const utils = require('@codedungeon/utils')
@@ -25,6 +26,7 @@ const environment = require('./toolbox/environment')
 const packageManager = require('./toolbox/packageManager')
 
 const HELP_PAD = 30
+const REQUIRED_MARK = '✖︎'
 
 class CLI {
   constructor(argv = [], projectRootDir = null, pkgInfo = null) {
@@ -99,8 +101,8 @@ class CLI {
       api,
       app: this.app,
       arguments: this.arguments,
-      colors,
       commandName: this.commandName,
+      colors,
       config,
       debug,
       env: {
@@ -124,6 +126,7 @@ class CLI {
       print,
       semver,
       strings,
+      helpers,
       arrays,
       system,
       table,
@@ -594,9 +597,9 @@ class CLI {
     if (this.toolbox.utils.has(module, 'arguments')) {
       this.toolbox.print.warning('\nArguments:')
       for (const [key, value] of Object.entries(module.arguments)) {
-        console.log(
-          `  ${key}                    ${value.description} ${value?.required ? colors.red('-required-') : ''}`
-        )
+        let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
+
+        console.log(`  ${key}                    ${required} ${value.description}`)
       }
     }
 
@@ -632,9 +635,9 @@ class CLI {
             defaultValue = defaultValue.replace(/,/gi, ', ')
           }
 
-          let required = ''
+          let required = ' '
           if (module.flags[flag]?.required) {
-            required = this.toolbox.colors.red('-required-')
+            required = this.toolbox.colors.red.bold(REQUIRED_MARK) // this.toolbox.colors.red('-required-')
           }
 
           let aliases = ''
@@ -644,8 +647,11 @@ class CLI {
 
           let flags = '  --' + flag + aliases
           // pad 7 to include flag alias
-          console.log(flags.padEnd(COL_WIDTH + 5), description, defaultValue, required)
+          console.log(flags.padEnd(COL_WIDTH + 5), required, description, defaultValue)
         })
+
+        console.log('')
+        console.log(this.toolbox.colors.red('  ✖︎') + ' denotes required argument / options')
         console.log('')
       }
     }

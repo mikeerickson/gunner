@@ -89,7 +89,7 @@ fs.write = (filename, data, options = { overwrite: false }) => {
   }
   let parentPath = path.dirname(filename)
   if (!fs.existsSync(parentPath)) {
-    fs.mkdirSync(parentPath)
+    fs.mkdirSync(parentPath, { recursive: true })
   }
 
   fs.writeFileSync(filename, data)

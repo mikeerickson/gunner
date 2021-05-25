@@ -22,20 +22,26 @@
 const colors = require('chalk')
 
 module.exports = {
-  name: '{{name}}',
+  name: '{{command}}',
   description: '{{description}}',
   disabled: false,
   hidden: {{hidden}},
-  usage: `{{name}} ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
+  usage: `{{command}} ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
   {{#showArguments}}
   arguments: {
-    name: { aliases: ['n'], description: 'Command Filename', required: false },
+    name: { description: 'Resource Filename', required: true },
+    prompt: {
+        type: 'input',
+        hint: '(as it will be saved on disk)',
+      },
   },
+
   {{/showArguments}}
   flags: {
     // example flag, adjust accordingly
-    name: { aliases: ['n'], description: 'Command name', required: false }
+    command: { aliases: ['c'], description: 'Command name', required: false }
   },
+
   execute(toolbox) {
     {{#quiet}}
     /*

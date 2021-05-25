@@ -38,7 +38,7 @@ describe('make:command', (done) => {
   it('should create test command', (done) => {
     let testCommandName = 'TestCommand'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-    let cmd = `gunner make:command ${testCommandName} --name test --description test --overwrite`
+    let cmd = `gunner make:command ${testCommandName} --command test --description test --overwrite`
 
     let result = execSync(cmd)
     result = result.toString()
@@ -49,9 +49,19 @@ describe('make:command', (done) => {
     done()
   })
 
+  it('should alert when required attribute is not supplied and does not have prompt object', (done) => {
+    let testCommandName = 'TestRequired'
+    exec(`gunner test:prompt ${testCommandName}`, async (err, stdout, stderr) => {
+      let result = stdout.replace(/\n/gi, '')
+      expect(result).contain('Missing Required Arguments:')
+      expect(result).contain('- test required argument without prompt')
+    })
+    done()
+  })
+
   it('should show warning when command already exists', (done) => {
     let testCommandName = 'make-command'
-    exec(`gunner make:command ${testCommandName} --name test --description test`, async (err, stdout, stderr) => {
+    exec(`gunner make:command ${testCommandName} --command test --description test`, async (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
       expect(result).contain(`${testCommandName}.js Already Exists`)
     })
@@ -61,26 +71,26 @@ describe('make:command', (done) => {
   it('should prompt for description', async (done) => {
     let testCommandName = '_InvalidName_'
     exec(
-      `gunner make:command ${testCommandName} --name test --description test --overwrite`,
+      `gunner make:command ${testCommandName} --command test --description test --overwrite`,
       async (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
-        expect(result).contain(`Invalid Name:  ${testCommandName}`)
+        expect(result).contain(`Invalid Resource Filename:  ${testCommandName}`)
       }
     )
     done()
   })
 
-  it('should handle --arguments flag', (done) => {
+  it('should handle --noArguments flag', (done) => {
     let testCommandName = 'TestCommandFlag'
     exec(
-      `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test`,
+      `gunner make:command ${testCommandName} --command test --noArguments --overwrite --description test`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
         let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
         let data = fs.readFileSync(testCommandFilename, 'utf-8')
         fs.delete(testCommandFilename)
-        expect(data).to.contain('arguments: {')
+        expect(data).to.not.contain('arguments: {')
       }
     )
     done()
@@ -89,7 +99,7 @@ describe('make:command', (done) => {
   it('should suppress doc blocks using quiet flag', (done) => {
     let testCommandName = 'TestCommandDocBlocks'
     exec(
-      `gunner make:command ${testCommandName} --name test --arguments --overwrite --description test --quiet`,
+      `gunner make:command ${testCommandName} --command test --arguments --overwrite --description test --quiet`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
@@ -108,7 +118,7 @@ describe('make:command', (done) => {
   it('should set hidden to true using hidden flag', (done) => {
     let testCommandName = 'HiddenCommand'
     exec(
-      `gunner make:command ${testCommandName} --name test --overwrite --description test --hidden`,
+      `gunner make:command ${testCommandName} --command test --overwrite --description test --hidden`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
@@ -127,7 +137,7 @@ describe('make:command', (done) => {
   it('should create command using custom template', (done) => {
     let testCommandName = 'CustomTemplateCommand'
     exec(
-      `gunner make:command ${testCommandName} --name test --overwrite --description test --template="test/custom-templates/make-command.mustache"`,
+      `gunner make:command ${testCommandName} --command test --overwrite --description test --template="test/custom-templates/make-command.mustache"`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 

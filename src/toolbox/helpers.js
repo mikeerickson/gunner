@@ -7,8 +7,10 @@ const fs = require('fs-extra')
 const dotProp = require('dot-prop')
 const { prompt } = require('enquirer')
 const promptColors = require('ansi-colors')
+const clearConsole = require('clear-any-console')
 
 const pkgInfo = require('../../package.json')
+const { dd } = require('dumper.js')
 
 class Helpers {
   constructor(param = null) {}
@@ -36,7 +38,7 @@ class Helpers {
     }
     let items = typeof needles === 'string' ? needles.split(',') : needles
     for (let i = 0; i < items.length; i++) {
-      const element = items[i].replace(/-/gi, '')
+      const element = items[i]?.replace(/-/gi, '')
       if (args.hasOwnProperty(element)) {
         return true
       }
@@ -58,7 +60,25 @@ class Helpers {
     return require('yargs-parser')(cliCommand)
   }
 
-  getOptionValue(args, optName, defaultValue = null) {
+  getFlagValue(args = null, options = null, key = null, defaultValue = null) {
+    let flags = [key]
+    if (options.hasOwnProperty(key) && options[key].hasOwnProperty('aliases')) {
+      flags = flags.concat(options[key].aliases)
+    }
+
+    return this.getOptionValueEx(args, flags, defaultValue)
+  }
+
+  getOptionValue(args = null, options = null, key = null, defaultValue = null) {
+    let flags = [key]
+    if (options.hasOwnProperty(key) && options[key].hasOwnProperty('aliases')) {
+      flags = flags.concat(options[key].aliases)
+    }
+
+    return this.getOptionValueEx(args, flags, defaultValue)
+  }
+
+  getOptionValueEx(args, optName, defaultValue = null) {
     if (this.argumentHasOption(args, optName)) {
       let options = typeof optName === 'string' ? [optName] : optName
       for (let i = 0; i < options.length; i++) {
@@ -70,6 +90,18 @@ class Helpers {
       return defaultValue
     }
     return defaultValue
+  }
+
+  getArguments(args = null, flags = null) {
+    let result = {}
+    if (args && flags) {
+      Object.keys(flags).forEach((key) => {
+        // let controller = app.getOptionValue(toolbox.arguments, this.flags, 'controller')
+        result[key] = this.getOptionValue(args, flags, key)
+      })
+    }
+
+    return result
   }
 
   buildQuestion(type, name, message, alternateOptions = {}) {
@@ -110,6 +142,45 @@ class Helpers {
     } else {
       return false
     }
+  }
+
+  isEmptyObject(object = null) {
+    if (!object) return true
+    return Object.keys(object).length === 0
+  }
+
+  getProp(props = nll, value = null) {
+    return dotProp.get(props, value)
+  }
+
+  sanitizeResults(result = null, command = null) {
+    let data = {}
+
+    Object.keys(result).forEach((key) => {
+      let type = command.flags[key]?.prompt?.type
+      if (result?.hasOwnProperty(key) && type === 'list') {
+        if (typeof result[key] === 'string') {
+          data[key] = result[key].split(',')
+        } else {
+          if (result[key]) {
+            data[key] = result[key]
+          }
+        }
+        if (data[key]) {
+          data[key] = data[key].map((item) => item.trim())
+        }
+      } else {
+        if (result[key] || type === 'toggle') {
+          data[key] = result[key]
+        }
+      }
+    })
+
+    return Object.keys(data).length > 0 ? data : false
+  }
+
+  clearConsole() {
+    clearConsole()
   }
 }
 

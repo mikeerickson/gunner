@@ -22,6 +22,7 @@ strings.singular = (str) => {
 }
 
 strings.validName = (str) => {
+  if (!str) return false
   return str.match(/^[0-9a-zA-Z,-]+$/)
 }
 
