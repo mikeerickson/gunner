@@ -72,7 +72,7 @@ module.exports = {
       required: true,
       prompt: {
         type: 'invisible',
-        message: 'enter something here',
+        message: 'this is an invisible prompt',
         hint: 'what you are entering is not displayed but captured',
       },
     },
@@ -111,7 +111,7 @@ module.exports = {
       prompt: {
         type: 'list',
         message: 'enter list of items',
-        initial: 'item',
+        initial: 'initial value',
         hint: 'enter keys separated by comma',
         validate: (value, state, item, index) => {
           if (value.length === 0) {
@@ -182,7 +182,7 @@ module.exports = {
 
     snippet: {
       description: 'snippet prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'snippet',
         message: 'Fill out the fields in package.json',

@@ -6,6 +6,7 @@
 const { system, filesystem } = require('../src/gunner')
 const { expect } = require('chai')
 const pkgInfo = require('../package.json')
+const { dd } = require('dumper.js')
 
 const src = filesystem.path.join(__dirname, '..')
 

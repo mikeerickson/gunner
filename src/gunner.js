@@ -278,8 +278,8 @@ class CLI {
       let moduleRef = this.loadModule(module)
       if (moduleRef) {
         Object.keys(args).forEach((arg) => {
-          if (moduleRef?.flags?.hasOwnProperty(arg)) {
-            if (moduleRef.flags[arg].hasOwnProperty('aliases')) {
+          if (moduleRef?.flags?.arg) {
+            if (moduleRef.flags[arg].aliases) {
               const aliases = moduleRef.flags[arg].aliases
               aliases.forEach((alias) => {
                 args[alias] = args[arg]
@@ -289,7 +289,7 @@ class CLI {
         })
 
         // see if argument has an associated alias
-        if (moduleRef.hasOwnProperty('flags')) {
+        if (moduleRef?.flags) {
           const flags = Object.keys(moduleRef.flags)
           flags.forEach((flag) => {
             moduleRef.flags[flag]?.aliases?.forEach((alias) => {
@@ -304,8 +304,8 @@ class CLI {
   }
 
   isModuleValid(module) {
-    let hidden = module.hasOwnProperty('hidden') && module.hidden
-    if (module.hasOwnProperty('name')) {
+    let hidden = module?.hidden
+    if (module?.name) {
       if (module.name === 'default') {
         hidden = false
       }
@@ -334,16 +334,16 @@ class CLI {
   hasRequiredArguments(module, args) {
     let missingArguments = []
     for (let flag in module.flags) {
-      let hasPrompt = module.flags[flag].hasOwnProperty('prompt') && module?.usePrompts
-      if (module.flags[flag].hasOwnProperty('required') && module.flags[flag].required && !hasPrompt) {
+      let hasPrompt = module.flags[flag]?.prompt && module?.usePrompts
+      if (module.flags[flag]?.required && module.flags[flag].required && !hasPrompt) {
         let hasAlias = false
-        if (!args.hasOwnProperty(flag)) {
-          if (module.flags[flag].hasOwnProperty('aliases')) {
+        if (!args?.flag) {
+          if (module.flags[flag]?.aliases) {
             let alias = module.flags[flag].aliases[0]
-            hasAlias = args.hasOwnProperty(alias)
+            hasAlias = args?.alias
           }
 
-          if (module.flags[flag].hasOwnProperty('description')) {
+          if (module.flags[flag]?.description) {
             !hasAlias ? missingArguments.push(module.flags[flag].description) : null
           } else {
             !hasAlias ? missingArguments.push(flag) : null
@@ -360,7 +360,7 @@ class CLI {
     let defaults = {}
     keys.map((flag) => {
       let alias = ''
-      if (flags[flag].hasOwnProperty('aliases')) {
+      if (flags[flag]?.hasOwnProperty('aliases')) {
         alias = flags[flag].aliases[0]
       }
       let defaultValue = this.toolbox.utils.dot.get(flags[flag].default)
@@ -442,7 +442,7 @@ class CLI {
 
         if (!disabled && !hidden) {
           let name = module.name || ''
-          if (module.hasOwnProperty('flags')) {
+          if (module?.flags) {
             if (Object.keys(module.flags).length > 0) {
               name += ' [args]'
             }
@@ -495,7 +495,7 @@ class CLI {
         `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
       )
       if (!options.simple) {
-        if (this.pkgInfo.hasOwnProperty('info')) {
+        if (this.pkgInfo?.info) {
           let msg = colors.keyword('pink').dim.italic(this.pkgInfo.info)
           console.log(`   ${msg}`)
         } else {
@@ -590,7 +590,7 @@ class CLI {
     let description = this.toolbox.utils.has(module, 'description') ? module.description : `${module.name} command`
     console.log(`   ${description}`)
 
-    if (module.hasOwnProperty('usage')) {
+    if (module?.usage) {
       this.toolbox.print.warning('\nUsage:')
       console.log('  ' + module.usage)
     }
@@ -605,7 +605,7 @@ class CLI {
     }
 
     console.log('')
-    if (!module.hasOwnProperty('flags')) {
+    if (!module?.flags) {
       process.exit(0)
     }
     let keys = Object.keys(module.flags)
@@ -631,7 +631,7 @@ class CLI {
           let description = module.flags[flag]['description'] || colors.yellow('<missing description>')
 
           let defaultValue = ''
-          if (module.flags[flag].hasOwnProperty('default')) {
+          if (module.flags[flag]?.default) {
             defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')
             defaultValue = defaultValue.replace(/,/gi, ', ')
           }
@@ -642,7 +642,7 @@ class CLI {
           }
 
           let aliases = ''
-          if (module.flags[flag].hasOwnProperty('aliases')) {
+          if (module.flags[flag]?.aliases) {
             aliases = ', ' + '-' + module.flags[flag].aliases
           }
 
@@ -663,7 +663,7 @@ class CLI {
   showCommandHelpExample(command = '') {
     let module = this.loadModule(command)
     if (!module.disabled) {
-      if (module.hasOwnProperty('examples')) {
+      if (module?.examples) {
         console.log(this.toolbox.colors.yellow('Examples:'))
         module.examples.forEach((example) => {
           console.log('  ' + this.appName + ' ' + example)
@@ -688,12 +688,12 @@ class CLI {
       let disabled = module.disabled || false
 
       let required = module?.arguments?.name?.required
-      let prompt = module?.arguments?.name.hasOwnProperty('prompt') && module.usePrompts
+      let prompt = module?.arguments?.name?.prompt && module.usePrompts
 
       if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
         console.log('')
 
-        if (module.arguments.name.hasOwnProperty('help')) {
+        if (module.arguments.name?.help) {
           this.toolbox.print.error(module.arguments.name.help, 'ERROR')
         } else {
           this.toolbox.print.error(module.arguments.name.description + ' Required', 'ERROR')
@@ -713,8 +713,7 @@ class CLI {
           return output
         }
 
-        let result = module.hasOwnProperty('execute')
-        if (module.hasOwnProperty('execute')) {
+        if (module?.execute) {
           this.arguments = this.setDefaultFlags(this, module.flags)
           return module.execute(this.toolbox)
         }
@@ -753,7 +752,7 @@ class CLI {
     }
 
     // if no command or --help supplied, use default command if it exists
-    if (commandInfo.hasOwnProperty('default')) {
+    if (commandInfo?.default) {
       let defaultCommand = this.toolbox.strings.camelCase(commandInfo.default.replace('.js', ''))
       if (this.fs.exists(path.resolve(this.app.getCommandPath(), defaultCommand + '.js'))) {
         command = commandInfo.default

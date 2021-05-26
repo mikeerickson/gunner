@@ -4,10 +4,9 @@
  * -----------------------------------------------------------------------------------------*/
 
 const { prompt, Confirm, BooleanPrompt, NumberPrompt } = require('enquirer')
-const { dd } = require('dumper.js')
 const helpers = require('./helpers')
 const colors = require('ansi-colors')
-const { cyan, dim, danger } = require('ansi-colors')
+const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 const print = require('./print')
 
 async function input(config) {
@@ -52,7 +51,7 @@ async function multiSelect(config) {
       return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
     },
     indicator(state, choice) {
-      return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
+      return choice.enabled ? ' ' + green('●') : ' ' + gray('o')
     },
     styles: {
       heading(msg) {
@@ -90,11 +89,10 @@ prompts = {
 
     let validPrompt = false
 
-    let type = prompt.hasOwnProperty('type') ? prompt.type : 'input'
-
+    let type = prompt?.type || 'input'
     validPrompt = types.includes(type)
     if (validPrompt && (type === 'select' || type === 'multi' || type === 'multiselect')) {
-      let choices = prompt.hasOwnProperty('choices')
+      let choices = prompt?.choices || []
       validPrompt = choices
     }
     return validPrompt
@@ -107,7 +105,7 @@ prompts = {
     let answers = []
     let questions = []
 
-    if (helpers.getProp(command, 'arguments.name.required')) {
+    if (command?.arguments?.name?.required) {
       if (!commandName || commandName.length === 0) {
         questions.push(
           this.buildQuestion('input', 'commandName', command.arguments.name.description, {
@@ -130,10 +128,10 @@ prompts = {
         keys = command.flags[flag]?.aliases ? keys.concat(command.flags[flag].aliases) : keys
         let optionValue = helpers.getOptionValueEx(toolbox.arguments, keys)
 
-        let required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : false
+        let required = command.flags[flag]?.required ? command.flags[flag].required : false
 
         // configure prompt if exists
-        let hasPrompt = command.flags[flag].hasOwnProperty('prompt')
+        let hasPrompt = command.flags[flag]?.prompt
         let prompt = hasPrompt && command.flags[flag].prompt
 
         let validPrompt = this.validPrompt(prompt.type)
@@ -191,7 +189,7 @@ prompts = {
     }
 
     flags.forEach((key) => {
-      if (answers?.hasOwnProperty(key) && command.flags[key].prompt.type === 'list') {
+      if (answers?.key && command.flags[key].prompt.type === 'list') {
         answers[key] = answers[key].split(',')
       }
     })
@@ -207,6 +205,11 @@ prompts = {
       },
       indicator(state, choice) {
         return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
+      },
+      footer(state) {
+        if (state.limit < state?.choices?.length) {
+          return dim('(Scroll up and down to reveal more choices)')
+        }
       },
     }
 
@@ -237,6 +240,7 @@ prompts = {
     let options = {
       choices,
       maxSelected: choices.length,
+      initial,
       hint: '(Use <space> to select, <return> to submit)',
       symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
       pointer(state, choice) {
@@ -245,7 +249,9 @@ prompts = {
       indicator(state, choice) {
         return choice.enabled ? ' ' + colors.cyan(state.symbols.radio.on) : ' ' + colors.gray(state.symbols.radio.on)
       },
-      initial,
+      format() {
+        return prompt.input + ' ' + prompt.styles.muted(prompt.state.hint)
+      },
     }
     let question = this.buildQuestion('multiselect', 'answer', msg, options)
     return this.show(question)
