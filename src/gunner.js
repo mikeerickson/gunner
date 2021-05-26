@@ -337,7 +337,7 @@ class CLI {
       let hasPrompt = module.flags[flag]?.prompt && module?.usePrompts
       if (module.flags[flag]?.required && module.flags[flag].required && !hasPrompt) {
         let hasAlias = false
-        if (!args?.flag) {
+        if (!args[flag]) {
           if (module.flags[flag]?.aliases) {
             let alias = module.flags[flag].aliases[0]
             hasAlias = args?.alias
