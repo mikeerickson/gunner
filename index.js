@@ -22,7 +22,7 @@ if (!config.get('init', false)) {
 }
 
 const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
-  .usage(`${pkgInfo.packageName} ${colors.magenta('[command]')} ${colors.cyan('<options>')}`)
+  .usage(`${pkgInfo.packageName} ${colors.magenta.bold('<command>')} ${colors.cyan.bold('[options]')}`)
   .options(/* if not called, options will be suppressed in help dialog */)
   .examples(
     /* if not called, examples will be suppressed in help dialog */

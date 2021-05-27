@@ -8,9 +8,10 @@
 // https://vocajs.com/
 const pluarlize = require('pluralize')
 const strings = require('voca')
+const ansiRegex = require('ansi-regex')
 
 strings.raw = (str) => {
-  return str.replace(/\x1b\[..?m/g, '')
+  return str.replace(ansiRegex(), '')
 }
 
 strings.plural = (str) => {
@@ -29,7 +30,8 @@ strings.validName = (str) => {
 if (!String.prototype.hasOwnProperty('raw')) {
   Object.defineProperty(String.prototype, 'raw', {
     get: function () {
-      return this.replace(/\x1b\[..?m/g, '')
+      return this.replace(ansiRegex(), '')
+      // return this.replace(/\x1b\[..?m/g, '')
     },
   })
 }

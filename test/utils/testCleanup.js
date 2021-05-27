@@ -10,6 +10,11 @@ const { join } = require('path')
 ;(async () => {
   //
   // delete test commands
+  let commandPath = join('src', 'commands')
+  await fs.delete(join(commandPath, 'HiddenCommand.js'))
+  await fs.delete(join(commandPath, 'TestCommandFlag.js'))
+  await fs.delete(join(commandPath, 'TestCommandDocBlocks.js'))
+  await fs.delete(join(commandPath, 'CustomTemplateCommand.js'))
 
   // delete test extensions
   let extensionPath = join('src', 'extensions')
@@ -19,7 +24,10 @@ const { join } = require('path')
   // delete test temp files
   let tempFiles = join('./src', 'commands', '*.temp')
   system.run(`rm -rf ${tempFiles}`)
+
   system.run('rm -rf .temp/')
+
+  // system.run('npm run bump') // bump build, so we dont have to do this manually
 })().catch((err) => {
   console.error(err)
 })

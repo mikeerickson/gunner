@@ -3,9 +3,12 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const path = require('path')
+const fs = require('fs-extra')
 const colors = require('chalk')
-const { dd } = require('dumper.js')
+const print = require('../toolbox/print')
 const helpers = require('../toolbox/helpers')
+const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
@@ -54,7 +57,7 @@ module.exports = {
     let result = { ...args, ...answers }
 
     if (!result.command) {
-      console.log('')
+      console.log()
       toolbox.print.warning('Command Aborted\n', 'ABORT')
       process.exit()
     }
@@ -72,21 +75,21 @@ module.exports = {
     let template = toolbox.arguments.template || ''
 
     if (!toolbox.strings.validName(commandName)) {
-      console.log('')
+      console.log()
       toolbox.print.error(`🚫  Invalid Resource Filename:  ${commandName}`)
       toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
       process.exit(0)
     }
 
     if (!/^[a-z.,:][^,; 0-9]+$/.test(command)) {
-      console.log('')
+      console.log()
       toolbox.print.error(`🚫  Invalid Command:  ${command}`)
       toolbox.print.warn('    Valid Characters a-z, or -_:-\n')
       process.exit(0)
     }
 
     if (!toolbox.strings.validName(commandName)) {
-      console.log('')
+      console.log()
       toolbox.print.error(`🚫  Invalid Name:  ${commandName}`)
       toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
       process.exit(0)
@@ -101,9 +104,6 @@ module.exports = {
       hidden,
       noComment,
     }
-
-    console.log('')
-    console.log('')
 
     toolbox.commandName = data.name
 
@@ -130,6 +130,12 @@ module.exports = {
       let overwrite = toolbox.getOptionValue(toolbox.arguments, ['overwrite', 'o'])
       overwrite ? toolbox.filesystem.delete(commandFilename) : null
 
+      if (await this.checkForDuplicateCommand(commandFilename, data.command)) {
+        console.log('')
+        toolbox.print.error(`'${data.command}' command has already been defined\n`, 'ERROR')
+        process.exit()
+      }
+
       let shortFilename = toolbox.app.getShortenFilename(commandFilename)
       if (!toolbox.filesystem.existsSync(commandFilename)) {
         try {
@@ -144,6 +150,27 @@ module.exports = {
     } else {
       toolbox.print.error(`${toolbox.utils.tildify(templateFilename)} template not found`, 'ERROR')
     }
-    console.log('')
+    console.log()
+  },
+
+  async checkForDuplicateCommand(destFilename = null, commandName = null) {
+    let result = false
+    if (destFilename && commandName) {
+      let parent = path.dirname(destFilename)
+      try {
+        let files = await fs.readdir(parent)
+        files.forEach((filename) => {
+          let moduleFilename = path.join(parent, filename)
+          let module = require(moduleFilename)
+          if (module?.name && module.name === commandName && destFilename !== moduleFilename) {
+            result = true
+          }
+        })
+      } catch (err) {
+        console.error(`Error occured while reading directory ${parent}`, err)
+      }
+    }
+
+    return result
   },
 }

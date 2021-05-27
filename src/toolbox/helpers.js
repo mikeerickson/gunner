@@ -10,7 +10,6 @@ const promptColors = require('ansi-colors')
 const clearConsole = require('clear-any-console')
 
 const pkgInfo = require('../../package.json')
-const { dd } = require('dumper.js')
 
 class Helpers {
   constructor(param = null) {}
