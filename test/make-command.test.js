@@ -35,7 +35,7 @@ describe('make:command', (done) => {
     done()
   })
 
-  it('should create test command', (done) => {
+  it.only('should create test command', (done) => {
     let testCommandName = 'TestCommand'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
     let cmd = `gunner make:command ${testCommandName} --command testing:command --description "test command"  --overwrite`

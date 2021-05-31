@@ -25,6 +25,8 @@ const print = require('./toolbox/print')(this.quiet)
 const environment = require('./toolbox/environment')
 const packageManager = require('./toolbox/packageManager')
 
+const Messenger = require('@codedungeon/messenger')
+
 const HELP_PAD = 30
 const REQUIRED_MARK = '✖︎'
 
@@ -180,20 +182,21 @@ class CLI {
       this.optionInfo = options
     } else {
       let globalOptions = [
-        // '  --debug, -d                   Debug Mode',
+        '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
-        '  --overwrite, -o               Overwrite Existing Resource',
-        // '--logs, -l               Output logs to stdout',
+        '  --log                         Output logs to project `logs` directory',
       ]
 
       if (Array.isArray(options)) {
         options.forEach((item) => {
-          // globalOptions.push(`  --${item.option}`.padEnd(32) + item?.description)
+          globalOptions.push(`  --${item.option}`.padEnd(32) + item?.description)
         })
       }
 
       globalOptions.push('  --quiet, -q                   Quiet mode (suppress console output)')
       globalOptions.push('  --version, -v, -V             Show Version')
+
+      globalOptions.sort()
 
       this.optionInfo = globalOptions.join('\n')
     }
@@ -674,6 +677,14 @@ class CLI {
   }
 
   executeCommand(command, args) {
+    if (args?.log) {
+      let sArgs = JSON.stringify({ ...{ name: command }, ...args })
+      let name = this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+
+      Messenger.initLogger(true, 'logs', name)
+      Messenger.loggerLog(`execute ${command} ${sArgs}`)
+    }
+
     if (command.length > 0) {
       let module = this.loadModule(command)
       if (Object.keys(module).length === 0) {

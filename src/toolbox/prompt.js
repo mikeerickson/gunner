@@ -1,3 +1,5 @@
+/*eslint-disable */
+
 /*-------------------------------------------------------------------------------------------
  * Copyright (c) 2018-2021 Mike Erickson / Codedungeon.  All rights reserved.
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
@@ -5,9 +7,11 @@
 
 const { prompt, Confirm, BooleanPrompt, NumberPrompt } = require('enquirer')
 const helpers = require('./helpers')
+const arrays = require('./arrays')
 const colors = require('ansi-colors')
 const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 const print = require('./print')
+const { dd, dump } = require('dumper.js')
 
 async function input(config) {
   console.log('input prompt')
@@ -99,6 +103,15 @@ prompts = {
   },
 
   run: async function (toolbox, command) {
+    // dump({ name: toolbox.commandName, args: toolbox.arguments })
+    let argKeys = Object.keys(toolbox.arguments)
+    argKeys = arrays.deleteByValue(argKeys, 'log')
+    argKeys = arrays.deleteByValue(argKeys, 'overwrite')
+    argKeys = arrays.deleteByValue(argKeys, 'o')
+    argKeys = arrays.deleteByValue(argKeys, 'quiet')
+
+    let promptAll = toolbox.commandName.length === 0 && argKeys.length === 0
+
     console.log('')
     let commandName = toolbox.commandName
     let args = toolbox.arguments
@@ -122,6 +135,7 @@ prompts = {
     }
 
     let flags = Object.keys(command.flags)
+
     flags.forEach((flag) => {
       if (command.flags[flag]?.prompt) {
         let keys = [flag]
@@ -129,7 +143,9 @@ prompts = {
         let optionValue = helpers.getOptionValueEx(toolbox.arguments, keys)
 
         let required = command.flags[flag]?.required ? command.flags[flag].required : false
-
+        if (promptAll) {
+          required = true
+        }
         // configure prompt if exists
         let hasPrompt = command.flags[flag]?.prompt
         let prompt = hasPrompt && command.flags[flag].prompt
@@ -153,7 +169,13 @@ prompts = {
           let hint = prompt?.hint || ''
           let validate = prompt?.validate ? prompt.validate : null
           let choices = prompt?.choices ? prompt.choices : []
-          let initial = prompt?.initial ? prompt.initial : []
+          let initial = prompt?.initial ? prompt.initial : false
+          if (!initial) {
+            if (type === 'input') {
+              initial = ''
+            }
+          }
+
           let limit = prompt?.limit ? prompt.limit : null
           let maxSelected = prompt?.maxSelected ? prompt.maxSelected : null
           let sort = prompt?.sort ? prompt.sort : false
@@ -214,6 +236,7 @@ prompts = {
     }
 
     let options = { ...defaultOptions, ...alternateOptions }
+
     return { type, name, message, ...options }
   },
 

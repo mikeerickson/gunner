@@ -53,7 +53,6 @@ const arrays = {
   },
 
   deleteByValue: (arr, value) => {
-    if (index > arr.length) return
     return arr.filter((element) => {
       return element != value
     })

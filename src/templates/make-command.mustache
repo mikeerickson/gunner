@@ -1,4 +1,4 @@
-{{#noComment}}
+{{#showComments}}
 /* Command Descritption
  * Filename on disk must match the module name property
  * It will accept kebabCase or camelCase from module name
@@ -18,7 +18,7 @@
  *    - description [optional: Command description (displayed when show help)
  *    - required [optional]: <true|false> optional parameter if flag is required
  */
-{{/noComment}}
+{{/showComments}}
 const colors = require('chalk')
 
 module.exports = {
@@ -36,7 +36,6 @@ module.exports = {
         hint: '(as it will be saved on disk)',
       },
   },
-
   {{/showArguments}}
   flags: {
     // example flag, adjust accordingly

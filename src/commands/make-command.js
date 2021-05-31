@@ -8,7 +8,6 @@ const fs = require('fs-extra')
 const colors = require('chalk')
 const print = require('../toolbox/print')
 const helpers = require('../toolbox/helpers')
-const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
@@ -34,17 +33,36 @@ module.exports = {
         type: 'input',
         hint: 'e.g., make:command',
         validate: (value, state, item, index) => {
-          if (!/^[a-z.,:][^,; 0-9]+$/.test(value)) {
+          if (!/^[a-z.,:0-9][^,;]+$/.test(value)) {
             return colors.red.bold('Valid Characters a-z, or -_:')
           }
           return true
         },
       },
     },
-    description: { aliases: ['d'], description: 'Command Description', required: false },
+    description: {
+      aliases: ['d'],
+      description: 'Command Description',
+      required: false,
+      prompt: { type: 'input', hint: 'Description will be displayed when using command help' },
+    },
     hidden: { aliases: ['i'], description: 'Command Hidden', required: false },
-    noArguments: { aliases: ['a'], description: 'Suppress Arguments Block', required: false },
-    noComments: { aliases: ['m'], description: 'Suppress Command Comments', required: false },
+    noArguments: {
+      aliases: ['a'],
+      description: 'Suppress Arguments Block',
+      required: false,
+      prompt: {
+        type: 'confirm',
+        hint: 'The arguments section is the first positional argument (e.g., Resource Filename)',
+        initial: false,
+      },
+    },
+    noComments: {
+      aliases: ['m'],
+      description: 'Suppress Command Comments',
+      required: false,
+      prompt: { type: 'confirm', hint: 'Suppress Comments in Generated File', initial: true },
+    },
     template: { aliases: ['t'], description: 'Custom Template', required: false },
   },
   examples: ['make:command HelloWorld --name hello:world --description="Command Description"'],
@@ -60,13 +78,15 @@ module.exports = {
       console.log()
       toolbox.print.warning('Command Aborted\n', 'ABORT')
       process.exit()
+    } else {
+      console.log('')
     }
 
     let commandName = toolbox.commandName || result.commandName
 
     let name = result.name
     let command = result.command
-    let noComment = result.noComment || false
+    let noComments = result.noComments || false
     let description = result.description
     let noArguments = result.noArguments || false
 
@@ -81,18 +101,15 @@ module.exports = {
       process.exit(0)
     }
 
-    if (!/^[a-z.,:][^,; 0-9]+$/.test(command)) {
+    if (!/^[a-z.,:0-9][^,;]+$/.test(command)) {
       console.log()
       toolbox.print.error(`🚫  Invalid Command:  ${command}`)
-      toolbox.print.warn('    Valid Characters a-z, or -_:-\n')
+      toolbox.print.warn('    Valid Characters a-z, 0-9 or -_:-\n')
       process.exit(0)
     }
 
-    if (!toolbox.strings.validName(commandName)) {
-      console.log()
-      toolbox.print.error(`🚫  Invalid Name:  ${commandName}`)
-      toolbox.print.warn('    Valid Characters A-Z, a-z, 0-9, -\n')
-      process.exit(0)
+    if (typeof noComments === 'string') {
+      noComments = noComments === 'true' || noComments === 'TRUE' || noComments === 1
     }
 
     let data = {
@@ -102,7 +119,7 @@ module.exports = {
       description,
       template,
       hidden,
-      noComment,
+      showComments: !noComments,
     }
 
     toolbox.commandName = data.name
