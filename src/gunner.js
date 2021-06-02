@@ -808,3 +808,5 @@ module.exports = {
   template,
   utils,
 }
+
+module.exports.print = print
