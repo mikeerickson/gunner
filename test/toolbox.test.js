@@ -20,6 +20,7 @@ describe('toolbox', (done) => {
     expect(result).to.be.true
 
     expect(gunner.toolbox.env.appName).equals('gunner')
+
     done()
   })
 

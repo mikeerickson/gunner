@@ -809,4 +809,21 @@ module.exports = {
   utils,
 }
 
+module.exports.api = api
+module.exports.arrays = arrays
+module.exports.colors = colors
+module.exports.datetime = datetime
+module.exports.debug = debug
+module.exports.config = config
+module.exports.environment = environment
+module.exports.filesystem = filesystem
+module.exports.helpers = helpers
+module.exports.packageManager = packageManager
+module.exports.prompt = prompts
+module.exports.strings = strings
+module.exports.system = system
+module.exports.table = table
+module.exports.template = template
 module.exports.print = print
+module.exports.path = path
+module.exports.path = path
