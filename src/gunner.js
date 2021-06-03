@@ -13,7 +13,7 @@ const debug = require('dumper.js')
 const api = require('./toolbox/api')
 const arrays = require('./toolbox/arrays')
 const config = require('./toolbox/config')
-const helpers = require('./toolbox/config')
+const helpers = require('./toolbox/helpers')
 const prompts = require('./toolbox/prompt')
 const table = require('./toolbox/table.js')
 const utils = require('@codedungeon/utils')
@@ -128,7 +128,6 @@ class CLI {
       print,
       semver,
       strings,
-      helpers,
       arrays,
       system,
       table,
@@ -794,36 +793,22 @@ class CLI {
 
 module.exports = {
   CLI,
-  api,
-  arrays,
-  colors,
-  config,
-  environment,
-  filesystem,
-  print,
-  prompts,
-  strings,
-  system,
-  table,
-  template,
   utils,
 }
 
+// expose toolbox
 module.exports.api = api
 module.exports.arrays = arrays
 module.exports.colors = colors
-module.exports.datetime = datetime
-module.exports.debug = debug
 module.exports.config = config
 module.exports.environment = environment
 module.exports.filesystem = filesystem
 module.exports.helpers = require('./toolbox/helpers')
 module.exports.packageManager = packageManager
+module.exports.print = print
 module.exports.prompt = prompts
 module.exports.strings = strings
 module.exports.system = system
 module.exports.table = table
 module.exports.template = template
-module.exports.print = print
-module.exports.path = path
-module.exports.path = path
+module.exports.utils = utils
