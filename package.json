@@ -2,7 +2,7 @@
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
   "version": "0.42.0",
-  "build": "250",
+  "build": "252",
   "description": "Node CLI Framework",
   "info": "created in memory of my trusty sidekick \"Gunner\" who passed away in 2019.\n   his memory will last in my heart forever.",
   "author": "Mike Erickson <codedungeon@gmail.com> (https://github.com/mikeerickson)",
@@ -60,7 +60,7 @@
     "sinon": "9.2.4"
   },
   "dependencies": {
-    "@codedungeon/messenger": "0.9.1",
+    "@codedungeon/messenger": "0.10.0",
     "@codedungeon/utils": "0.0.12",
     "ansi-regex": "4.1.0",
     "apisauce": "2.0.1",

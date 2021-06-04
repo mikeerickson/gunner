@@ -209,6 +209,12 @@ class CLI {
     return this
   }
 
+  logger(logDir = 'logs', name = null) {
+    let logName = name ? name : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+    Messenger.initLogger(true, logDir, logName)
+    return this
+  }
+
   examples(examples = '') {
     this.exampleInfo = examples
     return this
@@ -678,9 +684,6 @@ class CLI {
   executeCommand(command, args) {
     if (args?.log) {
       let sArgs = JSON.stringify({ ...{ name: command }, ...args })
-      let name = this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
-
-      Messenger.initLogger(true, 'logs', name)
       Messenger.loggerLog(`execute ${command} ${sArgs}`)
     }
 
@@ -812,3 +815,4 @@ module.exports.system = system
 module.exports.table = table
 module.exports.template = template
 module.exports.utils = utils
+module.exports.path = path

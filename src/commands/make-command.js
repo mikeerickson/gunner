@@ -33,8 +33,8 @@ module.exports = {
         type: 'input',
         hint: 'e.g., make:command',
         validate: (value, state, item, index) => {
-          if (!/^[a-z.,:0-9][^,;]+$/.test(value)) {
-            return colors.red.bold('Valid Characters a-z, or -_:')
+          if (!/^[a-z.,:][^,; 0-9]+$/.test(value)) {
+            return colors.red.bold('Valid Characters a-z, A-Z, or -_:')
           }
           return true
         },
