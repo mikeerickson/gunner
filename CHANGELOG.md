@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36 .. 0.43] - 2021-06-04
+
+- Implemented Messenger `system` logging interface
+- Added `.logger` entrypoint to allow configuration of logs directory
+
 ## [0.27 .. 0.35] - 2021-05-24
 
 - Added prompt interface (see test-prompt for supported prompts)

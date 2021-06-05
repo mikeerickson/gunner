@@ -5,68 +5,13 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
-const { prompt, Confirm, BooleanPrompt, NumberPrompt } = require('enquirer')
+const { prompt } = require('enquirer')
+
 const helpers = require('./helpers')
 const arrays = require('./arrays')
 const colors = require('ansi-colors')
 const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 const print = require('./print')
-const { dd, dump } = require('dumper.js')
-
-async function input(config) {
-  console.log('input prompt')
-}
-
-async function question(config) {
-  console.log('question prompt (alias of input)')
-}
-
-async function confirm(config) {
-  console.log('confirm prompt')
-}
-
-async function list(config) {
-  console.log('list prompt')
-}
-
-async function number(config) {
-  const prompt = new NumberPrompt({
-    name: 'number',
-    message: 'Please enter a number',
-  })
-  return prompt
-}
-
-async function autoComplete(config) {
-  console.log('autoComplete prompt')
-}
-
-async function select(config) {
-  config.type = 'select'
-  return multiSelect(config)
-}
-
-async function multiSelect(config) {
-  const answers = await prompt({
-    type: config.type,
-    name: config.name || 'choice',
-    message: config.msg,
-    pointer(state, choice) {
-      return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
-    },
-    indicator(state, choice) {
-      return choice.enabled ? ' ' + green('●') : ' ' + gray('o')
-    },
-    styles: {
-      heading(msg) {
-        return msg
-      },
-    },
-    limit: config.limit || config.choices.length,
-    initial: config.initial || config.choices[0],
-    choices: config.choices || [],
-  })
-}
 
 prompts = {
   validPromptTypes: function () {
@@ -220,6 +165,10 @@ prompts = {
   },
 
   buildQuestion: function (type, name, message, alternateOptions = {}) {
+    type = type === 'multi' ? 'multiselect' : type
+    type = type === 'boolean' ? 'confirm' : type
+    type = type === 'number' ? 'numeral' : type
+
     let defaultOptions = {
       styles: { em: colors.cyan },
       pointer(state, choice) {
@@ -240,57 +189,6 @@ prompts = {
     return { type, name, message, ...options }
   },
 
-  input: (msg, options = { initial: '' }) => {
-    return prompt({ type: 'input', name: 'answer', message: msg }, options).catch((err) => console.error)
-  },
-
-  boolean: (message, initial = false) => {
-    const prompt = new BooleanPrompt({ message, initial })
-    return prompt.run().catch((err) => console.error)
-  },
-
-  confirm: (msg, options = { initial: false }) => {
-    return prompt({ type: 'confirm', name: 'answer', message: msg }, options).catch((err) => console.error)
-  },
-
-  multiSelect: function (msg = '', choices = [], initial = '') {
-    // choices: array of strings or objects
-    // [{name: "item1", message: "Item 1"},{name: "item2", message: "Item 2"}]
-    // initail: array or string (using name)
-    // Example:
-    // let items = [{name: "item1", message: "Item 1"},{name: "item2", message: "Item 2"}]
-    // let result = await toolbox.prompts.multiSelect('What do you want', items, ['item2', 'item3'])
-    let options = {
-      choices,
-      maxSelected: choices.length,
-      initial,
-      hint: '(Use <space> to select, <return> to submit)',
-      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
-      pointer(state, choice) {
-        return choice.index === state.index ? colors.green(colors.symbols.pointer) : ' '
-      },
-      indicator(state, choice) {
-        return choice.enabled ? ' ' + colors.cyan(state.symbols.radio.on) : ' ' + colors.gray(state.symbols.radio.on)
-      },
-      format() {
-        return prompt.input + ' ' + prompt.styles.muted(prompt.state.hint)
-      },
-    }
-    let question = this.buildQuestion('multiselect', 'answer', msg, options)
-    return this.show(question)
-  },
-
-  select: function (msg = '', choices = [], initial = '') {
-    let options = {
-      choices,
-      maxSelected: 1,
-      limit: choices.length,
-      initial,
-    }
-    let question = this.buildQuestion('select', 'answer', msg, options)
-    return this.show(question)
-  },
-
   show: async (questions) => {
     const response = await prompt(questions).catch((err) => {
       if (err) {
@@ -299,6 +197,146 @@ prompts = {
       return false
     })
     return response
+  },
+
+  /*-------------------------------------------------------------------------------------------
+   * Prompt Methods
+   * Used for one of prompts, if you need a series, use the `buildQuestion` interface (see docs).
+   * -----------------------------------------------------------------------------------------*/
+
+  boolean: (message, initial = false) => {
+    let options = { initial }
+    return prompt({ type: 'confirm', name: 'answer', message }, options).catch((err) => console.error)
+  },
+
+  confirm: (msg, options = { initial: false }) => {
+    return prompt({ type: 'confirm', name: 'answer', message: msg }, options).catch((err) => console.error)
+  },
+
+  input: (msg, options = { initial: '' }) => {
+    return prompt({ type: 'input', name: 'answer', message: msg }, options).catch((err) => console.error)
+  },
+
+  list: (msg, options = { hint: 'separate by comma' }) => {
+    return prompt({ type: 'list', name: 'answer', message: msg }, options).catch((err) => console.error)
+  },
+
+  // NOTE: This method is replicated to `multiSelect`, if changed duplicate to `multiSelect` method
+  multi: (msg, options = { initial: false }) => {
+    let maxSelected = options?.maxSelected ? options.maxSelected : options.choices.length
+    if (maxSelected > options.choices.length) {
+      maxSelected = options.choices.length
+    }
+
+    let defOptions = {
+      choices: [],
+      maxSelected,
+      initial: [],
+      hint: '(Use <space> to select, <return> to submit)',
+      styles: { em: colors.cyan },
+      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
+      pointer(state, choice) {
+        return choice.index === state.index ? colors.green(colors.symbols.pointer) : ' '
+      },
+      indicator(state, choice) {
+        return choice.enabled
+          ? ' ' + colors.cyan.bold(state.symbols.radio.on)
+          : ' ' + colors.gray.bold(state.symbols.radio.on)
+      },
+      format() {
+        if (this.maxSelected === this.choices.length) {
+          return ''
+        } else {
+          let n = this.maxSelected - this.selected.length
+          let s = n === 0 || n > 1 ? 's' : ''
+          let msg = n === 0 ? 'You have reached maximum selection' : `You may select ${n} more item${s}`
+          return msg
+        }
+      },
+    }
+
+    let multiOptions = { ...defOptions, ...options }
+    multiOptions.maxSelected = maxSelected
+
+    return prompt({ type: 'multiselect', name: 'answer', message: msg }, multiOptions).catch((err) => console.log(''))
+  },
+
+  // NOTE: This is a physical copy of `multi` method.  If changed, replicate here
+  multiSelect: (msg, options = { initial: false }) => {
+    let maxSelected = options?.maxSelected ? options.maxSelected : options.choices.length
+    if (maxSelected > options.choices.length) {
+      maxSelected = options.choices.length
+    }
+
+    let defOptions = {
+      choices: [],
+      maxSelected,
+      initial: [],
+      hint: '(Use <space> to select, <return> to submit)',
+      styles: { em: colors.cyan },
+      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
+      pointer(state, choice) {
+        return choice.index === state.index ? colors.green(colors.symbols.pointer) : ' '
+      },
+      indicator(state, choice) {
+        return choice.enabled
+          ? ' ' + colors.cyan.bold(state.symbols.radio.on)
+          : ' ' + colors.gray.bold(state.symbols.radio.on)
+      },
+      format() {
+        if (this.maxSelected === this.choices.length) {
+          return ''
+        } else {
+          let n = this.maxSelected - this.selected.length
+          let s = n === 0 || n > 1 ? 's' : ''
+          let msg = n === 0 ? 'You have reached maximum selection' : `You may select ${n} more item${s}`
+          return msg
+        }
+      },
+    }
+
+    let multiOptions = { ...defOptions, ...options }
+    multiOptions.maxSelected = maxSelected
+
+    return prompt({ type: 'multiselect', name: 'answer', message: msg }, multiOptions).catch((err) => console.log(''))
+  },
+
+  numeral: (msg = '', initialValue = 0, options = {}) => {
+    let opts = { ...{ initial: initialValue }, ...options }
+    return prompt({ type: 'numeral', name: 'answer', message: msg }, opts).catch((err) => console.error)
+  },
+
+  number: (msg = '', initialValue = 0, options = {}) => {
+    let opts = { ...{ initial: initialValue }, ...options }
+    return prompt({ type: 'numeral', name: 'answer', message: msg }, opts).catch((err) => console.error)
+  },
+
+  select: function (msg = '', choices = [], initValue = '', options = {}) {
+    let initial = Array.isArray(initValue) ? initValue[0] : initValue
+    let format = options.hasOwnProperty('format') ? options.format : () => {}
+    let defOptions = {
+      choices,
+      initial,
+      hint: '(<return> to submit)',
+      format,
+      styles: { em: colors.cyan },
+      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
+      pointer(state, choice) {
+        return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
+      },
+      indicator(state, choice) {
+        return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
+      },
+    }
+
+    let multiOptions = { ...defOptions, ...options }
+
+    return prompt({ type: 'select', name: 'answer', message: msg }, multiOptions).catch((err) => console.log(''))
+  },
+
+  toggle: (msg = '', initialValue = 0, options = {}) => {
+    let opts = { ...{ initial: initialValue }, ...options }
+    return prompt({ type: 'toggle', name: 'answer', message: msg }, opts).catch((err) => console.error)
   },
 }
 
