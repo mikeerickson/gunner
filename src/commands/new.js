@@ -62,7 +62,8 @@ module.exports = {
 
     let ghUserLocal = ''
     let ghUserName = ''
-
+    let githubFirstName = ''
+    githubLastName = ''
     try {
       ghUserLocal = await gitUserLocal()
       ghUserName = await githubUsername(ghUserLocal.user.email)
@@ -72,12 +73,18 @@ module.exports = {
 
     console.log('')
 
-    let [githubFirstName, githubLastName] = ghUserLocal.user.name.split(' ')
+    if (ghUserLocal?.user) {
+      let ghParts = ghUserLocal.user.name.split(' ')
+      if (ghParts.length >= 2) {
+        githubFirstName = ghParts[0]
+        githubLastName = ghParts[1]
+      }
+    }
 
-    let fname = toolbox.config.get('fname') || githubFirstName
-    let lname = toolbox.config.get('lname') || githubLastName
-    let email = toolbox.config.get('email') || ghUserLocal.user.email
-    let gitUserName = toolbox.config.get('gitUserName') || ghUserName
+    let fname = toolbox.config.get('fname') || githubFirstName || ''
+    let lname = toolbox.config.get('lname') || githubLastName || ''
+    let email = toolbox.config.get('email') || ghUserLocal.user.email || ''
+    let gitUserName = toolbox.config.get('gitUserName') || ghUserName || ''
     let pkgMgr = toolbox.config.get('pkgMgr') || 'npm'
 
     let questions = []
