@@ -60,8 +60,15 @@ module.exports = {
     const gitUserLocal = require('git-user-local')
     const githubUsername = require('github-username')
 
-    let ghUserLocal = await gitUserLocal()
-    let ghUserName = await githubUsername(ghUserLocal.user.email)
+    let ghUserLocal = ''
+    let ghUserName = ''
+
+    try {
+      ghUserLocal = await gitUserLocal()
+      ghUserName = await githubUsername(ghUserLocal.user.email)
+    } catch (error) {
+      console.log()
+    }
 
     console.log('')
 

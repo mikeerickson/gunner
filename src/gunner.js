@@ -196,6 +196,7 @@ class CLI {
       globalOptions.push('  --version, -v, -V             Show Version')
 
       globalOptions.sort()
+      this.toolbox.globalOptions = globalOptions
 
       this.optionInfo = globalOptions.join('\n')
     }
@@ -319,7 +320,7 @@ class CLI {
       }
     }
 
-    return this.toolbox.utils.has(module, 'name') && !hidden
+    return this.toolbox.utils.has(module, 'name') //  && !hidden
   }
 
   loadModule(module = '') {
