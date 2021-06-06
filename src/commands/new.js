@@ -83,7 +83,7 @@ module.exports = {
 
     let fname = toolbox.config.get('fname') || githubFirstName || ''
     let lname = toolbox.config.get('lname') || githubLastName || ''
-    let email = toolbox.config.get('email') || ghUserLocal.user.email || ''
+    let email = toolbox.config.get('email') || ghUserLocal?.user?.email || ''
     let gitUserName = toolbox.config.get('gitUserName') || ghUserName || ''
     let pkgMgr = toolbox.config.get('pkgMgr') || 'npm'
 
