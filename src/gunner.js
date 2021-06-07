@@ -817,3 +817,4 @@ module.exports.table = table
 module.exports.template = template
 module.exports.utils = utils
 module.exports.path = path
+module.exports.shell = require('shelljs')

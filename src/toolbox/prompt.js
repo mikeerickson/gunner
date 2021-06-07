@@ -204,6 +204,10 @@ prompts = {
    * Used for one of prompts, if you need a series, use the `buildQuestion` interface (see docs).
    * -----------------------------------------------------------------------------------------*/
 
+  autocomplete(message = null, options = {}) {
+    return prompt({ type: 'autocomplete', name: 'answer', message }, options).catch((err) => console.error)
+  },
+
   boolean: (message, initial = false) => {
     let options = { initial }
     return prompt({ type: 'confirm', name: 'answer', message }, options).catch((err) => console.error)
