@@ -36,7 +36,7 @@ describe('make:command', (done) => {
   })
 
   it('should create test command', (done) => {
-    let testCommandName = 'TestCommand'
+    let testCommandName = 'TestCommand2'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
     let cmd = `gunner make:command ${testCommandName} --command testing:command --description "test command"  --overwrite`
 
@@ -45,7 +45,7 @@ describe('make:command', (done) => {
 
     let msg = result.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js Created Successfully`)
-    // fs.delete(testCommandFilename)
+    fs.delete(testCommandFilename)
     done()
   })
 

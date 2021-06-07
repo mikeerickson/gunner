@@ -5,10 +5,8 @@
 
 module.exports = {
   name: 'default',
-  description: '',
+  disabled: false,
   hidden: true,
-  usage: 'Default Command',
-  flags: {},
   execute(toolbox) {
     console.log('')
     toolbox.print.info('Default Command\n', 'INFO')

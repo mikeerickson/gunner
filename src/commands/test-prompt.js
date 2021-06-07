@@ -10,7 +10,8 @@ const semver = require('semver')
 
 module.exports = {
   name: 'test:prompt',
-  description: 'Showcase Prompt Supprot',
+  description: 'Showcase Prompt Support',
+  disabled: false,
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
   usePrompts: true,
   arguments: {

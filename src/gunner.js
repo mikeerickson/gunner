@@ -323,6 +323,29 @@ class CLI {
     return this.toolbox.utils.has(module, 'name') //  && !hidden
   }
 
+  isValidCommand(command) {
+    let commandFiles = this.fs.readdirSync(this.app.getCommandPath())
+    for (let index = 0; index < commandFiles.length; index++) {
+      let module = require(path.join(this.app.getCommandPath(), commandFiles[index]))
+      if (module?.name === command) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  loadModuleByCommand(command = null) {
+    let commandFiles = this.fs.readdirSync(this.app.getCommandPath())
+    for (let index = 0; index < commandFiles.length; index++) {
+      let module = require(path.join(this.app.getCommandPath(), commandFiles[index]))
+      if (module?.name === command) {
+        return module
+      }
+    }
+    return {}
+  }
+
   loadModule(module = '') {
     // try kebabCase or camelCase filename
     let files = [
@@ -337,6 +360,7 @@ class CLI {
         filename = file
       }
     })
+
     return filename.length > 0 ? require(filename) : {}
   }
 
@@ -365,6 +389,9 @@ class CLI {
   }
 
   setDefaultFlags(cli, flags) {
+    if (!flags) {
+      return {}
+    }
     let keys = Object.keys(flags)
     let defaults = {}
     keys.map((flag) => {
@@ -689,16 +716,13 @@ class CLI {
     }
 
     if (command.length > 0) {
-      let module = this.loadModule(command)
-      if (Object.keys(module).length === 0) {
+      if (!this.isValidCommand(command)) {
         this.toolbox.print.error(`\n🚫 Invalid Command "${command}"`)
         this.toolbox.print.note(`   For list of available commands, execute '${this.packageName} --help'\n`)
         process.exit(1)
       }
-      if (!this.isModuleValid(module)) {
-        this.toolbox.print.error(`\n🚫 An error occurred accessing: ${command}\n`)
-        process.exit(1)
-      }
+
+      let module = this.loadModuleByCommand(command)
       let disabled = module.disabled || false
 
       let required = module?.arguments?.name?.required
@@ -773,7 +797,11 @@ class CLI {
       }
     } else {
       if (command.length === 0 && !this.help) {
-        command = this.fs.exists(path.resolve(this.app.getCommandPath(), 'default.js')) ? 'default' : ''
+        let defaultCommand = path.resolve(this.app.getCommandPath(), 'default.js')
+        if (this.fs.existsSync(defaultCommand)) {
+          let module = require(defaultCommand)
+          command = !module.disabled ? 'default' : command
+        }
       }
     }
 

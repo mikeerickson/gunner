@@ -6,6 +6,7 @@
 const { expect } = require('chai')
 const { exec } = require('child_process')
 const pkgInfo = require('../package.json')
+const strings = require('../src/toolbox/strings')
 
 describe('default', (done) => {
   it('should return correct command name', (done) => {
@@ -16,25 +17,24 @@ describe('default', (done) => {
 
   it('should use default command', (done) => {
     exec('gunner', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('Default Command')
+      let result = strings.raw(stdout.replace(/\n/gi, ''))
+      expect(result).contain(' INFO  Default Command')
     })
     done()
   })
 
   it('should show version when command help supplied', (done) => {
     exec('gunner --help', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
+      let result = strings.raw(stdout.replace(/\n/gi, ''))
       expect(result).contain('v' + pkgInfo.version)
     })
     done()
   })
 
-  it('should execute sample command help', (done) => {
+  it('should execute sample command help and return error since it is hidden', (done) => {
     exec('gunner default --help', (err, stdout, stderr) => {
-      let result = stdout.replace(/\n/gi, '')
-      expect(result).contain('default')
-      expect(result).contain('Default Command')
+      let result = strings.raw(stdout.replace(/\n/gi, ''))
+      expect(result).contain('default command')
     })
     done()
   })
