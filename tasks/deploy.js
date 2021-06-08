@@ -54,8 +54,7 @@ console.log('')
 msg.success(`Build ${config.build} Deploy Completed Successfully`, 'SUCCESS')
 console.log('')
 
-config.debug ? console.log(`${result}`) : ''
+success ? shell.exec('npm run bump:dev') : null
+success ? shell.exec('npm run todo') : null
 
-// if all good, run np
-success ? shell.exec('bash ./tasks/np.sh') : msg.error('Errors occured, deployment aborted', 'ERROR')
-console.log('')
+config.debug ? console.log(`${result}`) : ''
