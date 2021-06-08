@@ -47,14 +47,14 @@ console.log('')
 // push changes to master
 msg.info('==> Pushing to master')
 result = shell.exec('git push origin master')
-debug ? console.log(`${result}`) : ''
+config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // wrap up
 msg.success(`Build ${config.build} Deploy Completed Successfully`, 'SUCCESS')
 console.log('')
 
-debug ? console.log(`${result}`) : ''
+config.debug ? console.log(`${result}`) : ''
 
 // if all good, run np
 success ? shell.exec('np') : msg.error('Errors occured, deployment aborted', 'ERROR')
