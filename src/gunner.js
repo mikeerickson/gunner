@@ -483,6 +483,7 @@ class CLI {
               name += ' [args]'
             }
           }
+
           let description = module?.description || `${module.name} command`
 
           if (name.length > 0) {
@@ -635,8 +636,10 @@ class CLI {
       this.toolbox.print.warning('\nArguments:')
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
+        let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
+        hint = hint.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}                    ${required} ${value.description}`)
+        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -665,7 +668,11 @@ class CLI {
           }
 
           let description = module.flags[flag]['description'] || colors.yellow('<missing description>')
-
+          let hint = this.toolbox.utils.dot.get(module.flags[flag], 'prompt.hint') || ''
+          hint = hint.length > 0 ? '(' + hint + ')' : ''
+          if (hint.length > 0) {
+            description += colors.gray(` ${hint}`)
+          }
           let defaultValue = ''
           if (module.flags[flag]?.default) {
             defaultValue = this.toolbox.colors.cyan('[default: ' + module.flags[flag].default + ']')

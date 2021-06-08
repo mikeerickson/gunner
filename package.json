@@ -24,6 +24,7 @@
   "scripts": {
     "bump": "./tasks/bumpBuild.js",
     "bump:dev": "./tasks/bumpBuild.js --verbose",
+    "logs": "",
     "lint": "node ./tasks/lint.js",
     "test": "./tasks/test.js $1",
     "test:all": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
