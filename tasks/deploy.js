@@ -8,6 +8,9 @@ const shell = require('shelljs')
 const msg = require('@codedungeon/messenger')
 let pkgInfo = require('../package.json')
 
+// bump build
+shell.exec('npm run bump:dev')
+
 // each item must be set accordingly
 let config = {
   debug: true,
@@ -54,7 +57,6 @@ console.log('')
 msg.success(`Build ${config.build} Deploy Completed Successfully`, 'SUCCESS')
 console.log('')
 
-success ? shell.exec('npm run bump:dev') : null
 success ? shell.exec('npm run todo') : null
 
 config.debug ? console.log(`${result}`) : ''
