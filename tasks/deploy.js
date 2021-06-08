@@ -6,13 +6,14 @@
 const colors = require('chalk')
 const shell = require('shelljs')
 const msg = require('@codedungeon/messenger')
-let pkgInfo = require('../package.json')
 
 // bump build
 shell.exec('npm run bump:dev')
 
+const pkgInfo = require('../package.json')
+
 // each item must be set accordingly
-let config = {
+const config = {
   debug: true,
   runTests: true,
   build: pkgInfo?.build || '',
@@ -21,9 +22,10 @@ let config = {
 }
 
 // reusable shell result
+let result = ''
 let success = true
 
-let result = shell.exec('npm run test -- --dot')
+result = shell.exec('npm run test -- --dot')
 success = config.runTests ? result.includes('PASSED') || result.includes('SUCCESS') : true
 if (!success) {
   msg.error('Testing Failed, deployment aborted\n', 'ERROR')
@@ -31,24 +33,24 @@ if (!success) {
 }
 
 // execute build command
-config.buildCommand ? msg.info(colors.bold('==> Creating Production Build...')) : null
+config.buildCommand ? msg.info(colors.bold('==> Creating Production Build...\n')) : null
 config.buildCommand ? shell.exec(config.buildCommand) : null
 console.log('')
 
 // add all files and commit
-msg.info(colors.bold('==> Adding All Files'))
+msg.info(colors.bold('==> Adding All Files\n'))
 result = shell.exec('git add .')
 config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // commit changes
-msg.info(colors.bold(`==> Comming changes build ${config.build}`))
+msg.info(colors.bold(`==> Commting changes build ${config.build}\n`))
 result = shell.exec(`git commit -m "production build ${config.build}"`)
 config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // push changes to master
-msg.info(colors.bold('==> Pushing to master'))
+msg.info(colors.bold('==> Pushing to master branch\n'))
 result = shell.exec('git push origin master')
 config.debug ? console.log(`${result}`) : ''
 console.log('')
