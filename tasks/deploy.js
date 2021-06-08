@@ -41,7 +41,7 @@ console.log('')
 // commit changes
 msg.info(`==> Comming changes build ${config.build}`)
 result = shell.exec(`git commit -m "production build ${config.build}"`)
-debug ? console.log(`${result}`) : ''
+config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // push changes to master
