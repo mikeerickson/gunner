@@ -28,24 +28,24 @@ if (!success) {
 }
 
 // execute build command
-config.buildCommand ? msg.info('==> Creating Production Build...') : null
+config.buildCommand ? msg.info(colors.bold('==> Creating Production Build...')) : null
 config.buildCommand ? shell.exec(config.buildCommand) : null
 console.log('')
 
 // add all files and commit
-msg.info('==> Adding All Files')
+msg.info(colors.bold('==> Adding All Files'))
 result = shell.exec('git add .')
 config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // commit changes
-msg.info(`==> Comming changes build ${config.build}`)
+msg.info(colors.bold(`==> Comming changes build ${config.build}`))
 result = shell.exec(`git commit -m "production build ${config.build}"`)
 config.debug ? console.log(`${result}`) : ''
 console.log('')
 
 // push changes to master
-msg.info('==> Pushing to master')
+msg.info(colors.bold('==> Pushing to master'))
 result = shell.exec('git push origin master')
 config.debug ? console.log(`${result}`) : ''
 console.log('')
@@ -57,4 +57,5 @@ console.log('')
 config.debug ? console.log(`${result}`) : ''
 
 // if all good, run np
-success ? shell.exec('np') : msg.error('Errors occured, deployment aborted', 'ERROR')
+success ? shell.exec('bash ./tasks/np.sh') : msg.error('Errors occured, deployment aborted', 'ERROR')
+console.log('')
