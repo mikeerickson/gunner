@@ -24,7 +24,6 @@
   "scripts": {
     "bump": "./tasks/bumpBuild.js",
     "bump:dev": "./tasks/bumpBuild.js --verbose",
-    "logs": "",
     "lint": "node ./tasks/lint.js",
     "test": "./tasks/test.js $1",
     "test:all": "mocha ./test/*.test.js && node ./test/utils/testCleanup.js",
@@ -60,7 +59,7 @@
     "sinon": "9.2.4"
   },
   "dependencies": {
-    "@codedungeon/messenger": "0.10.0",
+    "@codedungeon/messenger": "0.11.0",
     "@codedungeon/utils": "0.0.12",
     "ansi-regex": "4.1.0",
     "apisauce": "2.0.1",
