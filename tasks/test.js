@@ -7,8 +7,14 @@ const { join } = require('path')
 const { existsSync } = require('fs')
 const msg = require('@codedungeon/messenger')
 let validFilename = require('valid-filename')
+const { dd } = require('dumper.js')
 
-let filename = process.argv[2] || '*.test.js'
+// get command arguments (cli and dot)
+let argv = require('minimist')(process.argv)
+let filename = argv['_'].length > 2 ? argv['_'][2] : '*.test.js'
+let dot = (argv?.dot && argv?.dot === 'true') || argv?.dot ? true : false
+
+let reporter = dot ? 'dot' : 'spec'
 
 if (!filename.includes('test')) {
   let ext = path.extname(filename) || '.js'
@@ -17,7 +23,7 @@ if (!filename.includes('test')) {
 
 if (validFilename(filename)) {
   if (!existsSync(join('./test/', filename))) {
-    msg.error(`Invalid FIlename: ./test/${filename}`, 'ERROR')
+    msg.error(`Invalid Filename: ./test/${filename}`, 'ERROR')
     console.log('')
     process.exit(0)
   }
@@ -29,7 +35,7 @@ if (validFilename(filename)) {
   try {
     const subprocess = execa(
       './node_modules/mocha/bin/mocha',
-      ['./test/' + filename, '--reporter', 'spec', '--timeout 5000'],
+      ['./test/' + filename, '--reporter', reporter, '--timeout 5000'],
       { env: { FORCE_COLOR: 'true' } }
     )
     subprocess.stdout.pipe(process.stdout)

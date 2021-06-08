@@ -112,8 +112,20 @@ describe('toolbox', (done) => {
     done()
   })
 
+  it('prompt', (done) => {
+    let result = gunner.toolbox.hasOwnProperty('print')
+    expect(result).to.be.true
+    done()
+  })
+
   it('projectRoot', (done) => {
     let result = gunner.toolbox.env.hasOwnProperty('projectRoot')
+    expect(result).to.be.true
+    done()
+  })
+
+  it('shell', (done) => {
+    let result = gunner.toolbox.hasOwnProperty('shell')
     expect(result).to.be.true
     done()
   })

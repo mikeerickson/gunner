@@ -8,6 +8,7 @@ const App = require('./toolbox/App')
 const path = require('path')
 const colors = require('chalk')
 const semver = require('semver')
+const shell = require('shelljs')
 const datetime = require('dayjs')
 const debug = require('dumper.js')
 const api = require('./toolbox/api')
@@ -21,8 +22,8 @@ const strings = require('./toolbox/strings')
 const system = require('./toolbox/system.js')
 const template = require('./toolbox/template')
 const filesystem = require('./toolbox/filesystem')
-const print = require('./toolbox/print')(this.quiet)
 const environment = require('./toolbox/environment')
+const print = require('./toolbox/print')(this.quiet)
 const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
@@ -129,6 +130,7 @@ class CLI {
       semver,
       strings,
       arrays,
+      shell,
       system,
       table,
       template,
@@ -637,7 +639,7 @@ class CLI {
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
         let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
-        hint = hint.length > 0 ? '(' + hint + ')' : ''
+        hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
         console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
       }
@@ -852,4 +854,4 @@ module.exports.table = table
 module.exports.template = template
 module.exports.utils = utils
 module.exports.path = path
-module.exports.shell = require('shelljs')
+module.exports.shell = shell

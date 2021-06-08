@@ -1,1 +1,0 @@
-mocha "test/$1" && node ./test/utils/testCleanup.js
