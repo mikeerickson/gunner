@@ -1,4 +1,10 @@
-const fs = require('fs')
+#!/usr/bin/env node
+
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) 2021 Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const execa = require('execa')
 const msg = require('@codedungeon/messenger')
 

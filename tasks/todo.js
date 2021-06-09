@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 /*eslint no-console: "off"*/
 
+/*-------------------------------------------------------------------------------------------
+ * Copyright (c) 2021 Mike Erickson / Codedungeon.  All rights reserved.
+ * Licensed under the MIT license.  See LICENSE in the project root for license information.
+ * -----------------------------------------------------------------------------------------*/
+
 const { spawnSync } = require('child_process')
 const colors = require('chalk')
 
