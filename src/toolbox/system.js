@@ -16,9 +16,15 @@ const system = {
     return execSync(cmd, { inherit: true }).toString()
   },
 
-  exec: async (cmd = null, options = []) => {
-    const { stdout } = await execa(cmd, options)
-    return strings.raw(stdout)
+  exec: async (cmd = null, params = []) => {
+    try {
+      const subprocess = execa(cmd, params, { env: { FORCE_COLOR: 'true' } })
+      subprocess.stdout.pipe(process.stdout)
+      const { stdout, stderr } = await subprocess
+      return !stderr ? 'SUCCESS' : 'FAIL'
+    } catch (error) {
+      return 'FAIL'
+    }
   },
 
   which: (app) => {
