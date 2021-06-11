@@ -7,6 +7,7 @@ const { exec, execSync } = require('child_process')
 const execa = require('execa')
 const strings = require('./strings')
 const which = require('which')
+const { dd } = require('dumper.js')
 
 const system = {
   run: (cmd, showConsoleOutput = false) => {
@@ -17,6 +18,15 @@ const system = {
   },
 
   exec: async (cmd = null, params = [], options = { quiet: false }) => {
+    if (options.quiet) {
+      try {
+        const result = await execa(cmd, params, { env: { FORCE_COLOR: 'true' } })
+        return result.stdout
+      } catch (error) {
+        return 'FAIL'
+      }
+    }
+
     try {
       const subprocess = execa(cmd, params, { env: { FORCE_COLOR: 'true' } })
       subprocess.stdout.pipe(process.stdout)
