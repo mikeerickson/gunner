@@ -30,7 +30,7 @@ let success = true
 
 async function execute() {
   // result = shell.exec('npm run test -- --dot')
-  result = await system.exec('npm', ['test', '--', '--dot'], { quiet: true })
+  result = await system.exec('npm', ['test', '--', '--dot'])
 
   success = config.runTests ? result.includes('PASSED') || result.includes('SUCCESS') : true
   if (!success) {
