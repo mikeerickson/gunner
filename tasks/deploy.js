@@ -73,7 +73,7 @@ async function execute() {
   console.log('')
 
   // wrap up
-  print.success(`v${config.version} build ${config.build} Deploy Completed Successfully`, 'SUCCESS')
+  print.success(`Build ${config.build} Deploy Completed Successfully`, 'SUCCESS')
   console.log('')
 
   success ? await system.exec('npm', ['run', 'todo']) : null
