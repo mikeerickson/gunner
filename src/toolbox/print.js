@@ -7,6 +7,9 @@ const messenger = require('@codedungeon/messenger')
 
 module.exports = (quiet = false) => {
   const print = {
+    write: (type = 'log', msg = '') => {
+      return quiet ? msg : messenger.write(type, msg)
+    },
     success: (msg = '', label = '') => {
       return quiet ? msg : messenger.success(msg, label)
     },

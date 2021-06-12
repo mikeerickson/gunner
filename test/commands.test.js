@@ -5,6 +5,7 @@
 
 const { expect } = require('chai')
 const { exec } = require('child_process')
+const { dd } = require('dumper.js')
 const pkgInfo = require('../package.json')
 
 describe('commands', (done) => {
@@ -23,8 +24,9 @@ describe('commands', (done) => {
   })
 
   it('should execute sample command help', (done) => {
-    exec('gunner sayHello --help', (err, stdout, stderr) => {
+    exec('gunner say-hello --help', (err, stdout, stderr) => {
       let result = stdout.replace(/\n/gi, '')
+
       expect(result).contain('say-hello')
       expect(result).contain('Options:')
       expect(result).contain('--name, -n')

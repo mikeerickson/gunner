@@ -60,7 +60,7 @@
     "sinon": "9.2.4"
   },
   "dependencies": {
-    "@codedungeon/messenger": "0.11.0",
+    "@codedungeon/messenger": "0.12.0",
     "@codedungeon/utils": "0.0.12",
     "ansi-regex": "4.1.0",
     "apisauce": "2.0.1",

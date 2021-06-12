@@ -31,6 +31,11 @@ class Helpers {
     return pkgInfo[key]
   }
 
+  getLogFilename(location = 'logs') {
+    let logFilePath = path.join(location)
+    dd(logFilePath)
+  }
+
   argumentHasOption(args, needles) {
     if (typeof needles === 'undefined') {
       return false

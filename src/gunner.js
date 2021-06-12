@@ -89,6 +89,7 @@ class CLI {
     this.optionInfo = ''
     this.exampleInfo = ''
     this.versionStr = ''
+    this.hookData = {}
 
     /** Setup Toolbox */
     this.toolbox = {
@@ -215,6 +216,11 @@ class CLI {
   logger(logDir = 'logs', name = null) {
     let logName = name ? name : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
     Messenger.initLogger(true, logDir, logName)
+    return this
+  }
+
+  hooks(data = {}) {
+    this.hookData = { ...data }
     return this
   }
 
@@ -520,6 +526,7 @@ class CLI {
   }
 
   showVersion(options = { simple: false }) {
+    print.write('debug', 'showVersion')
     if (this.versionStr.length > 0) {
       console.log(this.versionStr)
     } else {
@@ -594,7 +601,19 @@ class CLI {
     }
   }
 
+  validateCommand(command) {
+    if (!this.isValidCommand(command) && this.hookData.hasOwnProperty('commandPrefix')) {
+      if (!command.includes(this.hookData?.commandPrefix)) {
+        command = this.hookData.commandPrefix + command
+        Messenger.write('log', `added commandPrefix ${command}`)
+      }
+    }
+    return command
+  }
+
   showCommandHelp(command = '') {
+    command = this.validateCommand(command)
+
     if (this.commandInfo.length > 0) {
       return this.commandInfo
     }
@@ -718,7 +737,18 @@ class CLI {
     }
   }
 
+  executeHook(hook = '', command = '', args = []) {
+    if (this.hookData.hasOwnProperty(hook)) {
+      this.hookData[hook](this.toolbox, command, args)
+    }
+  }
+
   executeCommand(command, args) {
+    let output = ''
+    command = this.validateCommand(command)
+
+    this.executeHook('beforeExecute', command, args)
+
     if (args?.log) {
       let sArgs = JSON.stringify({ ...{ name: command }, ...args })
       Messenger.loggerLog(`execute ${command} ${sArgs}`)
@@ -753,29 +783,32 @@ class CLI {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
 
         if (requiredArguments.length > 0 && !prompt) {
-          let output = '        - ' + requiredArguments.join(', ') + '\n'
+          output = '        - ' + requiredArguments.join(', ') + '\n'
           console.log('')
           this.toolbox.print.error('Missing Required Arguments:', 'ERROR')
           this.toolbox.print.error(output)
+          this.executeHook('afterExecute', command, args, output)
           return output
         }
 
         if (module?.execute) {
           this.arguments = this.setDefaultFlags(this, module.flags)
-          return module.execute(this.toolbox)
+          let result = module.execute(this.toolbox)
+          this.executeHook('afterExecute', command, args, result)
         }
       } else {
         let output = `🚫  Invalid Command: ${command}`
         this.toolbox.print.error(output)
-        return output
       }
+
+      this.executeHook('afterExecute', command, args)
+      return output
     }
   }
 
   handleCommand(argv, commandInfo = {}) {
     // special handle if default supplied in .run()
     commandInfo = argv.length >= 3 ? {} : commandInfo
-
     let command = commandInfo.name || this.command
     let args = commandInfo.args || this.arguments
 
