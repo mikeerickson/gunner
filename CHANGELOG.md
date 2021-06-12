@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.36 .. 0.43] - 2021-06-04
+## [0.36 .. 0.56.0] - 2021-06-12
 
 - Implemented Messenger `system` logging interface
 - Added `.logger` entrypoint to allow configuration of logs directory

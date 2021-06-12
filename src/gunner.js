@@ -214,8 +214,10 @@ class CLI {
   }
 
   logger(logDir = 'logs', name = null) {
-    let logName = name ? name : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
-    Messenger.initLogger(true, logDir, logName)
+    if (this.toolbox.arguments?.log) {
+      let logName = name ? name : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+      Messenger.initLogger(true, logDir, logName)
+    }
     return this
   }
 
