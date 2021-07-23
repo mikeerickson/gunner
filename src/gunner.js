@@ -663,6 +663,11 @@ class CLI {
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
         console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
+        if (module.arguments.name?.options) {
+          let options = module.arguments.name.options.join(', ')
+          let spacer = module.arguments.name.required ? '  ' : ''
+          console.log(colors.cyan.italic(`  available commands:     ${spacer}`) + colors.cyan.italic(options))
+        }
       }
     }
 
@@ -714,7 +719,14 @@ class CLI {
 
           let flags = '  --' + flag + aliases
           // pad 7 to include flag alias
+
           console.log(flags.padEnd(COL_WIDTH + 5), required, description, defaultValue)
+
+          if (module.flags[flag]?.options) {
+            let options = module.flags[flag].options.join(', ')
+            let spacer = module.flags[flag].required ? '' : ''
+            console.log(colors.cyan.italic(`    available options:      ${spacer}`) + colors.cyan.italic(options))
+          }
         })
 
         console.log('')

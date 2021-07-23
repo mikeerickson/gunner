@@ -10,6 +10,7 @@ const promptColors = require('ansi-colors')
 const clearConsole = require('clear-any-console')
 
 const pkgInfo = require('../../package.json')
+const { dd } = require('dumper.js')
 
 class Helpers {
   constructor(param = null) {}
@@ -33,7 +34,6 @@ class Helpers {
 
   getLogFilename(location = 'logs') {
     let logFilePath = path.join(location)
-    dd(logFilePath)
   }
 
   argumentHasOption(args, needles) {
@@ -96,12 +96,15 @@ class Helpers {
     return defaultValue
   }
 
-  getArguments(args = null, flags = null) {
+  getArguments(args = null, flags = null, options = { initializeNullValues: false }) {
     let result = {}
     if (args && flags) {
       Object.keys(flags).forEach((key) => {
         // let controller = app.getOptionValue(toolbox.arguments, this.flags, 'controller')
         result[key] = this.getOptionValue(args, flags, key)
+        if (options.initializeNullValues) {
+          result[key] = !result[key] ? false : result[key]
+        }
       })
     }
 

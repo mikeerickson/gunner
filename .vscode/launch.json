@@ -20,12 +20,23 @@
       "request": "launch",
       "name": "Default Program: .run()",
       "program": "${workspaceFolder}/index.js",
-      "args": []
+      "args": [
+        "test"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Command Test",
+      "name": "Command test",
+      "program": "${workspaceFolder}/index.js",
+      "args": [
+        "test"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Command: make:command",
       "program": "${workspaceFolder}/index.js",
       "args": [
         "make:command",

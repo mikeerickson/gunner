@@ -40,8 +40,7 @@ describe('make:command', (done) => {
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
     let cmd = `gunner make:command ${testCommandName} --command testing:command --description "test command"  --overwrite`
 
-    let result = execSync(cmd)
-    result = result.toString()
+    let result = execSync(cmd).toString()
 
     let msg = result.replace(/\n/gi, '')
     expect(msg).contain(`${testCommandName}.js Created Successfully`)

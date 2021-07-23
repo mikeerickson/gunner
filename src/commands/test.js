@@ -1,6 +1,7 @@
 const colors = require('chalk')
 const print = require('../toolbox/print')
 const helpers = require('../toolbox/helpers')
+const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'test',
@@ -8,14 +9,16 @@ module.exports = {
   disabled: false,
   hidden: false,
   usage: `test ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
-  usePrompts: false,
+  usePrompts: true,
   arguments: {
     name: {
-      description: 'Sub Command',
+      description: 'Command',
       required: true,
+      options: ['backup', 'backup2', 'backup3'],
       prompt: {
-        type: 'input',
-        hint: '(as it will be saved on disk)',
+        type: 'select',
+        hint: 'which command would you like to execute',
+        choices: ['backup', 'k project', 'z project'],
       },
     },
   },
@@ -24,8 +27,8 @@ module.exports = {
     test: {
       aliases: ['t'],
       description: 'Use Tests',
-      required: false,
-      prompt: { type: 'confirm', hint: 'Would you like to create tests?' },
+      required: true,
+      prompt: { disabled: true, type: 'confirm', hint: 'Would you like to create tests?' },
     },
   },
 

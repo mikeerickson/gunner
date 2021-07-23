@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.57.0 .. 0.57.1] - 2021-07-23
+
+- Fixed assumption that `commandName` would use `input` prompt
+- Added CLI abort (Command-c) to display abort message (unless `--quite` flag is supplied)
+  - e.g. `gunner test --quiet` will not show abort message
+- Added `disabled` option to `prompt` object which will skip prompt
+- Added `options` to arguments and flags which are displayed when show help
+
 ## [0.36 .. 0.56.0] - 2021-06-12
 
 - Implemented Messenger `system` logging interface

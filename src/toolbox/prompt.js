@@ -12,6 +12,7 @@ const arrays = require('./arrays')
 const colors = require('ansi-colors')
 const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 const print = require('./print')
+const { dd, dump } = require('dumper.js')
 
 prompts = {
   validPromptTypes: function () {
@@ -65,24 +66,44 @@ prompts = {
 
     if (command?.arguments?.name?.required) {
       if (!commandName || commandName.length === 0) {
-        questions.push(
-          this.buildQuestion('input', 'commandName', command.arguments.name.description, {
-            validate: (value, state, item, index) => {
-              if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
-                return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
-              }
-              return true
-            },
-            hint: command.arguments.name.prompt.hint,
-          })
-        )
+        let type = command.arguments.name.prompt.type
+        if (type === 'input') {
+          questions.push(
+            this.buildQuestion('input', 'commandName', command.arguments.name.description, {
+              validate: (value, state, item, index) => {
+                if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
+                  return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
+                }
+                return true
+              },
+              hint: command.arguments.name.prompt.hint,
+            })
+          )
+        } else {
+          let argument = command.arguments.name
+
+          let type = argument.prompt.type
+          let message = argument.prompt.hasOwnProperty('message') ? argument.prompt.message : argument.description
+          let hint = message === argument.prompt.hint ? '' : argument.prompt?.hint ? argument.prompt?.hint : ''
+
+          let choices = argument.hasOwnProperty('options')
+            ? argument.options
+            : argument.prompt.hasOwnProperty('choices')
+            ? argument.prompt.choices
+            : []
+
+          let options = { type, message, choices, hint }
+
+          questions.push(this.buildQuestion(type, 'commandName', argument.description, options))
+        }
       }
     }
 
     let flags = Object.keys(command.flags)
 
     flags.forEach((flag) => {
-      if (command.flags[flag]?.prompt) {
+      let disabled = command.flags[flag].prompt?.disabled ? command.flags[flag].prompt.disabled : false
+      if (command.flags[flag]?.prompt && !disabled) {
         let keys = [flag]
         keys = command.flags[flag]?.aliases ? keys.concat(command.flags[flag].aliases) : keys
         let optionValue = helpers.getOptionValueEx(toolbox.arguments, keys)
@@ -110,6 +131,7 @@ prompts = {
           type = type === 'multi' ? 'multiselect' : type
           type = type === 'boolean' ? 'confirm' : type
           type = type === 'list' ? 'input' : type
+          type = type === 'choice' ? 'select' : type
 
           let hint = prompt?.hint || ''
           let validate = prompt?.validate ? prompt.validate : null
@@ -155,6 +177,12 @@ prompts = {
       answers = await this.show(questions)
     }
 
+    if (!answers && !toolbox.arguments?.quiet) {
+      console.log('')
+      toolbox.print.warning('Command Aborted\n', 'ABORT')
+      process.exit()
+    }
+
     flags.forEach((key) => {
       if (answers?.key && command.flags[key].prompt.type === 'list') {
         answers[key] = answers[key].split(',')
@@ -164,10 +192,14 @@ prompts = {
     return answers
   },
 
-  buildQuestion: function (type, name, message, alternateOptions = {}) {
+  buildQuestion: function (type = '', name = '', message = '', alternateOptions = {}) {
+    // type (input type)
+    // name (prompt name)
+    // message (prompt messsage)
     type = type === 'multi' ? 'multiselect' : type
     type = type === 'boolean' ? 'confirm' : type
     type = type === 'number' ? 'numeral' : type
+    type = type === 'choice' ? 'select' : type
 
     let defaultOptions = {
       styles: { em: colors.cyan },
@@ -185,6 +217,7 @@ prompts = {
     }
 
     let options = { ...defaultOptions, ...alternateOptions }
+    options.type = type
 
     return { type, name, message, ...options }
   },
