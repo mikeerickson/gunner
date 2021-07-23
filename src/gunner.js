@@ -510,12 +510,13 @@ class CLI {
     if (this.debug) {
       let separator = '='.repeat(this.toolbox.utils.windowSize().width)
       if (command !== undefined && command !== '') {
-        command += ' ' + this.commandName
+        let subCommand = this.toolbox.commandName.length > 0 ? this.toolbox.commandName : 'n/a'
         console.log('\n')
         let msg =
-          ' 🚦  DEBUG COMMAND: ' +
-          command +
-          '\n    ' +
+          ' 🚦  DEBUG COMMAND: \n' +
+          `     command name:     ${command}\n` +
+          `     subcommand name:  ${subCommand}\n` +
+          '     options / flags:  ' +
           JSON.stringify(this.arguments).replace(/,/gi, ', ').replace(/:/gi, ': ')
 
         console.log(this.toolbox.colors.gray(separator))
@@ -528,7 +529,6 @@ class CLI {
   }
 
   showVersion(options = { simple: false }) {
-    print.write('debug', 'showVersion')
     if (this.versionStr.length > 0) {
       console.log(this.versionStr)
     } else {
@@ -821,6 +821,7 @@ class CLI {
     }
 
     if (this.argumentHasOption(args, ['V', 'version'])) {
+      console.log('')
       this.showVersion({ simple: true })
       process.exit(0)
     }

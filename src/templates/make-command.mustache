@@ -20,6 +20,8 @@
  */
 {{/showComments}}
 const colors = require('chalk')
+const print = require('../toolbox/print')
+const helpers = require('../toolbox/helpers')
 
 module.exports = {
   name: '{{command}}',
@@ -30,19 +32,27 @@ module.exports = {
   usePrompts: true,
   {{#showArguments}}
   arguments: {
-    name: { description: 'Resource Filename', required: true },
-    prompt: {
+    name: {
+      description: 'Sub Command',
+      required: true,
+      prompt: {
         type: 'input',
         hint: '(as it will be saved on disk)',
       },
+    },
   },
   {{/showArguments}}
   flags: {
     // example flag, adjust accordingly
-    command: { aliases: ['c'], description: 'Command name', required: false }
+    test: {
+      aliases: ['t'],
+      description: 'Use Tests',
+      required: false,
+      prompt: { type: 'confirm', hint: 'Would you like to create tests?' },
+    },
   },
 
-  execute(toolbox) {
+  async execute(toolbox) {
     {{#quiet}}
     /*
      * - you can use the following variables when creating your command
@@ -50,11 +60,18 @@ module.exports = {
      * - toolbox.arguments
      */
      {{/quiet}}
-    // get quiet flag
+    // example retrieving global option
     let quiet = toolbox.getOptionValue(toolbox.arguments, ['quiet', 'q'])
 
-		// example processing command
-    let name = toolbox.strings.titleCase(toolbox.arguments.name || 'world')
-    toolbox.print.info(`Hello ${name}`)
+    let args = helpers.getArguments(toolbox.arguments, this.flags)
+    let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
+
+    // merge args and answers
+    let flags = { ...args, ...answers }
+    console.log({
+      subCommand: toolbox.commandName || flags.commandName,
+      arguments: toolbox.arguments,
+      flags,
+    })
   }
 }
