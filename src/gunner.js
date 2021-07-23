@@ -27,6 +27,7 @@ const print = require('./toolbox/print')(this.quiet)
 const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
+const { SSL_OP_ALL } = require('constants')
 
 const HELP_PAD = 30
 const REQUIRED_MARK = '✖︎'
@@ -621,7 +622,6 @@ class CLI {
     }
 
     let module = this.loadModule(command)
-
     if (!this.toolbox.utils.has(module, 'name')) {
       let commandFilename = strings.titleCase(strings.camelCase(command)) + '.js'
       let message = `Unable to locate valid command file matching ${command}`
@@ -659,13 +659,17 @@ class CLI {
       this.toolbox.print.warning('\nArguments:')
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
-        let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
-        hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
-        if (module.arguments.name?.options) {
-          let options = module.arguments.name.options.join(', ')
-          let spacer = module.arguments.name.required ? '  ' : ''
+        // dd(module.arguments.command)
+        let hint = module.arguments[key].prompt.hint
+        hint = hint = hint?.length > 0 ? '(' + hint + ')' : ''
+
+        let temp = key.padEnd(23)
+        console.log(`  ${temp} ${required} ${value.description} ${colors.gray(hint)}`)
+
+        if (module.arguments[key]?.options) {
+          let options = module.arguments[key].options.join(', ')
+          let spacer = module.arguments[key].required ? '  ' : ''
           console.log(colors.cyan.italic(`  available commands:     ${spacer}`) + colors.cyan.italic(options))
         }
       }
@@ -778,19 +782,24 @@ class CLI {
       let module = this.loadModuleByCommand(command)
       let disabled = module.disabled || false
 
-      let required = module?.arguments?.name?.required
-      let prompt = module?.arguments?.name?.prompt && module.usePrompts
+      if (module.hasOwnProperty('arguments')) {
+        let keys = Object.keys(module.arguments)
+        let name = Object.keys(module.arguments).length > 0 ? Object.keys(module.arguments)[0] : null
+        if (name) {
+          let required = module?.arguments[name]?.required
+          let prompt = module?.arguments[name]?.prompt && module.usePrompts
+          if (this.argv.length <= 3 && module?.arguments && required && !prompt) {
+            console.log('')
 
-      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
-        console.log('')
-
-        if (module.arguments.name?.help) {
-          this.toolbox.print.error(module.arguments.name.help, 'ERROR')
-        } else {
-          this.toolbox.print.error(module.arguments.name.description + ' Required', 'ERROR')
+            if (module.arguments[name]?.help) {
+              this.toolbox.print.error(module.arguments[name].help, 'ERROR')
+            } else {
+              this.toolbox.print.error(module.arguments[name].description + ' Required', 'ERROR')
+            }
+            console.log('')
+            process.exit(0)
+          }
         }
-        console.log('')
-        process.exit(0)
       }
 
       if (!disabled) {

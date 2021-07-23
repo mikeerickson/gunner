@@ -11,10 +11,10 @@ module.exports = {
   usage: `test ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
   usePrompts: true,
   arguments: {
-    name: {
+    command: {
       description: 'Command',
       required: true,
-      options: ['backup', 'backup2', 'backup3'],
+      choices: ['backup', 'backup2', 'backup3'],
       prompt: {
         type: 'select',
         hint: 'which command would you like to execute',
@@ -28,7 +28,8 @@ module.exports = {
       aliases: ['t'],
       description: 'Use Tests',
       required: true,
-      prompt: { disabled: true, type: 'confirm', hint: 'Would you like to create tests?' },
+      choices: ['a', 'b'],
+      prompt: { disabled: false, type: 'select', hint: 'Would you like to create tests?' },
     },
   },
 
