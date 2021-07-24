@@ -667,10 +667,10 @@ class CLI {
         let temp = key.padEnd(23)
         console.log(`  ${temp} ${required} ${value.description} ${colors.gray(hint)}`)
 
-        if (module.arguments[key]?.options) {
-          let options = module.arguments[key].options.join(', ')
-          let spacer = module.arguments[key].required ? '  ' : ''
-          console.log(colors.cyan.italic(`  available commands:     ${spacer}`) + colors.cyan.italic(options))
+        if (module.arguments[key]?.choices) {
+          let options = module.arguments[key].choices.join(', ')
+          let label = `  available ${strings.plural(key)}:`.padEnd(26)
+          console.log(colors.cyan.italic(`${label}  `) + colors.cyan.italic(options))
         }
       }
     }
@@ -726,8 +726,8 @@ class CLI {
 
           console.log(flags.padEnd(COL_WIDTH + 5), required, description, defaultValue)
 
-          if (module.flags[flag]?.options) {
-            let options = module.flags[flag].options.join(', ')
+          if (module.flags[flag]?.choices) {
+            let options = module.flags[flag].choices.join(', ')
             let spacer = module.flags[flag].required ? '' : ''
             console.log(colors.cyan.italic(`    available options:      ${spacer}`) + colors.cyan.italic(options))
           }
