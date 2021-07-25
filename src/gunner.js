@@ -31,6 +31,21 @@ const Messenger = require('@codedungeon/messenger')
 const HELP_PAD = 30
 const REQUIRED_MARK = '✖︎'
 
+const log = (command, resource, args) => {
+  if (resource.length === 0) {
+    return
+  }
+
+  let cmd = ''
+  Object.keys(args).forEach((item) => {
+    if (item !== 'anonymous' && item !== 'sub' && item !== 'log' && item.length > 1) {
+      cmd += typeof args[item] === 'boolean' ? '--' + item + ' ' : '--' + item + ' ' + args[item] + ' '
+    }
+  })
+  cmd = `${command} ${resource} ${cmd}`.trim()
+  Messenger.loggerInfo(cmd)
+}
+
 class CLI {
   constructor(argv = [], projectRootDir = null, pkgInfo = null) {
     if (pkgInfo && pkgInfo.name === '@codedungeon/gunner') {
@@ -100,6 +115,7 @@ class CLI {
 
       getOptionValue: this.getOptionValue,
       argumentHasOption: this.argumentHasOption,
+      logToFile: log,
 
       // toolbox modules
       api,
@@ -186,7 +202,7 @@ class CLI {
       let globalOptions = [
         '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
-        '  --log                         Output logs to project `logs` directory',
+        // '  --log                         Output logs to project `logs` directory',
       ]
 
       if (Array.isArray(options)) {
@@ -805,7 +821,6 @@ class CLI {
         this.toolbox.print.error(output)
       }
 
-      this.executeHook('afterExecute', command, args)
       return output
     }
   }
@@ -876,16 +891,14 @@ class CLI {
       return
     }
 
-    if (args.log) {
-      let cmd = ''
-      Object.keys(args).forEach((item) => {
-        if (item !== 'anonymous' && item !== 'sub' && item !== 'log' && item.length > 1) {
-          cmd += typeof args[item] === 'boolean' ? '--' + item + ' ' : '--' + item + ' ' + args[item] + ' '
-        }
-      })
-      cmd = `${command} ${resource} ${cmd}`.trim()
-      Messenger.loggerInfo(cmd)
-    }
+    let cmd = ''
+    Object.keys(args).forEach((item) => {
+      if (item !== 'anonymous' && item !== 'sub' && item !== 'log' && item.length > 1) {
+        cmd += typeof args[item] === 'boolean' ? '--' + item + ' ' : '--' + item + ' ' + args[item] + ' '
+      }
+    })
+    cmd = `${command} ${resource} ${cmd}`.trim()
+    Messenger.loggerInfo(cmd)
   }
 }
 

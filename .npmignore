@@ -11,3 +11,4 @@ custom-templates/
 docker/
 src/test-prompt.js
 src/test-command.js
+src/unused

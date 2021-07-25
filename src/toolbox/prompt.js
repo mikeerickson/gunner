@@ -183,6 +183,10 @@ prompts = {
 
     if (questions.length > 0) {
       answers = await this.show(questions)
+      let args = { ...answers }
+      delete args.commandName
+
+      toolbox.logToFile(command.name, toolbox.commandName || answers.commandName, args)
     }
 
     if (!answers && !toolbox.arguments?.quiet) {
