@@ -29,7 +29,7 @@ const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
     /* if not called, examples will be suppressed in help dialog */
     `${pkgInfo.packageName} make:command TestCommand --name hello --description "hello command description"`
   )
-  .logger({ directory: 'logs', filename: null, alwaysLog: true })
+  .logger({ alwaysLog: true })
   .hooks({
     beforeExecute: (toolbox, command = '', args = {}, data = null) => {
       toolbox.print.write('info', { hook: 'beforeExecute', command, args, data, cwd: process.cwd() })

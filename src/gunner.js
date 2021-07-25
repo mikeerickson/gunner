@@ -213,7 +213,9 @@ class CLI {
     return this
   }
 
-  logger(options = { directory: 'system', filename: null, alwaysLog: false }) {
+  logger(userOptions = null) {
+    let options = { ...{ directory: 'system', filename: null, alwaysLog: false }, ...userOptions }
+
     if (options.alwaysLog) {
       this.toolbox.arguments.log = true
     }
