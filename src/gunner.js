@@ -213,13 +213,15 @@ class CLI {
     return this
   }
 
-  logger(logDir = 'logs', logFilename = null, options = { alwaysLog: false }) {
+  logger(options = { directory: 'system', filename: null, alwaysLog: false }) {
     if (options.alwaysLog) {
       this.toolbox.arguments.log = true
     }
     if (this.toolbox.arguments?.log) {
-      let logName = logFilename ? logFilename : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
-      Messenger.initLogger(true, logDir, logName)
+      let logName = options.filename
+        ? options.filename
+        : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+      Messenger.initLogger(true, options.directory, logName)
     }
     return this
   }
@@ -573,11 +575,11 @@ class CLI {
       this.showVersion()
 
       if (this.usageInfo.length > 0) {
-        this.toolbox.print.warning('Usage:')
+        console.log(colors.yellow('Usage:'))
         console.log(this.formatInfo(this.usageInfo) + '\n')
       }
 
-      this.toolbox.print.warning('Commands:')
+      console.log(colors.yellow('Commands:'))
 
       if (this.commandInfo.length > 0) {
         console.log(this.commandInfo + '\n')
@@ -592,12 +594,12 @@ class CLI {
       }
 
       if (this.optionInfo.length > 1) {
-        this.toolbox.print.warning('Global Options:')
+        console.log(colors.yellow('Global Options:'))
         console.log(this.optionInfo + '\n')
       }
 
       if (this.exampleInfo.length > 0) {
-        this.toolbox.print.warning('Examples:')
+        console.log(colors.yellow('Examples:'))
         console.log(this.formatInfo(this.exampleInfo) + '\n')
       }
     } else {
@@ -610,7 +612,7 @@ class CLI {
     if (!this.isValidCommand(command) && this.hookData.hasOwnProperty('commandPrefix')) {
       if (!command.includes(this.hookData?.commandPrefix)) {
         command = this.hookData.commandPrefix + command
-        Messenger.write('log', `added commandPrefix ${command}`)
+        Messenger.write('info', `added commandPrefix ${command}`)
       }
     }
     return command
@@ -654,12 +656,12 @@ class CLI {
     console.log(`   ${description}`)
 
     if (module?.usage) {
-      this.toolbox.print.warning('\nUsage:')
+      console.log(colors.yellow('\nUsage:'))
       console.log('  ' + module.usage)
     }
 
     if (this.toolbox.utils.has(module, 'arguments')) {
-      this.toolbox.print.warning('\nArguments:')
+      console.log(colors.yellow('\nArguments:'))
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
         let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
@@ -880,7 +882,7 @@ class CLI {
         }
       })
       cmd = `${command} ${resource} ${cmd}`.trim()
-      Messenger.loggerLog(cmd)
+      Messenger.loggerInfo(cmd)
     }
   }
 }

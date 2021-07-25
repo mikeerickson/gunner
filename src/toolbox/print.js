@@ -11,9 +11,9 @@ module.exports = (quiet = false) => {
     write: (type = 'log', msg = '') => {
       return quiet ? msg : messenger.write(type, msg)
     },
-    writeLog: (type = 'log', msg = '') => {
-      messenger.write(type, msg)
-    },
+    // writeLog: (type = 'log', msg = '') => {
+    //   messenger.write(type, msg)
+    // },
     success: (msg = '', label = '') => {
       return quiet ? msg : messenger.success(msg, label)
     },
