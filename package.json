@@ -1,7 +1,7 @@
 {
   "name": "@codedungeon/gunner",
   "packageName": "gunner",
-  "version": "0.58.0",
+  "version": "0.59.0",
   "build": "300",
   "description": "Node CLI Framework",
   "info": "created in memory of my trusty sidekick \"Gunner\" who passed away in 2019.\n   his memory will last in my heart forever.",
