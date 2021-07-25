@@ -4,11 +4,15 @@
  * -----------------------------------------------------------------------------------------*/
 
 const messenger = require('@codedungeon/messenger')
+const { dd } = require('dumper.js')
 
 module.exports = (quiet = false) => {
   const print = {
     write: (type = 'log', msg = '') => {
       return quiet ? msg : messenger.write(type, msg)
+    },
+    writeLog: (type = 'log', msg = '') => {
+      messenger.write(type, msg)
     },
     success: (msg = '', label = '') => {
       return quiet ? msg : messenger.success(msg, label)
@@ -44,6 +48,7 @@ module.exports = (quiet = false) => {
       return quiet ? msg : messenger.note(msg, label)
     },
     log: (msg = '', label = '') => {
+      console.log('here')
       return quiet ? msg : messenger.log(msg, label)
     },
     debug: (msg = '', label = '') => {

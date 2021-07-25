@@ -27,7 +27,6 @@ const print = require('./toolbox/print')(this.quiet)
 const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
-const { SSL_OP_ALL } = require('constants')
 
 const HELP_PAD = 30
 const REQUIRED_MARK = '✖︎'
@@ -48,7 +47,7 @@ class CLI {
 
     this.argv = argv
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
-    this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
+    this.projectRoot = projectRootDir || path.dirname(path.dirname(this.fs.realpathSync(argv[1])))
 
     this.app = new App({ projectRoot: this.projectRoot })
 
@@ -214,9 +213,12 @@ class CLI {
     return this
   }
 
-  logger(logDir = 'logs', name = null) {
+  logger(logDir = 'logs', logFilename = null, options = { alwaysLog: false }) {
+    if (options.alwaysLog) {
+      this.toolbox.arguments.log = true
+    }
     if (this.toolbox.arguments?.log) {
-      let logName = name ? name : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+      let logName = logFilename ? logFilename : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
       Messenger.initLogger(true, logDir, logName)
     }
     return this
@@ -578,25 +580,25 @@ class CLI {
       this.toolbox.print.warning('Commands:')
 
       if (this.commandInfo.length > 0) {
-        this.toolbox.print.log(this.commandInfo + '\n')
+        console.log(this.commandInfo + '\n')
       } else {
         let commands = this.showCommands()
 
         if (commands.length > 0) {
-          this.toolbox.print.log(commands)
+          console.log(commands)
         } else {
-          this.toolbox.print.log('  No Command Available\n')
+          console.log('  No Command Available\n')
         }
       }
 
       if (this.optionInfo.length > 1) {
         this.toolbox.print.warning('Global Options:')
-        this.toolbox.print.log(this.optionInfo + '\n')
+        console.log(this.optionInfo + '\n')
       }
 
       if (this.exampleInfo.length > 0) {
         this.toolbox.print.warning('Examples:')
-        this.toolbox.print.log(this.formatInfo(this.exampleInfo) + '\n')
+        console.log(this.formatInfo(this.exampleInfo) + '\n')
       }
     } else {
       this.showCommandHelp(this.command)
@@ -622,6 +624,7 @@ class CLI {
     }
 
     let module = this.loadModule(command)
+
     if (!this.toolbox.utils.has(module, 'name')) {
       let commandFilename = strings.titleCase(strings.camelCase(command)) + '.js'
       let message = `Unable to locate valid command file matching ${command}`
@@ -659,19 +662,10 @@ class CLI {
       this.toolbox.print.warning('\nArguments:')
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
+        let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
+        hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        // dd(module.arguments.command)
-        let hint = module.arguments[key].prompt.hint
-        hint = hint = hint?.length > 0 ? '(' + hint + ')' : ''
-
-        let temp = key.padEnd(23)
-        console.log(`  ${temp} ${required} ${value.description} ${colors.gray(hint)}`)
-
-        if (module.arguments[key]?.choices) {
-          let options = module.arguments[key].choices.join(', ')
-          let label = `  available ${strings.plural(key)}:`.padEnd(26)
-          console.log(colors.cyan.italic(`${label}  `) + colors.cyan.italic(options))
-        }
+        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -723,14 +717,7 @@ class CLI {
 
           let flags = '  --' + flag + aliases
           // pad 7 to include flag alias
-
           console.log(flags.padEnd(COL_WIDTH + 5), required, description, defaultValue)
-
-          if (module.flags[flag]?.choices) {
-            let options = module.flags[flag].choices.join(', ')
-            let spacer = module.flags[flag].required ? '' : ''
-            console.log(colors.cyan.italic(`    available options:      ${spacer}`) + colors.cyan.italic(options))
-          }
         })
 
         console.log('')
@@ -767,11 +754,6 @@ class CLI {
 
     this.executeHook('beforeExecute', command, args)
 
-    if (args?.log) {
-      let sArgs = JSON.stringify({ ...{ name: command }, ...args })
-      Messenger.loggerLog(`execute ${command} ${sArgs}`)
-    }
-
     if (command.length > 0) {
       if (!this.isValidCommand(command)) {
         this.toolbox.print.error(`\n🚫 Invalid Command "${command}"`)
@@ -782,24 +764,19 @@ class CLI {
       let module = this.loadModuleByCommand(command)
       let disabled = module.disabled || false
 
-      if (module.hasOwnProperty('arguments')) {
-        let keys = Object.keys(module.arguments)
-        let name = Object.keys(module.arguments).length > 0 ? Object.keys(module.arguments)[0] : null
-        if (name) {
-          let required = module?.arguments[name]?.required
-          let prompt = module?.arguments[name]?.prompt && module.usePrompts
-          if (this.argv.length <= 3 && module?.arguments && required && !prompt) {
-            console.log('')
+      let required = module?.arguments?.name?.required
+      let prompt = module?.arguments?.name?.prompt && module.usePrompts
 
-            if (module.arguments[name]?.help) {
-              this.toolbox.print.error(module.arguments[name].help, 'ERROR')
-            } else {
-              this.toolbox.print.error(module.arguments[name].description + ' Required', 'ERROR')
-            }
-            console.log('')
-            process.exit(0)
-          }
+      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
+        console.log('')
+
+        if (module.arguments.name?.help) {
+          this.toolbox.print.error(module.arguments.name.help, 'ERROR')
+        } else {
+          this.toolbox.print.error(module.arguments.name.description + ' Required', 'ERROR')
         }
+        console.log('')
+        process.exit(0)
       }
 
       if (!disabled) {
@@ -830,6 +807,7 @@ class CLI {
   }
 
   handleCommand(argv, commandInfo = {}) {
+    this.logToFile(argv, commandInfo.args || this.arguments)
     // special handle if default supplied in .run()
     commandInfo = argv.length >= 3 ? {} : commandInfo
     let command = commandInfo.name || this.command
@@ -871,7 +849,6 @@ class CLI {
       }
     }
 
-    // if did not supply command show help
     return command.length > 0 ? this.executeCommand(command, args) : this.showHelp(this.appName)
   }
 
@@ -886,6 +863,25 @@ class CLI {
       let extFilename = path.join(extensionPath, filename)
       let module = require(extFilename)(cli)
     })
+  }
+
+  logToFile(argv = [], args = {}) {
+    let command = argv[2] || ''
+    let resource = argv[3] || ''
+    if (resource.length === 0) {
+      return
+    }
+
+    if (args.log) {
+      let cmd = ''
+      Object.keys(args).forEach((item) => {
+        if (item !== 'anonymous' && item !== 'sub' && item !== 'log' && item.length > 1) {
+          cmd += typeof args[item] === 'boolean' ? '--' + item + ' ' : '--' + item + ' ' + args[item] + ' '
+        }
+      })
+      cmd = `${command} ${resource} ${cmd}`.trim()
+      Messenger.loggerLog(cmd)
+    }
   }
 }
 

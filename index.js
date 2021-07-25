@@ -39,4 +39,5 @@ const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
     },
     commandPrefix: 'make:',
   })
+  .logger('system', null, { alwaysLog: true })
   .run()
