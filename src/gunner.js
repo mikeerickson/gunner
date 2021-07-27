@@ -426,6 +426,7 @@ class CLI {
       return {}
     }
     let keys = Object.keys(flags)
+
     let defaults = {}
     keys.map((flag) => {
       let alias = ''
@@ -445,6 +446,7 @@ class CLI {
         ),
       })
     })
+
     return defaults
   }
 
@@ -465,8 +467,7 @@ class CLI {
       if (items[i] === undefined) {
         return false
       }
-      const element = items[i].replace(/-/gi, '')
-      if (args.hasOwnProperty(element)) {
+      if (args.hasOwnProperty(items[i])) {
         return true
       }
     }
@@ -477,7 +478,7 @@ class CLI {
     if (this.argumentHasOption(args, optName)) {
       let options = typeof optName === 'string' ? [optName] : optName
       for (let i = 0; i < options.length; i++) {
-        let option = options[i].replace(/-/gi, '')
+        let option = options[i]
         if (args.hasOwnProperty(option)) {
           return args[option]
         }

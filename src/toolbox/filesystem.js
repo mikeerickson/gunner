@@ -95,4 +95,8 @@ fs.write = (filename, data, options = { overwrite: false }) => {
   fs.writeFileSync(filename, data)
 }
 
+fs.shortname = (str = '') => {
+  return str.split('\\').pop().split('/').pop()
+}
+
 module.exports = fs
