@@ -32,7 +32,7 @@ const HELP_PAD = 30
 const REQUIRED_MARK = '✖︎'
 
 const log = (command, resource, args) => {
-  if (resource.length === 0) {
+  if (resource?.length === 0) {
     return
   }
 
@@ -42,8 +42,9 @@ const log = (command, resource, args) => {
       cmd += typeof args[item] === 'boolean' ? '--' + item + ' ' : '--' + item + ' ' + args[item] + ' '
     }
   })
+
   cmd = `${command} ${resource} ${cmd}`.trim()
-  Messenger.loggerInfo(cmd)
+  Messenger.loggerDebug(cmd)
 }
 
 class CLI {
@@ -202,7 +203,7 @@ class CLI {
       let globalOptions = [
         '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
-        // '  --log                         Output logs to project `logs` directory',
+        '  --log-dir                     Log directory (if different than default)',
       ]
 
       if (Array.isArray(options)) {
@@ -239,6 +240,7 @@ class CLI {
       let logName = options.filename
         ? options.filename
         : this.pkgInfo.name.replace('@codedungeon/', '').replace('/', '-')
+
       Messenger.initLogger(true, options.directory, logName)
     }
     return this
@@ -899,7 +901,7 @@ class CLI {
       }
     })
     cmd = `${command} ${resource} ${cmd}`.trim()
-    Messenger.loggerInfo(cmd)
+    Messenger.loggerDebug(cmd)
   }
 }
 

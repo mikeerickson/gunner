@@ -14,6 +14,8 @@ const msg = require('@codedungeon/messenger')
 let validFilename = require('valid-filename')
 const { dd } = require('dumper.js')
 
+msg.initLogger(true, 'system', 'gunner')
+
 // get command arguments (cli and dot)
 let argv = require('minimist')(process.argv)
 let filename = argv['_'].length > 2 ? argv['_'][2] : '*.test.js'

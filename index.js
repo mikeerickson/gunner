@@ -6,7 +6,7 @@ const path = require('path')
 const colors = require('chalk')
 const config = require('./src/toolbox/config')
 const begoo = require('begoo')
-const { dd } = require('dumper.js')
+let parseArgs = require('minimist')
 
 if (!config.get('init', false)) {
   let msg =
@@ -22,6 +22,11 @@ if (!config.get('init', false)) {
   config.set('init', true)
 }
 
+const getLogDirectory = (argv, defaultLocation = 'system') => {
+  let logDir = parseArgs(argv)['logDir'] || parseArgs(argv)['log-dir'] || ''
+  return logDir.length > 0 ? logDir : defaultLocation
+}
+
 const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
   .usage(`${pkgInfo.packageName} ${colors.magenta.bold('<command>')} ${colors.cyan.bold('[options]')}`)
   .options(/* if not called, options will be suppressed in help dialog */)
@@ -29,13 +34,13 @@ const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
     /* if not called, examples will be suppressed in help dialog */
     `${pkgInfo.packageName} make:command TestCommand --name hello --description "hello command description"`
   )
-  .logger({ alwaysLog: true })
+  .logger({ directory: getLogDirectory(process.argv), alwaysLog: true })
   .hooks({
     beforeExecute: (toolbox, command = '', args = {}) => {
-      toolbox.print.write('info', { hook: 'beforeExecute', command, args, cwd: process.cwd() })
+      toolbox.print.write('debug', { hook: 'beforeExecute', command, args, cwd: process.cwd() })
     },
     afterExecute: (toolbox, command = '', args = {}) => {
-      toolbox.print.write('info', { hook: 'afterExecute', command, args })
+      toolbox.print.write('debug', { hook: 'afterExecute', command, args })
     },
     commandPrefix: 'make:',
   })
