@@ -37,6 +37,7 @@
       "type": "node",
       "request": "launch",
       "name": "Command: make:command",
+      "runtimeExecutable": "/Users/mikee/.nvm/versions/node/v14.15.5/bin/node",
       "program": "${workspaceFolder}/index.js",
       "args": [
         "make:command",
