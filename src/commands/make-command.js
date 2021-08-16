@@ -8,6 +8,7 @@ const fs = require('fs-extra')
 const colors = require('chalk')
 const print = require('../toolbox/print')
 const helpers = require('../toolbox/helpers')
+const { dd } = require('dumper.js')
 
 module.exports = {
   name: 'make:command',
@@ -26,6 +27,7 @@ module.exports = {
   },
   flags: {
     command: {
+      type: 'string',
       aliases: ['c'],
       description: 'Command Name',
       required: true,
@@ -89,6 +91,7 @@ module.exports = {
     let noComments = result.noComments || false
     let description = result.description
     let noArguments = result.noArguments || false
+    let testing = toolbox.arguments?.testing || false
 
     let hidden = result.hidden || false
 
@@ -119,6 +122,7 @@ module.exports = {
       description,
       template,
       hidden,
+      testing,
       showComments: !noComments,
     }
 

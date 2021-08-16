@@ -25,6 +25,7 @@ const table = {
     console.log()
     console.log(table.toString())
   },
+
   verboseInfo: (header = [], data = {}) => {
     if (Object.keys(data).length === 0) {
       console.log('\n' + colors.red('No Tabld Data'))

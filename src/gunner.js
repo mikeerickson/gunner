@@ -297,7 +297,7 @@ class CLI {
   getArguments(argv, module) {
     let parseArgs = require('minimist')
 
-    // need to hack around a bit her since minimist thinks --constructor argument is bad
+    // need to hack around a bit here since minimist thinks --constructor argument is bad
     let idx = argv.indexOf('--constructor')
     if (idx >= 0) {
       argv[idx] = '--tempConstructor' // quick rename
@@ -423,6 +423,23 @@ class CLI {
     return missingArguments
   }
 
+  validateArguments(args, flags) {
+    let valid = { status: true }
+
+    // if command does not have flags, it will be valid
+    if (flags) {
+      Object.keys(flags).forEach((item) => {
+        let flagType = flags[item]?.type ? flags[item].type : 'any'
+        let value = args.hasOwnProperty(item) ? args[item] : null
+        if (flagType !== 'any' && value && flagType !== typeof value) {
+          valid = { status: false, flag: item, message: `Expected ${flagType}, ${typeof value} supplied` }
+        }
+      })
+    }
+
+    return valid
+  }
+
   setDefaultFlags(cli, flags) {
     if (!flags) {
       return {}
@@ -495,6 +512,9 @@ class CLI {
    */
   showCommands() {
     let commandPath = this.app.getCommandPath()
+
+    this.fs.mkdirSync(commandPath, { recursive: true })
+
     let commandFiles = this.fs.readdirSync(commandPath)
 
     let commands = ''
@@ -664,7 +684,7 @@ class CLI {
     }
 
     console.log(
-      `\n🚧 ${this.toolbox.colors.blue.bold('gunner')} ${this.toolbox.colors.blue(
+      `\n🚧 ${this.toolbox.colors.blue.bold(this.pkgInfo.packageName)} ${this.toolbox.colors.blue(
         'v' + this.pkgInfo.version + ' build ' + this.pkgInfo.build
       )}`
     )
@@ -815,7 +835,15 @@ class CLI {
         }
 
         if (module?.execute) {
+          let validator = this.validateArguments(this.arguments, module.flags)
+          if (!validator.status) {
+            console.log('')
+            print.error(validator.message, 'ERROR')
+            process.exit()
+          }
+
           this.arguments = this.setDefaultFlags(this, module.flags)
+
           let result = module.execute(this.toolbox)
           this.executeHook('afterExecute', command, args, result)
         }

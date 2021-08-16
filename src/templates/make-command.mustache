@@ -19,9 +19,13 @@
  *    - required [optional]: <true|false> optional parameter if flag is required
  */
 {{/showComments}}
-const colors = require('chalk')
-const print = require('../toolbox/print')
-const helpers = require('../toolbox/helpers')
+
+{{#testing}}
+const {colors, helpers, print} = require('../gunner')
+{{/testing}}
+{{^testing}}
+const {colors, helpers, print} = require('@codedungeon/gunner')
+{{/testing}}
 
 module.exports = {
   name: '{{command}}',

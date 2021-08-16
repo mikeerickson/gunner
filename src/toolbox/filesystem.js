@@ -9,6 +9,7 @@ const trash = require('trash')
 const fsj = require('fs-jetpack')
 const fs = require('fs-extra-promise')
 const { chmod, chmodSync, parse } = require('fs-chmod')
+const { pushd } = require('shelljs')
 
 const SUCCESS = 0
 const ERROR = -1
@@ -97,6 +98,29 @@ fs.write = (filename, data, options = { overwrite: false }) => {
 
 fs.shortname = (str = '') => {
   return str.split('\\').pop().split('/').pop()
+}
+
+fs.directoryList = (directory = '', options = {}) => {
+  let opts = { directoriesOnly: false, filesOnly: false, ...options }
+  let addDir = !opts.filesOnly
+  let addFile = !opts.directoriesOnly
+
+  let directoryPath = path.resolve(directory)
+  let result = fs.readdirSync(directoryPath)
+  let matches = []
+  result.forEach((item) => {
+    let itemName = path.join(directoryPath, item)
+    try {
+      let isDir = fs.lstatSync(itemName).isDirectory()
+      let isFile = fs.lstatSync(itemName).isFile()
+
+      addDir && isDir ? matches.push(itemName) : null
+      addFile && isFile ? matches.push(itemName) : null
+    } catch (error) {
+      console.log(error)
+    }
+  })
+  return matches
 }
 
 module.exports = fs

@@ -9,7 +9,6 @@ const { exec, execSync } = require('child_process')
 const App = require('../src/toolbox/App.js')
 const fs = require('../src/toolbox/filesystem')
 const execa = require('execa')
-const { dd } = require('dumper.js')
 
 describe('make:command', (done) => {
   let testCommandFilename = ''
@@ -38,7 +37,7 @@ describe('make:command', (done) => {
   it('should create test command', (done) => {
     let testCommandName = 'TestCommand2'
     let testCommandFilename = path.join(app.getProjectCommandPath(), `${testCommandName}.js`)
-    let cmd = `gunner make:command ${testCommandName} --command testing:command --description "test command"  --overwrite`
+    let cmd = `gunner make:command ${testCommandName} --command testing:command --description "test command"  --overwrite --testing`
 
     let result = execSync(cmd).toString()
 
@@ -51,7 +50,7 @@ describe('make:command', (done) => {
   it('should show warning when command already exists', (done) => {
     let testCommandName = 'make-command'
     exec(
-      `gunner make:command ${testCommandName} --command test:warning --description test`,
+      `gunner make:command ${testCommandName} --command test:warning --description test --testing`,
       async (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
         expect(result).contain(`${testCommandName}.js Already Exists`)
@@ -63,7 +62,7 @@ describe('make:command', (done) => {
   it('should prompt for description', async (done) => {
     let testCommandName = '_InvalidName_'
     exec(
-      `gunner make:command ${testCommandName} --command test:prompt --description test --overwrite`,
+      `gunner make:command ${testCommandName} --command test:prompt --description test --overwrite --testing`,
       async (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
         expect(result).contain(`Invalid Resource Filename:  ${testCommandName}`)
@@ -75,7 +74,7 @@ describe('make:command', (done) => {
   it('should handle --noArguments flag', (done) => {
     let testCommandName = 'TestCommandFlag'
     exec(
-      `gunner make:command ${testCommandName} --command test:flag --noArguments --overwrite --description test`,
+      `gunner make:command ${testCommandName} --command test:flag --noArguments --overwrite --description test --testing`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
@@ -98,7 +97,7 @@ describe('make:command', (done) => {
   it('should suppress doc blocks using quiet flag', (done) => {
     let testCommandName = 'TestCommandDocBlocks'
     exec(
-      `gunner make:command ${testCommandName} --command test:dock-block --arguments --overwrite --description "testing doc blocks" --quiet`,
+      `gunner make:command ${testCommandName} --command test:dock-block --arguments --overwrite --description "testing doc blocks" --quiet --testing`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
         try {
@@ -121,7 +120,7 @@ describe('make:command', (done) => {
   it('should set hidden to true using hidden flag', (done) => {
     let testCommandName = 'HiddenCommand'
     exec(
-      `gunner make:command ${testCommandName} --command test:hidden --overwrite --description test --hidden`,
+      `gunner make:command ${testCommandName} --command test:hidden --overwrite --description test --hidden --testing`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
@@ -144,7 +143,7 @@ describe('make:command', (done) => {
   it('should create command using custom template', (done) => {
     let testCommandName = 'CustomTemplateCommand'
     exec(
-      `gunner make:command ${testCommandName} --command test:template --overwrite --description test --template="test/custom-templates/make-command.mustache"`,
+      `gunner make:command ${testCommandName} --command test:template --overwrite --description test --template="test/custom-templates/make-command.mustache" --testing`,
       (err, stdout, stderr) => {
         let result = stdout.replace(/\n/gi, '')
 
