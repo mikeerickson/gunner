@@ -432,7 +432,7 @@ class CLI {
         let flagType = flags[item]?.type ? flags[item].type : 'any'
         let value = args.hasOwnProperty(item) ? args[item] : null
         if (flagType !== 'any' && value && flagType !== typeof value) {
-          valid = { status: false, flag: item, message: `Expected ${flagType}, ${typeof value} supplied` }
+          valid = { status: false, flag: item, message: `${item} expected ${flagType}, ${typeof value} supplied` }
         }
       })
     }
@@ -754,7 +754,7 @@ class CLI {
           }
 
           let aliases = ''
-          if (module.flags[flag]?.aliases) {
+          if (module.flags[flag]?.aliases && module.flags[flag].aliases.length > 0) {
             aliases = ', ' + '-' + module.flags[flag].aliases
           }
 

@@ -63,43 +63,46 @@ prompts = {
     let args = toolbox.arguments
     let answers = []
     let questions = []
+    let name = ''
 
-    let name = Object.keys(command.arguments).length > 0 ? Object.keys(command.arguments)[0] : null
-    if (!name) {
-      return
-    }
+    if (command.hasOwnProperty('arguments') && command.arguments.hasOwnProperty('name')) {
+      name = Object.keys(command.arguments).length > 0 ? Object.keys(command.arguments)[0] : null
+      if (!name) {
+        return
+      }
 
-    if (command?.arguments[name]?.required) {
-      if (!commandName || commandName.length === 0) {
-        let type = command.arguments[name].prompt.type
-        if (type === 'input') {
-          questions.push(
-            this.buildQuestion('input', 'commandName', command.arguments[name].description, {
-              validate: (value, state, item, index) => {
-                if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
-                  return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
-                }
-                return true
-              },
-              hint: command.arguments[name].prompt.hint,
-            })
-          )
-        } else {
-          let argument = command.arguments[name]
+      if (command?.arguments[name]?.required) {
+        if (!commandName || commandName.length === 0) {
+          let type = command.arguments[name].prompt.type
+          if (type === 'input') {
+            questions.push(
+              this.buildQuestion('input', 'commandName', command.arguments[name].description, {
+                validate: (value, state, item, index) => {
+                  if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
+                    return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
+                  }
+                  return true
+                },
+                hint: command.arguments[name].prompt.hint,
+              })
+            )
+          } else {
+            let argument = command.arguments[name]
 
-          let type = argument.prompt.type
-          let message = argument.prompt.hasOwnProperty('message') ? argument.prompt.message : argument.description
-          let hint = message === argument.prompt.hint ? '' : argument.prompt?.hint ? argument.prompt?.hint : ''
+            let type = argument.prompt.type
+            let message = argument.prompt.hasOwnProperty('message') ? argument.prompt.message : argument.description
+            let hint = message === argument.prompt.hint ? '' : argument.prompt?.hint ? argument.prompt?.hint : ''
 
-          let choices = argument.hasOwnProperty('choices')
-            ? argument.choices
-            : argument.prompt.hasOwnProperty('choices')
-            ? argument.prompt.choices
-            : []
+            let choices = argument.hasOwnProperty('choices')
+              ? argument.choices
+              : argument.prompt.hasOwnProperty('choices')
+              ? argument.prompt.choices
+              : []
 
-          let options = { type, message, choices, hint }
+            let options = { type, message, choices, hint }
 
-          questions.push(this.buildQuestion(type, 'commandName', argument.description, options))
+            questions.push(this.buildQuestion(type, 'commandName', argument.description, options))
+          }
         }
       }
     }

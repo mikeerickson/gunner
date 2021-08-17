@@ -63,7 +63,10 @@ const template = {
   render: function (templateData, data) {
     return Mustache.render(templateData, data)
   },
-  process: function (filename, data) {
+  process: function (filename, data = null) {
+    if (!data) {
+      throw new Error('Invalid Template Data')
+    }
     if (filesystem.exists(filename)) {
       let template = filesystem.read(filename, 'utf8')
       return Mustache.render(template, data)
