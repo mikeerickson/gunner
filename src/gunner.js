@@ -131,6 +131,7 @@ class CLI {
         arguments: this.arguments,
         command: this.command,
         commandName: this.commandName,
+        name: this.name,
         debug: this.debug,
         overwrite: this.overwrite,
         packageName: this.packageName,
@@ -816,9 +817,10 @@ class CLI {
         if (module.arguments.name?.help) {
           this.toolbox.print.error(module.arguments.name.help, 'ERROR')
         } else {
-          this.toolbox.print.error(module.arguments.name.description + ' Required', 'ERROR')
+          this.toolbox.print.error('"' + module.arguments.name.description + '"' + ' Required', 'ERROR')
+          this.toolbox.print.warn(colors.dim('        ' + strings.raw(module.usage)))
         }
-        console.log('')
+        // console.log('')
         process.exit(0)
       }
 
@@ -839,10 +841,16 @@ class CLI {
           if (!validator.status) {
             console.log('')
             print.error(validator.message, 'ERROR')
+            print.info('        Review command help for details on arguments and flags')
             process.exit()
           }
 
           this.arguments = this.setDefaultFlags(this, module.flags)
+
+          if (module.hasOwnProperty('arguments')) {
+            let keys = Object.keys(module.arguments)
+            this.toolbox[keys[0]] = this.commandName
+          }
 
           let result = module.execute(this.toolbox)
           this.executeHook('afterExecute', command, args, result)

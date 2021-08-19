@@ -48,7 +48,6 @@ module.exports = (quiet = false) => {
       return quiet ? msg : messenger.note(msg, label)
     },
     log: (msg = '', label = '') => {
-      console.log('here')
       return quiet ? msg : messenger.log(msg, label)
     },
     debug: (msg = '', label = '') => {

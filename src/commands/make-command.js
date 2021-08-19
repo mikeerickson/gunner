@@ -9,6 +9,7 @@ const colors = require('chalk')
 const print = require('../toolbox/print')
 const helpers = require('../toolbox/helpers')
 const { dd } = require('dumper.js')
+const { filesystem } = require('../gunner')
 
 module.exports = {
   name: 'make:command',
@@ -182,9 +183,11 @@ module.exports = {
         let files = await fs.readdir(parent)
         files.forEach((filename) => {
           let moduleFilename = path.join(parent, filename)
-          let module = require(moduleFilename)
-          if (module?.name && module.name === commandName && destFilename !== moduleFilename) {
-            result = true
+          if (!filesystem.isDirectory(moduleFilename)) {
+            let module = require(moduleFilename)
+            if (module?.name && module.name === commandName && destFilename !== moduleFilename) {
+              result = true
+            }
           }
         })
       } catch (err) {

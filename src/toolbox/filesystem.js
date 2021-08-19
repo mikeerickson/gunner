@@ -58,6 +58,14 @@ fs.delete = (path = '') => {
   }
 }
 
+fs.isDirectory = (path) => {
+  if (fs.existsSync(path)) {
+    return fs.lstatSync(path).isDirectory()
+  }
+
+  return false
+}
+
 fs.rmdir = (dir = '') => {
   if (fs.existsSync(dir)) {
     try {
