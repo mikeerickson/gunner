@@ -65,7 +65,7 @@ prompts = {
     let questions = []
     let name = ''
 
-    if (command.hasOwnProperty('arguments') && command.arguments.hasOwnProperty('name')) {
+    if (command.hasOwnProperty('arguments')) {
       name = Object.keys(command.arguments).length > 0 ? Object.keys(command.arguments)[0] : null
       if (!name) {
         return
@@ -76,7 +76,7 @@ prompts = {
           let type = command.arguments[name].prompt.type
           if (type === 'input') {
             questions.push(
-              this.buildQuestion('input', 'commandName', command.arguments[name].description, {
+              this.buildQuestion('input', name, command.arguments[name].description, {
                 validate: (value, state, item, index) => {
                   if (!/^[0-9a-zA-Z,-_]+$/.test(value)) {
                     return colors.red.bold('Valid Characters A-Z, a-z, 0-9, -_')
@@ -161,6 +161,14 @@ prompts = {
           let margin = prompt?.margin ? prompt.margin : null
           let fields = prompt?.fields ? prompt.fields : null
           let required = prompt?.required ? prompt.required : null
+          if (!required) {
+            required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : null
+          }
+          // if (type == 'snippet') {
+          //   console.log(command.flags[flag].required)
+          //   console.log(required)
+          // }
+
           let template = prompt?.template ? prompt.template : null
           let description = prompt?.message ? prompt.message : command.flags[flag].description
 
@@ -179,7 +187,9 @@ prompts = {
             required,
           })
 
-          questions.push(question)
+          if (required) {
+            questions.push(question)
+          }
         }
       }
     })
@@ -234,6 +244,13 @@ prompts = {
     let options = { ...defaultOptions, ...alternateOptions }
     options.type = type
 
+    if (type === 'numeral') {
+      // for whatever reason, the actual initl value for numbers is causing issues
+      // thus I have to +0 to make it work (and perform typeof check verified it is 'number')
+      // but it still didnt work
+      options.initial = options.initial + 0
+      return { type, name, message, ...options }
+    }
     return { type, name, message, ...options }
   },
 

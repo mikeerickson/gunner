@@ -808,16 +808,17 @@ class CLI {
       let module = this.loadModuleByCommand(command)
       let disabled = module.disabled || false
 
-      let required = module?.arguments?.name?.required
-      let prompt = module?.arguments?.name?.prompt && module.usePrompts
+      let argName = module?.arguments ? Object.keys(module.arguments)[0] : null
+      let required = module?.arguments ? module.arguments[argName].required : false
+      let prompt = module?.arguments ? module.arguments[argName].prompt && module.usePrompts : false
 
-      if (this.argv.length <= 3 && module?.arguments && module.arguments?.name && required && !prompt) {
+      if (this.argv.length <= 3 && module?.arguments && argName && required && !prompt) {
         console.log('')
 
-        if (module.arguments.name?.help) {
-          this.toolbox.print.error(module.arguments.name.help, 'ERROR')
+        if (module.arguments[argName]?.help) {
+          this.toolbox.print.error(module.arguments[argName].help, 'ERROR')
         } else {
-          this.toolbox.print.error('"' + module.arguments.name.description + '"' + ' Required', 'ERROR')
+          this.toolbox.print.error('"' + module.arguments[argName].description + '"' + ' Required', 'ERROR')
           this.toolbox.print.warn(colors.dim('        ' + strings.raw(module.usage)))
         }
         // console.log('')
@@ -826,7 +827,6 @@ class CLI {
 
       if (!disabled) {
         let requiredArguments = this.hasRequiredArguments(module, this.arguments)
-
         if (requiredArguments.length > 0 && !prompt) {
           output = '        - ' + requiredArguments.join(', ') + '\n'
           console.log('')

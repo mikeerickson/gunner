@@ -15,12 +15,12 @@ module.exports = {
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
   usePrompts: true,
   arguments: {
-    name: {
-      description: 'Resource Filename',
+    myArg: {
+      description: 'Argument Value',
       required: true,
       prompt: {
         type: 'input',
-        hint: 'as it will be saved on disk',
+        hint: 'what is your household title',
       },
     },
   },
@@ -123,16 +123,6 @@ module.exports = {
       },
     },
 
-    password: {
-      description: 'password prompt',
-      required: true,
-      prompt: {
-        type: 'password',
-        message: 'password',
-        hint: 'will echo * for each character',
-      },
-    },
-
     numeral: {
       description: 'numeral (number) prompt',
       required: true,
@@ -140,12 +130,23 @@ module.exports = {
         type: 'numeral',
         message: 'how old are you?',
         hint: 'if you are so inclined',
+        initial: 45,
         validate: (value, state, item, index) => {
           if (value <= 0) {
             return colors.red.bold('Come on, give us your age!')
           }
           return true
         },
+      },
+    },
+
+    password: {
+      description: 'password prompt',
+      required: true,
+      prompt: {
+        type: 'password',
+        message: 'password',
+        hint: 'will echo * for each character',
       },
     },
 
@@ -183,11 +184,10 @@ module.exports = {
 
     snippet: {
       description: 'snippet prompt',
-      required: false,
+      required: true,
       prompt: {
         type: 'snippet',
         message: 'Fill out the fields in package.json',
-        required: true,
         fields: [
           {
             name: 'author_name',
