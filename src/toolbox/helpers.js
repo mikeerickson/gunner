@@ -20,7 +20,7 @@ class Helpers {
   }
 
   getPackageVersion(addBuild = false) {
-    const build = addBuild ? ' build ' + this.getPackageBuild() : ''
+    const build = addBuild ? ` (${this.getPackageBuild()})` : ''
     return pkgInfo.version + build
   }
 

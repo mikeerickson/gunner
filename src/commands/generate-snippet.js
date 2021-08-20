@@ -11,7 +11,7 @@ module.exports = {
   name: 'generate:snippet',
   description: 'Generates command argument or flag',
   disabled: false,
-  hidden: false,
+  hidden: true,
   usage: `generate:snippet ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
   usePrompts: true,
   arguments: {},

@@ -11,6 +11,7 @@ const semver = require('semver')
 const shell = require('shelljs')
 const datetime = require('dayjs')
 const debug = require('dumper.js')
+const tildify = require('tildify')
 const api = require('./toolbox/api')
 const arrays = require('./toolbox/arrays')
 const config = require('./toolbox/config')
@@ -377,7 +378,7 @@ class CLI {
 
   loadModule(commandName = '') {
     let filename = ''
-    let commands = filesystem.directoryList(this.app.getCommandPath())
+    let commands = filesystem.directoryList(this.app.getCommandPath(), { filesOnly: true })
     commands.forEach((file) => {
       let module = require(file)
       if (module?.name && module?.name === commandName) {
@@ -513,14 +514,12 @@ class CLI {
    * CLI Interface Commands
    */
   showCommands() {
-    let commandPath = this.app.getCommandPath()
+    this.fs.mkdirSync(this.app.getCommandPath(), { recursive: true })
 
-    this.fs.mkdirSync(commandPath, { recursive: true })
-
-    let commandFiles = this.fs.readdirSync(commandPath)
+    let commandFiles = this.filesystem.directoryList(this.app.getCommandPath(), { filesOnly: true })
 
     let commands = ''
-    let projectHome = this.toolbox.colors.cyan('.' + commandPath.replace(process.env.PWD, ''))
+    let projectHome = tildify(this.app.getCommandPath())
 
     if (commandFiles.length === 0) {
       commands += this.toolbox.colors.red('  There are no defined commands\n')
@@ -528,25 +527,22 @@ class CLI {
     }
 
     commandFiles.forEach((filename) => {
-      if (path.extname(filename) == '.js') {
-        let moduleFilename = path.basename(filename, '.js')
-        let module = this.loadModule(path.basename(filename, '.js'))
-        let disabled = module.disabled || false
-        let hidden = module.hidden || false
+      let module = require(filename)
+      let disabled = module.disabled || false
+      let hidden = module.hidden || false
 
-        if (!disabled && !hidden) {
-          let name = module.name || ''
-          if (module?.flags) {
-            if (Object.keys(module.flags).length > 0) {
-              name += ' [args]'
-            }
+      if (!disabled && !hidden) {
+        let name = module.name || ''
+        if (module?.flags) {
+          if (Object.keys(module.flags).length > 0) {
+            name += ' [args]'
           }
+        }
 
-          let description = module?.description || `${module.name} command`
+        let description = module?.description || `${module.name} command`
 
-          if (name.length > 0) {
-            commands += '  ' + name.padEnd(HELP_PAD) + description + '\n'
-          }
+        if (name.length > 0) {
+          commands += '  ' + name.padEnd(HELP_PAD) + description + '\n'
         }
       }
     })
@@ -588,7 +584,7 @@ class CLI {
         console.log('') // give some breathing room when show --help
       }
       console.log(
-        `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ' build ' + buildStr)}`
+        `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ` (${buildStr})`)}`
       )
       if (!options.simple) {
         if (this.pkgInfo?.info) {
@@ -672,7 +668,7 @@ class CLI {
       return this.commandInfo
     }
 
-    let module = this.loadModule(command)
+    let module = this.loadModuleByCommand(command)
 
     if (!this.toolbox.utils.has(module, 'name')) {
       let commandFilename = strings.titleCase(strings.camelCase(command)) + '.js'
@@ -691,7 +687,7 @@ class CLI {
 
     console.log(
       `\n🚧 ${this.toolbox.colors.blue.bold(this.pkgInfo.packageName)} ${this.toolbox.colors.blue(
-        'v' + this.pkgInfo.version + ' build ' + this.pkgInfo.build
+        'v' + this.pkgInfo.version + `(${this.pkgInfo.build})`
       )}`
     )
 
@@ -779,7 +775,7 @@ class CLI {
   }
 
   showCommandHelpExample(command = '') {
-    let module = this.loadModule(command)
+    let module = this.loadModuleByCommand(command)
     if (!module.disabled) {
       if (module?.examples) {
         console.log(this.toolbox.colors.yellow('Examples:'))
@@ -813,8 +809,8 @@ class CLI {
       let disabled = module.disabled || false
 
       let argName = module?.arguments ? Object.keys(module.arguments)[0] : null
-      let required = module?.arguments ? module.arguments[argName].required : false
-      let prompt = module?.arguments ? module.arguments[argName].prompt && module.usePrompts : false
+      let required = module?.arguments ? module.arguments[argName]?.required : false
+      let prompt = module?.arguments ? module.arguments[argName]?.prompt && module.usePrompts : false
 
       if (this.argv.length <= 3 && module?.arguments && argName && required && !prompt) {
         console.log('')
@@ -839,7 +835,7 @@ class CLI {
         let requiredArguments = this.hasRequiredArguments(module, this.toolbox.arguments)
         if (module?.arguments) {
           let argName = Object.keys(module.arguments)[0]
-          if (module.arguments[argName].required && this.commandName.length === 0) {
+          if (module.arguments[argName]?.required && this.commandName.length === 0) {
             requiredArguments.unshift(module.arguments[argName].description)
           }
         }

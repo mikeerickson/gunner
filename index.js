@@ -31,8 +31,17 @@ const app = new CLI(process.argv, path.join(__dirname), pkgInfo)
   .usage(`${pkgInfo.packageName} ${colors.magenta.bold('<command>')} ${colors.cyan.bold('[options]')}`)
   .options(/* if not called, options will be suppressed in help dialog */)
   .examples(
-    /* if not called, examples will be suppressed in help dialog */
-    `${pkgInfo.packageName} make:command TestCommand --name hello --description "hello command description"`
+    [
+      `${pkgInfo.packageName} new ${colors.magenta('MyCLI')} ${colors.gray(
+        '(generates new CLI project in current directory)'
+      )}`,
+      `  ${pkgInfo.packageName} make:command ${colors.magenta('TestCommand')} ${colors.cyan(
+        '--name hello --description "hello command description"'
+      )}`,
+      `  ${pkgInfo.packageName} make:extension ${colors.magenta('machine-info-extension')} ${colors.cyan(
+        '--function "machineInfo"'
+      )}`,
+    ].join('\n')
   )
   .logger({ directory: getLogDirectory(process.argv), alwaysLog: true })
   .hooks({
