@@ -360,21 +360,14 @@ class CLI {
   }
 
   isValidCommand(command) {
-    let commandFiles = this.fs.readdirSync(this.app.getCommandPath())
-    for (let index = 0; index < commandFiles.length; index++) {
-      let module = require(path.join(this.app.getCommandPath(), commandFiles[index]))
-      if (module?.name === command) {
-        return true
-      }
-    }
-
-    return false
+    const commands = this.app.getCommandList()
+    return commands.includes(command)
   }
 
   loadModuleByCommand(command = null) {
-    let commandFiles = this.fs.readdirSync(this.app.getCommandPath())
+    let commandFiles = this.filesystem.directoryList(this.app.getCommandPath(), { filesOnly: true })
     for (let index = 0; index < commandFiles.length; index++) {
-      let module = require(path.join(this.app.getCommandPath(), commandFiles[index]))
+      let module = require(commandFiles[index])
       if (module?.name === command) {
         return module
       }
@@ -382,17 +375,12 @@ class CLI {
     return {}
   }
 
-  loadModule(module = '') {
-    // try kebabCase or camelCase filename
-    let files = [
-      path.join(this.app.getCommandPath(), strings.kebabCase(module) + '.js'),
-      path.join(this.app.getCommandPath(), strings.camelCase(module) + '.js'),
-      path.join(this.app.getCommandPath(), strings.snakeCase(module) + '.js'),
-    ]
-
+  loadModule(commandName = '') {
     let filename = ''
-    let result = files.forEach((file) => {
-      if (this.fs.existsSync(file)) {
+    let commands = filesystem.directoryList(this.app.getCommandPath())
+    commands.forEach((file) => {
+      let module = require(file)
+      if (module?.name && module?.name === commandName) {
         filename = file
       }
     })
@@ -426,12 +414,22 @@ class CLI {
 
   validateArguments(args, flags) {
     let valid = { status: true }
-
+    // debug.dd({ args, flags })
     // if command does not have flags, it will be valid
     if (flags) {
       Object.keys(flags).forEach((item) => {
         let flagType = flags[item]?.type ? flags[item].type : 'any'
         let value = args.hasOwnProperty(item) ? args[item] : null
+        if (flagType === 'boolean') {
+          if (typeof value === 'string' && flagType === 'boolean') {
+            if (value === 'false') {
+              value = false
+            }
+            if (value === 'true') {
+              value = true
+            }
+          }
+        }
         if (flagType !== 'any' && value && flagType !== typeof value) {
           valid = { status: false, flag: item, message: `${item} expected ${flagType}, ${typeof value} supplied` }
         }
@@ -456,6 +454,9 @@ class CLI {
       let defaultValue = this.toolbox.utils.dot.get(flags[flag].default)
       if (defaultValue === undefined) {
         defaultValue = null
+        if (flag.type === 'boolean') {
+          defaultValue = false
+        }
       }
       defaults = Object.assign(defaults, {
         [flag]: this.toolbox.utils.dot.get(
@@ -652,8 +653,12 @@ class CLI {
 
   validateCommand(command) {
     if (!this.isValidCommand(command) && this.hookData.hasOwnProperty('commandPrefix')) {
+      // command not found, try adding commandPrefix
       if (!command.includes(this.hookData?.commandPrefix)) {
-        command = this.hookData.commandPrefix + command
+        let adjustedCommand = this.hookData.commandPrefix + command
+        if (this.isValidCommand(adjustedCommand)) {
+          command = adjustedCommand
+        }
         Messenger.write('info', `added commandPrefix ${command}`)
       }
     }
@@ -792,10 +797,9 @@ class CLI {
     }
   }
 
-  executeCommand(command, args) {
+  async executeCommand(command, args) {
     let output = ''
     command = this.validateCommand(command)
-
     this.executeHook('beforeExecute', command, args)
 
     if (command.length > 0) {
@@ -821,12 +825,25 @@ class CLI {
           this.toolbox.print.error('"' + module.arguments[argName].description + '"' + ' Required', 'ERROR')
           this.toolbox.print.warn(colors.dim('        ' + strings.raw(module.usage)))
         }
-        // console.log('')
         process.exit(0)
+      } else {
+        if (prompt) {
+          let argName = module?.arguments ? Object.keys(module.arguments)[0] : ''
+          let answers = await prompts.run(this, module)
+          this.toolbox.arguments = { ...answers, ...this.toolbox.arguments }
+          this.toolbox.arguments[argName] = this.commandName || answers[argName]
+        }
       }
 
       if (!disabled) {
-        let requiredArguments = this.hasRequiredArguments(module, this.arguments)
+        let requiredArguments = this.hasRequiredArguments(module, this.toolbox.arguments)
+        if (module?.arguments) {
+          let argName = Object.keys(module.arguments)[0]
+          if (module.arguments[argName].required && this.commandName.length === 0) {
+            requiredArguments.unshift(module.arguments[argName].description)
+          }
+        }
+
         if (requiredArguments.length > 0 && !prompt) {
           output = '        - ' + requiredArguments.join(', ') + '\n'
           console.log('')

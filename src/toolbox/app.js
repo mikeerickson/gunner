@@ -3,8 +3,10 @@
  * Licensed under the MIT license.  See LICENSE in the project root for license information.
  * -----------------------------------------------------------------------------------------*/
 
+const { dd } = require('dumper.js')
 const { existsSync } = require('fs')
 const path = require('path')
+const filesystem = require('./filesystem')
 
 class App {
   constructor(args) {
@@ -36,6 +38,23 @@ class App {
 
   getCommandPath() {
     return path.join(path.resolve(this.projectRoot), 'src', 'commands')
+  }
+
+  getCommandList() {
+    let commands = []
+    let commandFiles = filesystem.directoryList(this.getCommandPath(), { filesOnly: true })
+    commandFiles.forEach((file) => {
+      try {
+        let module = require(file)
+        if (module?.name) {
+          commands.push(module.name)
+        }
+      } catch (error) {
+        throw new Error(`Invalid Command: ${file}`)
+      }
+    })
+
+    return commands
   }
 
   getExtensionPath() {

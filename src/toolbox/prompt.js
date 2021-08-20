@@ -7,12 +7,12 @@
 
 const { prompt } = require('enquirer')
 
-const helpers = require('./helpers')
-const arrays = require('./arrays')
-const colors = require('ansi-colors')
-const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 const print = require('./print')
-const { dd, dump } = require('dumper.js')
+const arrays = require('./arrays')
+const helpers = require('./helpers')
+const colors = require('ansi-colors')
+const messenger = require('@codedungeon/messenger')
+const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
 
 prompts = {
   validPromptTypes: function () {
@@ -204,7 +204,7 @@ prompts = {
 
     if (!answers && !toolbox.arguments?.quiet) {
       console.log('')
-      toolbox.print.warning('Command Aborted\n', 'ABORT')
+      messenger.warning('Command Aborted\n', 'ABORT')
       process.exit()
     }
 
