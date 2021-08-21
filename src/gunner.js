@@ -826,8 +826,9 @@ class CLI {
         if (prompt) {
           let argName = module?.arguments ? Object.keys(module.arguments)[0] : ''
           let answers = await prompts.run(this, module)
+
           this.toolbox.arguments = { ...answers, ...this.toolbox.arguments }
-          this.toolbox.arguments[argName] = this.commandName || answers[argName]
+          this.toolbox.arguments[argName] = this.commandName || answers[argName] || answers.commandName
         }
       }
 
