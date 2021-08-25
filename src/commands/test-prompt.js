@@ -235,7 +235,7 @@ module.exports = {
 
   async execute(toolbox) {
     // get CLI args, will be merged with answers below
-    let args = helpers.getArguments(toolbox.arguments, this.flags)
+    let args = helpers.getArguments(toolbox.arguments, this)
 
     // show any prompts (arguments or flags marked as required with prompt data)
     let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []

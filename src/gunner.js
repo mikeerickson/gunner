@@ -81,7 +81,7 @@ class CLI {
 
     this.commandName = this.getCommandName(argv) // sub command (see make:command for example)
 
-    this.arguments = this.getArguments(argv, this.command)
+    this.arguments = this.getArguments(argv, this)
 
     // setup global options
     this.verbose = this.arguments.verbose || false // dont add shortcut -v as that is reserved for version

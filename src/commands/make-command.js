@@ -71,7 +71,7 @@ module.exports = {
   examples: ['make:command HelloWorld --name hello:world --description="Command Description"'],
 
   async execute(toolbox) {
-    let args = helpers.getArguments(toolbox.arguments, this.flags)
+    let args = helpers.getArguments(toolbox.arguments, this)
     let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
 
     // merge args and answers

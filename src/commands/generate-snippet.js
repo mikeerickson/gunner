@@ -56,7 +56,7 @@ module.exports = {
     // example retrieving global option
     let quiet = toolbox.getOptionValue(toolbox.arguments, ['quiet', 'q'])
 
-    let args = helpers.getArguments(toolbox.arguments, this.flags)
+    let args = helpers.getArguments(toolbox.arguments, this)
     let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
 
     // merge args and answers

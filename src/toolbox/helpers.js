@@ -96,16 +96,42 @@ class Helpers {
     return defaultValue
   }
 
-  getArguments(args = null, flags = null, options = { initializeNullValues: false }) {
+  getArguments(cliArgs = null, commandArgsFlags = null, options = { initializeNullValues: false }) {
     let result = {}
-    if (args && flags) {
-      Object.keys(flags).forEach((key) => {
-        // let controller = app.getOptionValue(toolbox.arguments, this.flags, 'controller')
-        result[key] = this.getOptionValue(args, flags, key)
-        if (options.initializeNullValues) {
-          result[key] = !result[key] ? false : result[key]
+
+    if (cliArgs && commandArgsFlags) {
+      Object.keys(commandArgsFlags?.flags).forEach((key) => {
+        let type = commandArgsFlags.flags[key]?.type ? commandArgsFlags.flags[key].type : null
+        let value = this.getOptionValue(cliArgs, commandArgsFlags.flags, key)
+        if (value === null) {
+          let defaultValue = null
+          if (commandArgsFlags.flags[key]?.initial) {
+            defaultValue = commandArgsFlags.flags[key]?.initial
+          }
+          value = defaultValue
         }
+        if (type === 'boolean' && value === 'false') {
+          value = false
+        }
+        result[key] = value
       })
+      Object.keys(commandArgsFlags?.arguments).forEach((key) => {
+        let type = commandArgsFlags.arguments[key]?.type ? commandArgsFlags.arguments[key].type : null
+        let value = this.getOptionValue(cliArgs, commandArgsFlags.arguments, key)
+        if (value === null) {
+          let defaultValue = null
+          if (commandArgsFlags.arguments[key]?.initial) {
+            defaultValue = commandArgsFlags.arguments[key]?.initial
+          }
+          value = defaultValue
+        }
+        if (type === 'boolean' && value === 'false') {
+          value = false
+        }
+        result[key] = value
+      })
+    } else {
+      return { ...cliArgs }
     }
 
     return result

@@ -147,7 +147,11 @@ prompts = {
           if (choices.length === 0 && command.flags[flag].choices) {
             choices = [...command.flags[flag].choices]
           }
-          let initial = prompt?.initial ? prompt.initial : false
+          let initial = command.flags[flag]?.initial ? command.flags[flag].initial : null
+          if (!initial) {
+            initial = prompt?.initial ? prompt.initial : false
+          }
+
           if (!initial) {
             if (type === 'input') {
               initial = ''
