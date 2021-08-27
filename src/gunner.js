@@ -823,7 +823,7 @@ class CLI {
         }
         process.exit(0)
       } else {
-        if (prompt) {
+        if (prompt && !disabled) {
           let argName = module?.arguments ? Object.keys(module.arguments)[0] : ''
           let answers = await prompts.run(this, module)
 
@@ -850,7 +850,7 @@ class CLI {
           return output
         }
 
-        if (module?.execute) {
+        if (module?.execute && !disabled) {
           let validator = this.validateArguments(this.arguments, module.flags)
           if (!validator.status) {
             console.log('')
@@ -870,8 +870,11 @@ class CLI {
           this.executeHook('afterExecute', command, args, result)
         }
       } else {
-        let output = `🚫  Invalid Command: ${command}`
-        this.toolbox.print.error(output)
+        console.log('')
+        let output = `Invalid Command '${command}'`
+        this.toolbox.print.error(output, 'ERROR')
+        let packageName = this.pkgInfo?.packageName ? this.pkgInfo.packageName : this.pkgInfo.name
+        this.toolbox.print.warn(`        Review '${packageName} --help' for available commands`)
       }
 
       return output

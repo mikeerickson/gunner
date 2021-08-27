@@ -9,6 +9,7 @@ module.exports = {
   hidden: true,
   execute(toolbox) {
     console.log('')
+
     toolbox.print.info('Default Command\n', 'INFO')
   },
 }
