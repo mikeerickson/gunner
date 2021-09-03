@@ -12,6 +12,7 @@ module.exports = {
   name: 'test:prompt',
   description: 'Showcase Prompt Support',
   disabled: false,
+  hidden: false,
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
   usePrompts: true,
   arguments: {
@@ -29,6 +30,7 @@ module.exports = {
     autocomplete: {
       required: true,
       description: 'autocomplete prompt',
+      help: 'verbose help information',
       prompt: {
         type: 'autocomplete',
         message: 'pick the leader of the house',

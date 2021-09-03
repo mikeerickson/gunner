@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.70.0] - 2021-09-01
+
+- adjusted error message when calling a command which does not exist (they are all consistent error messages)
+- added `help` flag property (different than prompt `hint`) with help being displayed in expanded command help
+- added extended command help (each flag may contain a separate `help` property)
+
 ## [0.61.0] - 2021-08-15
 
 - fixed command help display (incorrect key, was hard coded to `gunner`)

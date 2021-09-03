@@ -681,7 +681,10 @@ class CLI {
     }
 
     if (module.disabled) {
-      console.log(this.toolbox.colors.red(`\n🚫  Invalid Command: ${command}`))
+      console.log('')
+      this.toolbox.print.error(`Invalid Command "${command}"`, 'ERROR')
+      let projectName = this.pkgInfo?.packageName || this.pkgInfo.name
+      this.toolbox.print.warn(`        For list of available commands, execute '${projectName} --help'\n`)
       process.exit(1)
     }
 
@@ -710,7 +713,7 @@ class CLI {
         let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
+        console.log(`  ${key}                   ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -739,10 +742,12 @@ class CLI {
           }
 
           let description = module.flags[flag]['description'] || colors.yellow('<missing description>')
-          let hint = this.toolbox.utils.dot.get(module.flags[flag], 'prompt.hint') || ''
-          hint = hint.length > 0 ? '(' + hint + ')' : ''
-          if (hint.length > 0) {
-            description += colors.gray(` ${hint}`)
+          let help = module.flags[flag]?.help ? module.flags[flag].help : ''
+          // let hint = this.toolbox.utils.dot.get(module.flags[flag], 'prompt.hint') || ''
+          // changed from hint to help 2021-08-30
+          help = help.length > 0 ? '(' + help + ')' : ''
+          if (help.length > 0) {
+            description += colors.gray(` ${help}`)
           }
           let defaultValue = ''
           if (module.flags[flag]?.default) {
@@ -800,7 +805,7 @@ class CLI {
 
     if (command.length > 0) {
       if (!this.isValidCommand(command)) {
-        this.toolbox.print.error(`\n🚫 Invalid Command "${command}"`)
+        this.toolbox.print.error(`Invalid Command "${command}"`, 'ERROR')
         this.toolbox.print.note(`   For list of available commands, execute '${this.packageName} --help'\n`)
         process.exit(1)
       }
@@ -871,10 +876,10 @@ class CLI {
         }
       } else {
         console.log('')
-        let output = `Invalid Command '${command}'`
+        let output = `Invalid Command "${command}"`
         this.toolbox.print.error(output, 'ERROR')
         let packageName = this.pkgInfo?.packageName ? this.pkgInfo.packageName : this.pkgInfo.name
-        this.toolbox.print.warn(`        Review '${packageName} --help' for available commands`)
+        this.toolbox.print.warn(`        For list of available commands, execute '${packageName} --help'`)
       }
 
       return output
