@@ -387,16 +387,13 @@ prompts = {
   select: function (msg = '', choices = [], initValue = '', options = {}) {
     let initial = Array.isArray(initValue) ? initValue[0] : initValue
     let format = options.hasOwnProperty('format') ? options.format : () => {}
+
     let defOptions = {
       choices,
-      initial,
-      hint: '(<return> to submit)',
       format,
+      hint: '(Use arrow keys, <return> to submit)',
+      initial,
       styles: { em: colors.cyan },
-      symbols: { indicator: { on: cyan('●'), off: dim.gray('●') } },
-      pointer(state, choice) {
-        return choice.index === state.index ? colors.cyan.bold(colors.symbols.pointer) : ' '
-      },
       indicator(state, choice) {
         return choice.enabled ? ' ' + colors.green('●') : ' ' + colors.gray('o')
       },

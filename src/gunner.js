@@ -710,10 +710,14 @@ class CLI {
       console.log(colors.yellow('\nArguments:'))
       for (const [key, value] of Object.entries(module.arguments)) {
         let required = value?.required ? this.toolbox.colors.red.bold(REQUIRED_MARK) : ' '
-        let hint = this.toolbox.utils.dot.get(module, 'arguments.name.prompt.hint')
+        let hint = this.toolbox.utils.dot.get(module, `arguments.${key}.help`) || ''
+        if (hint.length === 0) {
+          hint = this.toolbox.utils.dot.get(module, `arguments.${key}.prompt.hint`)
+        }
+        // let hint = this.toolbox.utils.dot.get(module, `arguments.${key}.prompt.hint`)
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}                   ${required} ${value.description} ${colors.gray(hint)}`)
+        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -986,3 +990,4 @@ module.exports.template = template
 module.exports.utils = utils
 module.exports.path = path
 module.exports.shell = shell
+module.exports.semver = semver

@@ -32,6 +32,7 @@ module.exports = {
       aliases: ['c'],
       description: 'Command Name',
       required: true,
+      help: 'command to execute on command line e.g., make:command',
       prompt: {
         type: 'input',
         hint: 'e.g., make:command',
