@@ -384,6 +384,10 @@ prompts = {
     return prompt({ type: 'numeral', name: 'answer', message: msg }, opts).catch((err) => console.error)
   },
 
+  password: (msg = '', options = {}) => {
+    return prompt({ type: 'password', name: 'password', message: msg }, options).catch((err) => console.error)
+  },
+
   select: function (msg = '', choices = [], initValue = '', options = {}) {
     let initial = Array.isArray(initValue) ? initValue[0] : initValue
     let format = options.hasOwnProperty('format') ? options.format : () => {}
