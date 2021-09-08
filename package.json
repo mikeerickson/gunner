@@ -64,6 +64,7 @@
     "ansi-regex": "4.1.0",
     "apisauce": "2.1.1",
     "arg": "5.0.0",
+    "bcrypt": "5.0.1",
     "begoo": "1.1.2",
     "bump-regex": "4.1.0",
     "chalk": "4.1.2",

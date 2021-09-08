@@ -377,8 +377,13 @@ class CLI {
   }
 
   loadModule(commandName = '') {
+    let commandPath = this.app.getCommandPath()
     let filename = ''
-    let commands = filesystem.directoryList(this.app.getCommandPath(), { filesOnly: true })
+
+    if (!filesystem.existsSync(commandPath)) {
+      filesystem.mkdirSync(commandPath, { recursive: true })
+    }
+    let commands = filesystem.directoryList(commandPath, { filesOnly: true })
     commands.forEach((file) => {
       let module = require(file)
       if (module?.name && module?.name === commandName) {
