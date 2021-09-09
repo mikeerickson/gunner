@@ -14,11 +14,11 @@ module.exports = {
   disabled: false,
   hidden: false,
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
-  usePrompts: true,
+  usePrompts: false,
   arguments: {
     myArg: {
       description: 'Argument Value',
-      required: true,
+      required: false,
       prompt: {
         type: 'input',
         hint: 'what is your household title',
@@ -27,8 +27,22 @@ module.exports = {
   },
 
   flags: {
+    disabledPrompt: {
+      aliases: ['d'],
+      required: false,
+      description: 'disabled prompt item',
+      default: 'mike',
+      prompt: {
+        type: 'input',
+        message: 'prompt message',
+        hint: 'this is disabled by default, enabled `execute` method',
+        disabled: true,
+        initial: 'x',
+      },
+    },
+
     autocomplete: {
-      required: true,
+      required: false,
       description: 'autocomplete prompt',
       help: 'verbose help information',
       prompt: {
@@ -41,7 +55,7 @@ module.exports = {
 
     boolean: {
       description: 'boolean prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'boolean',
         message: 'true or false',
@@ -51,7 +65,7 @@ module.exports = {
 
     confirm: {
       description: 'confirm prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'confirm',
         message: 'are you vaccinated',
@@ -61,7 +75,7 @@ module.exports = {
 
     input: {
       description: 'input prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'input',
         message: 'enter something here',
@@ -72,7 +86,7 @@ module.exports = {
 
     invisible: {
       description: 'invisible prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'invisible',
         message: 'this is an invisible prompt',
@@ -82,7 +96,7 @@ module.exports = {
 
     multiselect: {
       description: 'multiselect prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'multi',
         message: 'which languages do you speak (pick up to 3)',
@@ -110,12 +124,12 @@ module.exports = {
 
     list: {
       description: 'list prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'list',
-        message: 'enter list of items',
+        message: 'enter kids names',
         initial: 'initial value',
-        hint: 'enter keys separated by comma',
+        hint: 'each name separated by comma',
         validate: (value, state, item, index) => {
           if (value.length === 0) {
             return colors.red.bold('You must enter at least one item')
@@ -127,7 +141,7 @@ module.exports = {
 
     numeral: {
       description: 'numeral (number) prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'numeral',
         message: 'how old are you?',
@@ -144,7 +158,7 @@ module.exports = {
 
     password: {
       description: 'password prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'password',
         message: 'password',
@@ -154,7 +168,7 @@ module.exports = {
 
     scale: {
       description: 'scale prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'scale',
         message: 'please rate your experience',
@@ -175,7 +189,7 @@ module.exports = {
 
     select: {
       description: 'select prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'select',
         initial: 'item 2',
@@ -186,7 +200,7 @@ module.exports = {
 
     snippet: {
       description: 'snippet prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'snippet',
         message: 'Fill out the fields in package.json',
@@ -220,7 +234,7 @@ module.exports = {
 
     toggle: {
       description: 'toggle prompt',
-      required: true,
+      required: false,
       prompt: {
         type: 'toggle',
         message: 'simple toggle',
@@ -228,7 +242,7 @@ module.exports = {
     },
 
     test: {
-      required: true,
+      required: false,
       description: 'test required argument without prompt',
     },
   },
@@ -236,11 +250,16 @@ module.exports = {
   examples: ['test:prompt MyCommand --command hello:world --description="Command Description"'],
 
   async execute(toolbox) {
+    // override default for testing
+    this.flags.disabledPrompt.prompt.disabled = false
+
+    // override autocomplete choices
+    this.flags.autocomplete.prompt.choices = ['mike', 'kira']
     // get CLI args, will be merged with answers below
     let args = helpers.getArguments(toolbox.arguments, this)
 
     // show any prompts (arguments or flags marked as required with prompt data)
-    let answers = this.usePrompts ? await toolbox.prompts.run(toolbox, this) : []
+    let answers = await toolbox.prompts.run(toolbox, this)
 
     let result = helpers.sanitizeResults({ ...args, ...answers }, this)
 

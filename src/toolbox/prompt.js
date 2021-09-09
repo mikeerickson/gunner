@@ -13,6 +13,7 @@ const helpers = require('./helpers')
 const colors = require('ansi-colors')
 const messenger = require('@codedungeon/messenger')
 const { cyan, dim, danger, green, blue, red } = require('ansi-colors')
+const { dd } = require('dumper.js')
 
 prompts = {
   validPromptTypes: function () {
@@ -165,6 +166,10 @@ prompts = {
           let margin = prompt?.margin ? prompt.margin : null
           let fields = prompt?.fields ? prompt.fields : null
           let required = prompt?.required ? prompt.required : null
+
+          // prompt will be displayed if not disabled (default: false)
+          let disabled = prompt?.disabled ? prompt.disabled : false
+
           if (!required) {
             required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : null
           }
@@ -191,7 +196,7 @@ prompts = {
             required,
           })
 
-          if (required) {
+          if (!disabled) {
             questions.push(question)
           }
         }

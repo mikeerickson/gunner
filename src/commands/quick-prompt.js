@@ -14,6 +14,7 @@ module.exports = {
   flags: {},
   hidden: true,
   async execute(toolbox) {
+    dd('här')
     try {
       let result = await prompt.password('Enter Password')
       if (typeof result === 'function') {
