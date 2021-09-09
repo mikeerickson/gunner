@@ -52,6 +52,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Command: test:prompt",
+      "runtimeExecutable": "/Users/mikee/.nvm/versions/node/v14.15.5/bin/node",
+      "program": "${workspaceFolder}/index.js",
+      "args": [
+        "test:prompt"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Current File",
       "program": "${file}"
     },

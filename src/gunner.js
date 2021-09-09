@@ -29,8 +29,9 @@ const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
 
-const HELP_PAD = 30
+const HELP_PAD = 26
 const REQUIRED_MARK = '✖︎'
+const SPACER = '                     ' // 23 chars
 
 const log = (command, resource, args) => {
   if (resource?.length === 0) {
@@ -206,11 +207,12 @@ class CLI {
         '  --debug, -d                   Debug Mode',
         '  --help, -h, -H                Shows Help (this screen)',
         '  --log-dir                     Log directory (if different than default)',
+        '  --verbose                     Show Verbose Help',
       ]
 
       if (Array.isArray(options)) {
         options.forEach((item) => {
-          globalOptions.push(`  --${item.option}`.padEnd(32) + item?.description)
+          globalOptions.push(`  --${item.option}`.padEnd(HELP_PAD) + item?.description)
         })
       }
 
@@ -711,6 +713,8 @@ class CLI {
       console.log('  ' + module.usage)
     }
 
+    let argSpacer = SPACER
+
     if (this.toolbox.utils.has(module, 'arguments')) {
       console.log(colors.yellow('\nArguments:'))
       for (const [key, value] of Object.entries(module.arguments)) {
@@ -722,7 +726,7 @@ class CLI {
         // let hint = this.toolbox.utils.dot.get(module, `arguments.${key}.prompt.hint`)
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}                    ${required} ${value.description} ${colors.gray(hint)}`)
+        console.log(`  ${key}${argSpacer}${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -774,9 +778,14 @@ class CLI {
             aliases = ', ' + '-' + module.flags[flag].aliases
           }
 
-          let flags = '  --' + flag + aliases
-          // pad 7 to include flag alias
-          console.log(flags.padEnd(COL_WIDTH + 5), required, description, defaultValue)
+          let flags = '--' + flag + aliases
+
+          let flagValue = flags.padEnd(HELP_PAD)
+          console.log(`  ${flagValue}${required} ${description} ${defaultValue}`)
+          if (module.flags[flag]?.prompt?.hint && this.arguments?.verbose) {
+            let hint = '                              | ' + module.flags[flag]?.prompt?.hint
+            console.log(colors.gray.dim(`${hint}`))
+          }
         })
 
         console.log('')
