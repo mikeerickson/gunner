@@ -25,6 +25,7 @@ const template = require('./toolbox/template')
 const filesystem = require('./toolbox/filesystem')
 const environment = require('./toolbox/environment')
 const print = require('./toolbox/print')(this.quiet)
+
 const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
@@ -51,6 +52,7 @@ const log = (command, resource, args) => {
 
 class CLI {
   constructor(argv = [], projectRootDir = null, pkgInfo = null) {
+    // argv = !argv ? process.argv : argv
     if (pkgInfo && pkgInfo.name === '@codedungeon/gunner') {
       require('./inspector.js').startup()
     }
@@ -65,6 +67,7 @@ class CLI {
 
     this.argv = argv
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
+    // this.projectRoot = projectRootDir || this.fs.realpathSync(path.dirname(argv[1]))
     this.projectRoot = projectRootDir || path.dirname(path.dirname(this.fs.realpathSync(argv[1])))
 
     this.app = new App({ projectRoot: this.projectRoot })
@@ -212,8 +215,12 @@ class CLI {
 
       if (Array.isArray(options)) {
         options.forEach((item) => {
-          globalOptions.push(`  --${item.option}`.padEnd(HELP_PAD) + item?.description)
+          globalOptions.push(`  --${item.option}`.padEnd(HELP_PAD + 6) + item?.description)
         })
+      }
+
+      if (optionsType === 'object') {
+        globalOptions.push(`  --${options.option}`.padEnd(HELP_PAD + 6) + options?.description)
       }
 
       globalOptions.push('  --quiet, -q                   Quiet mode (suppress console output)')
@@ -235,8 +242,13 @@ class CLI {
   }
 
   logger(userOptions = null) {
-    let options = { ...{ directory: 'system', filename: null, alwaysLog: false }, ...userOptions }
+    if (typeof userOptions === 'string' && userOptions !== 'system') {
+      userOptions = {
+        directory: userOptions.startsWith('./') ? path.resolve(this.projectRoot, userOptions) : userOptions,
+      }
+    }
 
+    let options = { ...{ directory: 'system', filename: null, alwaysLog: true }, ...userOptions }
     if (options.alwaysLog) {
       this.toolbox.arguments.log = true
     }
@@ -399,7 +411,7 @@ class CLI {
   hasRequiredArguments(module, args) {
     let missingArguments = []
     for (let flag in module.flags) {
-      let hasPrompt = module.flags[flag]?.prompt && module?.usePrompts
+      let hasPrompt = module.flags[flag]?.prompt && module?.autoPrompt
       if (module.flags[flag]?.required && module.flags[flag].required && !hasPrompt) {
         let hasAlias = false
         if (!args[flag]) {
@@ -422,7 +434,6 @@ class CLI {
 
   validateArguments(args, flags) {
     let valid = { status: true }
-    // debug.dd({ args, flags })
     // if command does not have flags, it will be valid
     if (flags) {
       Object.keys(flags).forEach((item) => {
@@ -549,7 +560,7 @@ class CLI {
         let description = module?.description || `${module.name} command`
 
         if (name.length > 0) {
-          commands += '  ' + name.padEnd(HELP_PAD) + description + '\n'
+          commands += '  ' + name.padEnd(HELP_PAD + 4) + description + '\n'
         }
       }
     })
@@ -584,15 +595,13 @@ class CLI {
       console.log(this.versionStr)
     } else {
       let versionStr = this.pkgInfo.version
-      let buildStr = this.pkgInfo.build
+      let buildStr = this.pkgInfo?.build ? ` (${this.pkgInfo.build})` : ''
 
       const name = this.packageName.length > 0 ? this.packageName : this.toolbox.strings.titleCase(this.name)
       if (!options.simple) {
         console.log('') // give some breathing room when show --help
       }
-      console.log(
-        `🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + ` (${buildStr})`)}`
-      )
+      console.log(`🚧 ${this.toolbox.colors.blue.bold(name)} ${this.toolbox.colors.blue('v' + versionStr + buildStr)}`)
       if (!options.simple) {
         if (this.pkgInfo?.info) {
           let msg = colors.keyword('pink').dim.italic(this.pkgInfo.info)
@@ -695,9 +704,10 @@ class CLI {
       process.exit(1)
     }
 
+    let buildStr = this.pkgInfo?.build ? ` (${this.pkgInfo.build})` : ''
     console.log(
       `\n🚧 ${this.toolbox.colors.blue.bold(this.pkgInfo.packageName)} ${this.toolbox.colors.blue(
-        'v' + this.pkgInfo.version + `(${this.pkgInfo.build})`
+        'v' + this.pkgInfo.version + buildStr
       )}`
     )
 
@@ -726,7 +736,7 @@ class CLI {
         // let hint = this.toolbox.utils.dot.get(module, `arguments.${key}.prompt.hint`)
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}${argSpacer}${required} ${value.description} ${colors.gray(hint)}`)
+        console.log(`  ${key}${argSpacer} ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 
@@ -833,7 +843,7 @@ class CLI {
 
       let argName = module?.arguments ? Object.keys(module.arguments)[0] : null
       let required = module?.arguments ? module.arguments[argName]?.required : false
-      let prompt = module?.arguments ? module.arguments[argName]?.prompt && module.usePrompts : false
+      let prompt = module?.arguments ? module.arguments[argName]?.prompt && module.autoPrompt : false
 
       if (this.argv.length <= 3 && module?.arguments && argName && required && !prompt) {
         console.log('')

@@ -49,8 +49,7 @@ prompts = {
     return validPrompt
   },
 
-  run: async function (toolbox, command) {
-    // dump({ name: toolbox.commandName, args: toolbox.arguments })
+  run: async function (toolbox, command, runPrompts = null) {
     let argKeys = Object.keys(toolbox.arguments)
     argKeys = arrays.deleteByValue(argKeys, 'log')
     argKeys = arrays.deleteByValue(argKeys, 'overwrite')
@@ -68,11 +67,16 @@ prompts = {
 
     if (command.hasOwnProperty('arguments')) {
       name = Object.keys(command.arguments).length > 0 ? Object.keys(command.arguments)[0] : null
+      let disabled = command.arguments[name].prompt?.disabled ? command.arguments[name].prompt.disabled : false
+
+      if (disabled && runPrompts && runPrompts.includes(`arguments.${name}`)) {
+        disabled = false
+      }
       if (!name) {
         return
       }
 
-      if (command?.arguments[name]?.required) {
+      if (command?.arguments[name]?.required || !disabled) {
         if (!commandName || commandName.length === 0) {
           let type = command.arguments[name].prompt.type
           if (type === 'input') {
@@ -112,12 +116,35 @@ prompts = {
 
     flags.forEach((flag) => {
       let disabled = command.flags[flag].prompt?.disabled ? command.flags[flag].prompt.disabled : false
+
+      if (disabled && runPrompts && runPrompts.includes(`flags.${flag}`)) {
+        disabled = false
+      }
+
       if (command.flags[flag]?.prompt && !disabled) {
         let keys = [flag]
         keys = command.flags[flag]?.aliases ? keys.concat(command.flags[flag].aliases) : keys
         let optionValue = helpers.getOptionValueEx(toolbox.arguments, keys)
 
         let required = command.flags[flag]?.required ? command.flags[flag].required : false
+        if (!required) {
+          required = runPrompts && runPrompts.includes(`flags.${flag}`)
+        }
+
+        if (
+          !required &&
+          command.flags[flag].hasOwnProperty('prompt') &&
+          command.flags[flag].prompt.hasOwnProperty('disabled')
+        ) {
+          required = !command.flags[flag].prompt.disabled
+        }
+
+        if (!required && command.autoPrompt) {
+          if (command.flags[flag].hasOwnProperty('prompt')) {
+            required = command.flags[flag].prompt?.disabled ? !command.flags[flag].prompt.disabled : true
+          }
+        }
+
         if (promptAll) {
           required = true
         }
@@ -149,8 +176,13 @@ prompts = {
             choices = [...command.flags[flag].choices]
           }
           let initial = command.flags[flag]?.initial ? command.flags[flag].initial : null
+
           if (!initial) {
             initial = prompt?.initial ? prompt.initial : false
+          }
+
+          if (!initial) {
+            initial = command.flags[flag]?.default ? command.flags[flag].default : null
           }
 
           if (!initial) {
@@ -167,36 +199,28 @@ prompts = {
           let fields = prompt?.fields ? prompt.fields : null
           let required = prompt?.required ? prompt.required : null
 
-          // prompt will be displayed if not disabled (default: false)
-          let disabled = prompt?.disabled ? prompt.disabled : false
-
           if (!required) {
             required = command.flags[flag].hasOwnProperty('required') ? command.flags[flag].required : null
           }
-          // if (type == 'snippet') {
-          //   console.log(command.flags[flag].required)
-          //   console.log(required)
-          // }
 
           let template = prompt?.template ? prompt.template : null
           let description = prompt?.message ? prompt.message : command.flags[flag].description
 
-          let question = this.buildQuestion(type, flag, description, {
-            hint,
-            validate,
-            choices,
-            initial,
-            limit,
-            maxSelected,
-            sort,
-            scale,
-            margin,
-            fields,
-            template,
-            required,
-          })
-
           if (!disabled) {
+            let question = this.buildQuestion(type, flag, description, {
+              hint,
+              validate,
+              choices,
+              initial,
+              limit,
+              maxSelected,
+              sort,
+              scale,
+              margin,
+              fields,
+              template,
+              required,
+            })
             questions.push(question)
           }
         }

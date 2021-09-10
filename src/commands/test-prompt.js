@@ -9,16 +9,28 @@ const helpers = require('../toolbox/helpers')
 const semver = require('semver')
 
 module.exports = {
+  // command to be used on cli
   name: 'test:prompt',
+
+  // appears in CLI help
   description: 'Showcase Prompt Support',
+
+  // when disabled, command cannot be invoked
   disabled: false,
+
+  // when `hidden` command will not appear in `help` but can be invoked manually
   hidden: false,
+
   usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
-  usePrompts: false,
+
+  // if enabled, prompt will ask all questions for arguments / flags which are not `disabled`
+  autoPrompt: false,
+
+  // positional arguments (currently only support one position, multile in queue)
   arguments: {
     myArg: {
       description: 'Argument Value',
-      required: false,
+      required: true,
       prompt: {
         type: 'input',
         hint: 'what is your household title',
@@ -26,41 +38,62 @@ module.exports = {
     },
   },
 
+  // prompt rules:
+  // prompt.disable will omit question when `autoPrompt` is enabled
+  // prompt disable can be overridden when using `prompt.run` and supplying question fields
+  // in either case, if flag is supplied on cli, it will always be included
+  // if a prompt flag has been supplied on CLI, the prompt question will not be displayed
+
   flags: {
     disabledPrompt: {
       aliases: ['d'],
       required: false,
       description: 'disabled prompt item',
-      default: 'mike',
       prompt: {
         type: 'input',
         message: 'prompt message',
-        hint: 'this is disabled by default, enabled `execute` method',
+        hint: 'this is disabled by default, forced display in `prompt.run` method',
         disabled: true,
-        initial: 'x',
       },
     },
 
     autocomplete: {
+      // question type (boolean or string - default: string)
+      type: 'string',
+
+      // if not `autoPrompt` determines if flag must be supplied on cli
       required: false,
+
+      // flag description
       description: 'autocomplete prompt',
+
+      // default value (used if no prompt `initial` value)
+      default: 'joelle',
+
+      // additional help information (shows in command help)
       help: 'verbose help information',
       prompt: {
+        // see list of supported prompt types
         type: 'autocomplete',
+        // prompt message displayed as prompt title
         message: 'pick the leader of the house',
         choices: ['mike', 'kira', 'joelle', 'brady', 'bailey', 'trevor'],
+        // appears after `message`
         hint: 'start typing to see the goods',
+        // initial prompt value (if not supplied, will use `default` value if supplied)
+        initial: 'kira',
       },
     },
 
     boolean: {
+      type: 'boolean',
       description: 'boolean prompt',
-      required: false,
-      prompt: {
-        type: 'boolean',
-        message: 'true or false',
-        hint: 'you should answer yes',
-      },
+      required: true,
+      // prompt: {
+      //   type: 'boolean',
+      //   message: 'true or false',
+      //   hint: 'you should answer yes',
+      // },
     },
 
     confirm: {
@@ -136,6 +169,13 @@ module.exports = {
           }
           return true
         },
+      },
+    },
+
+    number: {
+      description: 'what you your favorite number',
+      prompt: {
+        type: 'number',
       },
     },
 
@@ -234,10 +274,12 @@ module.exports = {
 
     toggle: {
       description: 'toggle prompt',
+      help: 'xxx',
       required: false,
       prompt: {
         type: 'toggle',
         message: 'simple toggle',
+        hint: 'can be used as alternate to `confirm` prompt',
       },
     },
 
@@ -250,18 +292,27 @@ module.exports = {
   examples: ['test:prompt MyCommand --command hello:world --description="Command Description"'],
 
   async execute(toolbox) {
-    // override default for testing
-    this.flags.disabledPrompt.prompt.disabled = false
-
     // override autocomplete choices
     this.flags.autocomplete.prompt.choices = ['mike', 'kira']
+
     // get CLI args, will be merged with answers below
     let args = helpers.getArguments(toolbox.arguments, this)
 
-    // show any prompts (arguments or flags marked as required with prompt data)
-    let answers = await toolbox.prompts.run(toolbox, this)
+    // default prompt answers
+    let answers = {}
 
+    // show any prompts (arguments or flags marked as required with prompt data, or forced display (param 3))
+    // change `autoPrompt` to false to trigger direct invokating
+    if (!this.autoPrompt) {
+      // override defaults and force the following prompts to be displayed
+      const forcedPrompts = ['arguments.myArg', 'flags.disabledPrompt', 'flags.autocomplete', 'flags.toggle']
+      let response = await toolbox.prompts.run(toolbox, this, forcedPrompts)
+      answers = { ...response }
+    }
+
+    // perform any result coercion based on question type
     let result = helpers.sanitizeResults({ ...args, ...answers }, this)
+    dd({ args, result })
 
     let keys = Object.keys(result)
     let onlyRequired = keys.length === 1 && keys[0] === 'test'

@@ -143,46 +143,26 @@ class Helpers {
     return result
   }
 
-  setDefaultFlags(cliArgs = null, commandArgsFlags = null, options = { initializeNullValues: false }) {
+  setDefaultFlags(cliArgs = null, commandFlags = null, options = { initializeNullValues: true }) {
     let result = {}
 
-    if (cliArgs && commandArgsFlags) {
-      if (commandArgsFlags?.flags) {
-        Object.keys(commandArgsFlags?.flags).forEach((key) => {
-          let type = commandArgsFlags.flags[key]?.type ? commandArgsFlags.flags[key].type : null
-          let value = this.getOptionValue(cliArgs, commandArgsFlags.flags, key)
-          if (value === null) {
-            let defaultValue = null
-            if (commandArgsFlags.flags[key]?.initial) {
-              defaultValue = commandArgsFlags.flags[key]?.initial
-            }
-            value = defaultValue
+    if (cliArgs && commandFlags) {
+      Object.keys(commandFlags).forEach((key) => {
+        let type = commandFlags[key]?.type ? commandFlags[key].type : null
+        let value = this.getOptionValue(cliArgs, commandFlags, key)
+        if (value === null) {
+          let defaultValue = null
+          if (commandFlags[key]?.initial) {
+            defaultValue = commandFlags[key]?.initial
           }
+          value = defaultValue
+        }
 
-          if (type === 'boolean' && value === 'false') {
-            value = false
-          }
-          result[key] = value
-        })
-      }
-      if (commandArgsFlags?.arguments) {
-        Object.keys(commandArgsFlags?.arguments).forEach((key) => {
-          let type = commandArgsFlags.arguments[key]?.type ? commandArgsFlags.arguments[key].type : null
-          let value = this.getOptionValue(cliArgs, commandArgsFlags.arguments, key)
-          if (value === null) {
-            let defaultValue = null
-            if (commandArgsFlags.arguments[key]?.initial) {
-              defaultValue = commandArgsFlags.arguments[key]?.initial
-            }
-            value = defaultValue
-          }
-          if (type === 'boolean' && value === 'false') {
-            value = false
-          }
-
-          result[key] = value
-        })
-      }
+        if (type === 'boolean' && value === 'false') {
+          value = false
+        }
+        result[key] = value
+      })
     } else {
       return { ...cliArgs }
     }
@@ -241,7 +221,6 @@ class Helpers {
 
   sanitizeResults(result = null, command = null) {
     let data = {}
-
     Object.keys(result).forEach((key) => {
       let type = command.flags[key]?.prompt?.type
       if (result?.hasOwnProperty(key) && type === 'list') {
@@ -257,7 +236,23 @@ class Helpers {
         }
       } else {
         if (result[key] || type === 'toggle') {
-          data[key] = result[key]
+          if (type === 'toggle') {
+            if (result[key] !== null) {
+              data[key] = result[key]
+              if (data[key] === 'false') {
+                data[key] = false
+              }
+            }
+          } else {
+            if (type === 'confirm') {
+              data[key] = result[key] === 'true' || result[key]
+              if (data[key] === 'false') {
+                data[key] = false
+              }
+            } else {
+              data[key] = result[key]
+            }
+          }
         }
       }
     })

@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.72.0 .. 0.73.0] - 2021-09-09
+
+- added `prompt.disabled` flag which will instruct prompt runner to display prompt
+- added prompt.run method, allow to execute automatic prompt
+
 ## [0.70.0] - 2021-09-01
 
 - adjusted error message when calling a command which does not exist (they are all consistent error messages)

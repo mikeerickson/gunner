@@ -8,12 +8,9 @@ const { dd } = require('dumper.js')
 
 module.exports = (quiet = false) => {
   const print = {
-    write: (type = 'log', msg = '') => {
-      return quiet ? msg : messenger.write(type, msg)
+    write: (msg = '') => {
+      return quiet ? msg : messenger.write('log', msg)
     },
-    // writeLog: (type = 'log', msg = '') => {
-    //   messenger.write(type, msg)
-    // },
     success: (msg = '', label = '') => {
       return quiet ? msg : messenger.success(msg, label)
     },
