@@ -25,6 +25,7 @@ const template = {
       return `FILE_NOT_FOUND: ${templateFilename}`
     }
   },
+
   mergeFile: function (templateFilename = '', target = '', data = {}, options = { overwrite: true }) {
     if (filesystem.exists(templateFilename)) {
       let templateData = this.readFile(templateFilename, 'utf8')
@@ -42,6 +43,7 @@ const template = {
       return 'FILE_NOT_FOUND'
     }
   },
+
   readFile: function (filename) {
     if (filesystem.exists(filename)) {
       return filesystem.read(filename, 'utf-8')
@@ -49,6 +51,7 @@ const template = {
       return 'FILE_NOT_FOUND'
     }
   },
+
   writeFile: function (filename, data, options = { overwrite: true }) {
     if (filesystem.exists(filename)) {
       if (options.overwrite) {
@@ -60,9 +63,11 @@ const template = {
     filesystem.write(filename, data)
     return 'SUCCESS'
   },
+
   render: function (templateData, data) {
     return Mustache.render(templateData, data)
   },
+
   process: function (filename, data = null) {
     if (!data) {
       throw new Error('Invalid Template Data')

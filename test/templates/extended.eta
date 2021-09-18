@@ -1,0 +1,11 @@
+/*-------------------------------------------------------------------------------------------
+ * Extended template with looping code
+ * - Required interpolation when extended
+ * -----------------------------------------------------------------------------------------*/
+
+<%~ name %>
+<%= names.join(', ') %>
+
+Erickson family names:
+<% names.forEach((name, i) => {
+%> <%= i === names.length - 1 ? titleCase(name) : titleCase(name) + '\n' %><%});%>

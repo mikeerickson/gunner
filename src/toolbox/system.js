@@ -12,7 +12,11 @@ const { dd } = require('dumper.js')
 const system = {
   run: (cmd, showConsoleOutput = false) => {
     if (showConsoleOutput) {
-      return execSync(cmd, { stdio: 'inherit', inherit: true })
+      try {
+        return execSync(cmd, { stdio: 'inherit', inherit: true })
+      } catch (error) {
+        process.exit()
+      }
     }
     return execSync(cmd, { inherit: true }).toString()
   },

@@ -65,7 +65,7 @@ prompts = {
     let questions = []
     let name = ''
 
-    if (command.hasOwnProperty('arguments')) {
+    if (command.hasOwnProperty('arguments') && Object.keys(command.arguments).length > 0) {
       name = Object.keys(command.arguments).length > 0 ? Object.keys(command.arguments)[0] : null
       let disabled = command.arguments[name].prompt?.disabled ? command.arguments[name].prompt.disabled : false
 
@@ -78,7 +78,11 @@ prompts = {
 
       if (command?.arguments[name]?.required || !disabled) {
         if (!commandName || commandName.length === 0) {
-          let type = command.arguments[name].prompt.type
+          let argumentKeys = Object.keys(command.arguments[name])
+          if (argumentKeys.length === 0) {
+            return
+          }
+          let type = command.arguments[name]?.prompt?.type || null
           if (type === 'input') {
             questions.push(
               this.buildQuestion('input', name, command.arguments[name].description, {
