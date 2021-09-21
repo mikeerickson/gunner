@@ -61,7 +61,7 @@
   "dependencies": {
     "@codedungeon/messenger": "0.14.0",
     "@codedungeon/utils": "0.0.12",
-    "ansi-regex": "4.1.0",
+    "ansi-regex": "6.0.1",
     "apisauce": "2.1.1",
     "arg": "5.0.0",
     "bcrypt": "5.0.1",
