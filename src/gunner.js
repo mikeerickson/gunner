@@ -30,7 +30,7 @@ const packageManager = require('./toolbox/packageManager')
 
 const Messenger = require('@codedungeon/messenger')
 
-const HELP_PAD = 26
+const HELP_PAD = 28
 const REQUIRED_MARK = '✖︎'
 const SPACER = '                     ' // 23 chars
 
@@ -207,10 +207,10 @@ class CLI {
       this.optionInfo = options
     } else {
       let globalOptions = [
-        '  --debug, -d                   Debug Mode',
-        '  --help, -h, -H                Shows Help (this screen)',
-        '  --log-dir                     Log directory (if different than default)',
-        '  --verbose                     Show Verbose Help',
+        '  --debug, -d                     Debug Mode',
+        '  --help, -h, -H                  Shows Help (this screen)',
+        '  --log-dir                       Log directory (if different than default)',
+        '  --verbose                       Show Verbose Help',
       ]
 
       if (Array.isArray(options)) {
@@ -223,8 +223,8 @@ class CLI {
         globalOptions.push(`  --${options.option}`.padEnd(HELP_PAD + 6) + options?.description)
       }
 
-      globalOptions.push('  --quiet, -q                   Quiet mode (suppress console output)')
-      globalOptions.push('  --version, -v, -V             Show Version')
+      globalOptions.push('  --quiet, -q                     Quiet mode (suppress console output)')
+      globalOptions.push('  --version, -v, -V               Show Version')
 
       globalOptions.sort()
       this.toolbox.globalOptions = globalOptions
@@ -551,9 +551,15 @@ class CLI {
 
       if (!disabled && !hidden) {
         let name = module.name || ''
+        if (module?.arguments) {
+          if (Object.keys(module.arguments).length > 0) {
+            name += ' <args>'
+          }
+        }
+
         if (module?.flags) {
           if (Object.keys(module.flags).length > 0) {
-            name += ' [args]'
+            name += ' [options]'
           }
         }
 
@@ -640,6 +646,10 @@ class CLI {
         console.log(this.commandInfo + '\n')
       } else {
         let commands = this.showCommands()
+
+        // make things pretty and colorful so they stand out
+        commands = strings.replaceAll(commands, '<args>', colors.magenta('<args>'))
+        commands = strings.replaceAll(commands, '[options]', colors.cyan('[options]'))
 
         if (commands.length > 0) {
           console.log(commands)
@@ -736,7 +746,7 @@ class CLI {
         // let hint = this.toolbox.utils.dot.get(module, `arguments.${key}.prompt.hint`)
         hint = hint?.length > 0 ? '(' + hint + ')' : ''
 
-        console.log(`  ${key}${argSpacer} ${required} ${value.description} ${colors.gray(hint)}`)
+        console.log(`    ${key}${argSpacer} ${required} ${value.description} ${colors.gray(hint)}`)
       }
     }
 

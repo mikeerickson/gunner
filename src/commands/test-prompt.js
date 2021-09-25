@@ -21,7 +21,7 @@ module.exports = {
   // when `hidden` command will not appear in `help` but can be invoked manually
   hidden: false,
 
-  usage: `test:prompt ${colors.blue.bold('[Resource Name]')} ${colors.magenta.bold('<flags>')}`,
+  usage: `test:prompt ${colors.magenta.bold('<Resource Name>')} ${colors.blue.bold('[options]')}`,
 
   // if enabled, prompt will ask all questions for arguments / flags which are not `disabled`
   autoPrompt: false,

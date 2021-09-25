@@ -32,7 +32,7 @@ module.exports = {
   description: '{{description}}',
   disabled: false,
   hidden: {{hidden}},
-  usage: `{{command}} ${colors.magenta('<resource>')} ${colors.blue('[options]')}`,
+  usage: `{{command}} ${colors.magenta.bold('<resource>')} ${colors.blue.bold('[options]')}`,
   usePrompts: true,
   {{#showArguments}}
   arguments: {

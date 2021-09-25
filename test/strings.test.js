@@ -55,4 +55,31 @@ describe('string module', (done) => {
     expect(str.length).equal(4)
     done()
   })
+
+  it('should pluralize string', (done) => {
+    let dogs = strings.plural('dog')
+    expect(dogs).equal('dogs')
+
+    let companies = strings.plural('company')
+    expect(companies).equal('companies')
+
+    done()
+  })
+
+  it('should singularize string', (done) => {
+    let dog = strings.singular('dogs')
+    expect(dog).equal('dog')
+
+    let company = strings.singular('companies')
+    expect(company).equal('company')
+
+    done()
+  })
+
+  it('should replace all items in string', (done) => {
+    let str = '<hello> <hello> <hello>'
+    let result = strings.replaceAll(str, '<hello>', '<hello-world>')
+    expect(result).equal('<hello-world> <hello-world> <hello-world>')
+    done()
+  })
 })

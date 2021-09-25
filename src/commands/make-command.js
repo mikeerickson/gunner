@@ -14,7 +14,7 @@ const { filesystem } = require('../gunner')
 module.exports = {
   name: 'make:command',
   description: 'Create new command',
-  usage: `make:command ${colors.blue.bold('[Filename]')} ${colors.magenta.bold('<flags>')}`,
+  usage: `make:command ${colors.magenta.bold('<Filename>')} ${colors.blue.bold('[options]')}`,
   usePrompts: true,
   arguments: {
     name: {

@@ -10,6 +10,10 @@ const pluarlize = require('pluralize')
 const strings = require('voca')
 const ansiRegex = require('ansi-regex')
 
+const escapeRegExp = (string) => {
+  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+}
+
 strings.raw = (str) => {
   return str.replace(ansiRegex(), '')
 }
@@ -20,6 +24,10 @@ strings.plural = (str) => {
 
 strings.singular = (str) => {
   return pluarlize.singular(str)
+}
+
+strings.replaceAll = (str, find, replace) => {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace)
 }
 
 strings.validName = (str) => {
