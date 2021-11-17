@@ -8,8 +8,6 @@ const config = require('./src/toolbox/config')
 const begoo = require('begoo')
 let parseArgs = require('minimist')
 
-console.log('test')
-
 if (!config.get('init', false)) {
   let msg =
     colors.green('Welcome to Gunner') +
