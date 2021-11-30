@@ -544,7 +544,7 @@ module.exports = {
           toolbox.print.success(`${toolbox.colors.yellow(toolbox.commandName)} Project Created Successfully`, 'SUCCESS')
           toolbox.print.notice('\n👉 Next Steps:\n')
           toolbox.print.notice(`   ${toolbox.colors.gray('$')} cd ${toolbox.commandName}`)
-          toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${this.answers.pkgMgr} link ${toolbox.commandName}`)
+          toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${this.answers.pkgMgr} link`)
           toolbox.print.debug(colors.dim('     info => https://docs.npmjs.com/cli/v6/commands/npm-link'))
           toolbox.print.notice(`   ${toolbox.colors.gray('$')} ${toolbox.commandName} --help\n`)
           console.log(colors.keyword('pink').italic('   🐶 Woof!'))

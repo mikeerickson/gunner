@@ -5,10 +5,10 @@ logs/
 *.log
 *.taskpaper
 TODO.md
-NOTES.md
 example/
 .nyc_output/
 .vscode/
 .temp/
 custom-templates/
 src/unused/
+.idea/
