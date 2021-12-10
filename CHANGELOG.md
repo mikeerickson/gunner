@@ -4,8 +4,10 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.74.0 .. 0.74.3] - 2021-12-09
+
+- Updated LICENSE
+- Reorganized CHANGELOG (this document)
 
 ## [0.72.0 .. 0.73.0] - 2021-09-09
 
@@ -54,6 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - 2020-06-02
 
+## [0.3.0] - 2019-03-09
+
+### Added
+
+- First public Release
+- husky and commitlint to development workflow
+
 ### Added
 
 - Prompt interface (powered by enquirer)
@@ -66,11 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [enquirer](https://github.com/enquirer)
 
-## [0.3.0] - 2019-03-09
-
-### Added
-
-- First public Release
-- husky and commitlint to development workflow
+- The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+- This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
