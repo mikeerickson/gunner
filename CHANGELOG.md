@@ -4,7 +4,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.74.0 .. 0.74.13] - 2022-01-26
+## [0.74.0 .. 0.74.15] - 2022-01-26
 
 ## [0.74.0 .. 0.74.3] - 2021-12-09
 
