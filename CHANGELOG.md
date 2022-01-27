@@ -4,11 +4,7 @@
 
 All notable changes to this project will be documented in this file.
 
-<<<<<<< HEAD
 ## [0.74.0 .. 0.74.11] - 2022-01-26
-=======
-## [0.74.4 .. 0.74.10] - 2022-01-26
->>>>>>> ea3b564a490237e3318952fc89b63dddc75e7050
 
 ## [0.74.0 .. 0.74.3] - 2021-12-09
 
