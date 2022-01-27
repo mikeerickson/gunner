@@ -4,7 +4,11 @@
 
 All notable changes to this project will be documented in this file.
 
+<<<<<<< HEAD
 ## [0.74.0 .. 0.74.17] - 2022-01-26
+=======
+## [0.74.0 .. 0.74.19] - 2022-01-26
+>>>>>>> 6bd6976cf383a4fdf4b10d798d719ddca82abcf9
 
 - Bump version
 
