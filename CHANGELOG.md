@@ -4,7 +4,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.74.0 .. 0.74.21] - 2022-01-26
+## [0.74.0 .. 0.74.23] - 2022-01-26
 
 - Bump version
 
