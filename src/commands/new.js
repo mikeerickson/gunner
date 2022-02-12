@@ -20,7 +20,7 @@ const spinner = new Ora({
 
 module.exports = {
   name: 'new',
-  description: 'Generate new CLI project in the current directory using suppled "name" argument',
+  description: 'Generate new CLI project in the current directory using supplied "name" argument',
   usage: `new ${colors.magenta.bold('<name>')} ${colors.blue.bold('[options]')}`,
   arguments: {
     name: { description: 'New CLI Name', required: false },

@@ -854,6 +854,9 @@ class CLI {
       let argName = module?.arguments ? Object.keys(module.arguments)[0] : null
       let required = module?.arguments ? module.arguments[argName]?.required : false
       let prompt = module?.arguments ? module.arguments[argName]?.prompt && module.autoPrompt : false
+      if (typeof prompt === 'undefined') {
+        prompt = false
+      }
 
       if (this.argv.length <= 3 && module?.arguments && argName && required && !prompt) {
         console.log('')
@@ -887,8 +890,12 @@ class CLI {
         if (requiredArguments.length > 0 && !prompt) {
           output = '        - ' + requiredArguments.join(', ') + '\n'
           console.log('')
+
           this.toolbox.print.error('Missing Required Arguments:', 'ERROR')
-          this.toolbox.print.error(output)
+          requiredArguments.forEach((arg) => {
+            this.toolbox.print.error(' - ' + arg)
+          })
+
           this.executeHook('afterExecute', command, args, output)
           return output
         }
