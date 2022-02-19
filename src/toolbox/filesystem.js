@@ -131,4 +131,21 @@ fs.directoryList = (directory = '', options = {}) => {
   return matches
 }
 
+fs.filename = (pathItem = '') => {
+  return pathItem.replace(/^.*(\\|\/|:)/, '')
+}
+
+// muscle memory from yesterYear
+fs.shortName = (pathItem = '') => {
+  return pathItem.replace(/^.*(\\|\/|:)/, '')
+}
+
+fs.parentName = (pathItem = '') => {
+  return path.dirname(pathItem)
+}
+
+fs.dirname = (pathItem = '') => {
+  return path.dirname(pathItem)
+}
+
 module.exports = fs

@@ -66,4 +66,62 @@ describe('filesystem patching', (done) => {
     expect(fs.cwd('..')).equal(path.dirname(process.cwd()))
     done()
   })
+
+  it('should return filename from path', (done) => {
+    let pathName = 'src/toolbox/filesystem.js'
+
+    expect(fs.filename(pathName)).equal('filesystem.js')
+
+    done()
+  })
+
+  it('should return filename from path using alias', (done) => {
+    let pathName = 'src/toolbox/filesystem.js'
+
+    expect(fs.shortName(pathName)).equal('filesystem.js')
+
+    done()
+  })
+
+  it('should return parentName from path', (done) => {
+    let pathName = 'src/toolbox/filesystem.js'
+
+    expect(fs.parentName(pathName)).equal('src/toolbox')
+
+    done()
+  })
+
+  it('should return parentName from path using alias', (done) => {
+    let pathName = 'src/toolbox/filesystem.js'
+
+    expect(fs.dirname(pathName)).equal('src/toolbox')
+
+    done()
+  })
+
+  it('should return directory list', (done) => {
+    let dirList = fs.directoryList()
+
+    expect(dirList.length).greaterThan(0)
+
+    done()
+  })
+
+  it('should return directory list containing only directories', (done) => {
+    let fullList = fs.directoryList()
+    let dirList = fs.directoryList('', { directoriesOnly: true })
+
+    expect(fullList.length !== dirList.length).equal(true)
+
+    done()
+  })
+
+  it('should return directory list containing only files', (done) => {
+    let fullList = fs.directoryList()
+    let fileList = fs.directoryList('', { filesOnly: true })
+
+    expect(fullList.length !== fileList.length).equal(true)
+
+    done()
+  })
 })
