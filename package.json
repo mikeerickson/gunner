@@ -80,7 +80,7 @@
     "eta": "1.12.3",
     "execa": "5.0.0",
     "fs-chmod": "1.0.6",
-    "fs-extra": "9.1.0",
+    "fs-extra": "^10.0.0",
     "fs-extra-promise": "1.0.1",
     "fs-jetpack": "4.1.1",
     "git-user-info": "1.0.1",
