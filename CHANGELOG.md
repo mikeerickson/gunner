@@ -4,6 +4,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.77.0] - 2022-06-xx
+
+- Fixed issue when passing array of options, was also reported as `object`
+- Renamed `Options:` to `Command Options:` when displaying command help
+- Added `Global Options` output when executing command --help
+- Adjusted padding of Commands, Options and Global Options so they are consistent
+> This has been a long standing issue, hopefully it is right everywhere
+
 ## [0.74.0 .. 0.74.28] - 2022-01-26
 
 - Bump version

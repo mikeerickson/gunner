@@ -201,6 +201,8 @@ class CLI {
     return this
   }
 
+  // options array example
+  // .options([{option: 'xxx', description: 'yyy'}])
   options(options = '') {
     let optionsType = typeof options
     if (optionsType === 'string' && options.length > 0) {
@@ -219,7 +221,7 @@ class CLI {
         })
       }
 
-      if (optionsType === 'object') {
+      if (optionsType === 'object' && !Array.isArray(options)) {
         globalOptions.push(`  --${options.option}`.padEnd(HELP_PAD + 6) + options?.description)
       }
 
@@ -625,6 +627,13 @@ class CLI {
     }
   }
 
+  showGlobalOptions() {
+    if (this.optionInfo.length > 1) {
+      console.log(colors.yellow('Global Options:'))
+      console.log(this.optionInfo + '\n')
+    }
+  }
+
   showHelp(appName = '') {
     // if we have defined custom help, display it
     if (this.helpInfo.length > 0) {
@@ -768,7 +777,7 @@ class CLI {
         return !module.flags['name']?.hidden
       })
       if (flags.length > 0) {
-        console.log(this.toolbox.colors.yellow('Options:'))
+        console.log(this.toolbox.colors.yellow('Command Options:'))
         keys.forEach((flag) => {
           if (module.flags[flag]?.hidden) {
             return false
@@ -800,7 +809,7 @@ class CLI {
 
           let flags = '--' + flag + aliases
 
-          let flagValue = flags.padEnd(HELP_PAD)
+          let flagValue = flags.padEnd(HELP_PAD + 2)
           console.log(`  ${flagValue}${required} ${description} ${defaultValue}`)
           if (module.flags[flag]?.prompt?.hint && this.arguments?.verbose) {
             let hint = '                              | ' + module.flags[flag]?.prompt?.hint
@@ -954,6 +963,7 @@ class CLI {
 
     if (this.command.length > 0 && this.arguments.help) {
       this.showCommandHelp(this.command)
+      this.showGlobalOptions()
       this.showCommandHelpExample(this.command)
       return
     }
