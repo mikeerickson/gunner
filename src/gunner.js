@@ -451,6 +451,11 @@ class CLI {
             }
           }
         }
+
+        if (flagType === 'string' && typeof value === 'number') {
+          value = value.toString()
+        }
+
         if (flagType !== 'any' && value && flagType !== typeof value) {
           valid = { status: false, flag: item, message: `${item} expected ${flagType}, ${typeof value} supplied` }
         }

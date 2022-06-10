@@ -4,7 +4,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.77.0] - 2022-06-xx
+## [0.78.0] - 2022-06-10
+
+- fixed issue when passing what appears to be number to flag which expects string
+
+## [0.77.0] - 2022-06-08
 
 - Fixed issue when passing array of options, was also reported as `object`
 - Renamed `Options:` to `Command Options:` when displaying command help
