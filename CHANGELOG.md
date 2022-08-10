@@ -4,6 +4,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.79.0] - 2022-08-10
+
 ## [0.78.0] - 2022-06-10
 
 - fixed issue when passing what appears to be number to flag which expects string
