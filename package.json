@@ -52,7 +52,7 @@
     "eslint-config-prettier": "4.1.0",
     "eslint-plugin-prettier": "3.0.1",
     "leasot": "11.5.0",
-    "mocha": "6.0.2",
+    "mocha": "10.2.0",
     "mock-fs": "4.13.0",
     "nyc": "15.1.0",
     "prettier": "2.2.1",
