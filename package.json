@@ -102,7 +102,7 @@
     "shelljs": "0.8.4",
     "strip-ansi": "5.0.0",
     "trash": "7.2.0",
-    "update-notifier": "5.1.0",
+    "update-notifier": "6.0.2",
     "valid-filename": "3.1.0",
     "voca": "1.4.0",
     "which": "2.0.2"
