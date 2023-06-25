@@ -4,6 +4,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.80.0] - 2023-06-25
+- Fixed issue when running tests, changing the project root in gunner:constructor
+  - this,projectRoot variable
+
 ## [0.79.0] - 2022-08-10
 
 ## [0.78.0] - 2022-06-10

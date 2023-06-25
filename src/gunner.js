@@ -68,11 +68,18 @@ class CLI {
     this.argv = argv
     this.fs = this.filesystem = require('./toolbox/filesystem') // get this early as it will be used during bootstrap
     // this.projectRoot = projectRootDir || this.fs.realpathSync(path.dirname(argv[1]))
-    this.projectRoot = projectRootDir || path.dirname(path.dirname(this.fs.realpathSync(argv[1])))
+    // this.projectRoot = projectRootDir || path.dirname(path.dirname(this.fs.realpathSync(argv[1])))
+    Messenger.loggerDebug('make sure this change works (see previous call)')
+    print.warn('make sure this change works (see previous call)', 'gunner constructor')
+
+    this.projectRoot = projectRootDir || path.dirname(this.fs.realpathSync(argv[1]))
+    // console.log(this.projectRoot)
+    // process.exit()
 
     this.app = new App({ projectRoot: this.projectRoot })
 
     this.pkgInfo = require(path.join(this.fs.realpathSync(this.projectRoot), 'package.json'))
+
     this.versionInfo = this.pkgInfo.version
     this.name = this.pkgInfo.name
     this.appName = this.pkgInfo.packageName
