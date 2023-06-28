@@ -89,7 +89,7 @@
     "ip": "1.1.5",
     "jsonfile": "6.1.0",
     "min-dot": "0.1.1",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "mustache": "4.2.0",
     "node-ip": "0.1.2",
     "npm-which": "3.0.1",
