@@ -5,6 +5,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.80.0] - 2023-06-25
+- Added `dayjs` export to `toolbox`
+  - Usage: `toolbox.datetime('2023-05-15T00:00:00.000Z').format('MMM DD YYYY');`
+
+## [0.80.0] - 2023-06-25
 - Fixed issue when running tests, changing the project root in gunner:constructor
   - this,projectRoot variable
 

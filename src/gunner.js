@@ -10,6 +10,7 @@ const colors = require('chalk')
 const semver = require('semver')
 const shell = require('shelljs')
 const datetime = require('dayjs')
+const dayjs = require('dayjs')
 const debug = require('dumper.js')
 const tildify = require('tildify')
 const api = require('./toolbox/api')
@@ -154,6 +155,7 @@ class CLI {
       filesystem: this.fs,
       fs: this.fs,
       datetime,
+      dayjs,
       path,
       packageManager,
       prompts,
